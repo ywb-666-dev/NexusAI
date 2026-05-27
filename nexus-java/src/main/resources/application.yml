@@ -1,0 +1,69 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: nexus-java
+
+  # ==================== SQL Server ====================
+  datasource:
+    # 注意：把 192.168.56.101 换成你 Ubuntu 虚拟机的实际 IP
+    url: jdbc:sqlserver://192.168.56.101:1433;databaseName=NexusAI;encrypt=true;trustServerCertificate=true;loginTimeout=30;
+    username: sa
+    password: YourStrong@Passw0rd
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+
+  # ==================== RocketMQ ====================
+  rocketmq:
+    name-server: 192.168.56.101:9876
+    producer:
+      group: nexus-java-producer
+      send-message-timeout: 3000
+      retry-times-when-send-failed: 2
+  # ==================== redis ====================
+  data:
+    redis:
+      host: 192.168.56.101
+      port: 6379
+      database: 0
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+# ==================== MyBatis-Plus ====================
+mybatis-plus:
+  configuration:
+    # 开发阶段打印 SQL 到控制台
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 驼峰映射：数据库 create_at → 实体 createAt
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      # 主键策略：数据库自增（对应 SQL Server IDENTITY）
+      id-type: auto
+
+# ==================== JWT 自定义配置 ====================
+jwt:
+  # 密钥长度必须 >= 32 个字符，否则 jjwt 启动报错
+  secret: nexus-ai-local-secret-key-2026-32chars!!
+  # Token 有效期，单位毫秒。86400000 = 24 小时
+  expiration: 86400000
+
+# ==================== 日志配置 ====================
+logging:
+  level:
+    # 打印 Mapper 层的 SQL 参数
+    org.ibo.nexusjava.mapper: debug
+  pattern:
+    # %X{requestId} 读取 MDC 里的 requestId，实现全链路追踪
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %X{requestId} %-5level %logger{36} - %msg%n"

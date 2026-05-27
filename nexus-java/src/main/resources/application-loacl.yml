@@ -1,0 +1,2 @@
+jwt:
+  secret: nexus-local-dev-key-2026-05-27-32chars!!
