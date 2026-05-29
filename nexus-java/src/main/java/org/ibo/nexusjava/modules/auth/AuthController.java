@@ -10,13 +10,15 @@ import org.ibo.nexusjava.modules.auth.vo.LoginVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author: yi327
  * @date: 2026/5/27
  */
-@RestController("/api/java/auth")
+@RestController
+@RequestMapping("/api/java/auth")
 public class AuthController {
     @Autowired
     AuthService authService;
