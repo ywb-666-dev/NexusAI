@@ -255,3 +255,36 @@ async def get_task_status(task_id: str) -> dict:
     except Exception:
         pass
     return {"status": "unknown"}
+
+
+async def run_scout_task(
+    task_id: str,
+    subscription_id: int,
+    keywords: list[str],
+    source_platforms: list[str],
+    mcp_pool: Any,
+    db: AsyncSession,
+) -> None:
+    """运行完整的 Scout Agent 采集流水线"""
+    from app.agents.supervisor import build_scout_agent
+
+    initial_state = {
+        "task_id": task_id,
+        "subscription_id": subscription_id,
+        "keywords": keywords,
+        "source_platforms": source_platforms,
+        "raw_items": [],
+        "parsed_contents": [],
+        "duplicate_ids": [],
+        "stored_ids": [],
+        "stored_count": 0,
+        "duplicate_count": 0,
+        "status": "queued",
+        "error": None,
+    }
+
+    try:
+        agent = build_scout_agent(mcp_pool, db)
+        agent.invoke(initial_state)
+    except Exception as e:
+        await _update_task_status(task_id, f"error: {str(e)}")
