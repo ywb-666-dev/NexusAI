@@ -68,13 +68,12 @@ async def mcp_server_health(name: str, request: Request):
     }
 
 
-# ============================================================
-# 后续你的路由不要全写在这里，用 app.include_router() 拆分出去
-# 例如：
-# from app.api import agent, content
-# app.include_router(agent.router, prefix="/api/python/agent")
-# app.include_router(content.router, prefix="/api/python/contents")
-# ============================================================
+from app.api import agent, content, subscription, notification
+
+app.include_router(agent.router, prefix="/api/python/agent", tags=["agent"])
+app.include_router(content.router, prefix="/api/python/contents", tags=["content"])
+app.include_router(subscription.router, prefix="/api/python/subscriptions", tags=["subscription"])
+app.include_router(notification.router, prefix="/api/python/notifications", tags=["notification"])
 
 if __name__ == "__main__":
     import uvicorn
