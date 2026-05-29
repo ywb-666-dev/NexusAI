@@ -25,6 +25,16 @@ public enum ErrorCode {
     SUBSCRIPTION_NOT_FOUND(1300, "订阅规则不存在"),
     SUBSCRIPTION_NAME_EXISTS(1301, "订阅规则名称已存在"),
 
+    // 通知模块 1400-1499
+    NOTIFICATION_NOT_FOUND(1400, "通知不存在"),
+
+    // 审批模块 1500-1599
+    APPROVAL_TICKET_NOT_FOUND(1500, "审批工单不存在"),
+    APPROVAL_ALREADY_PROCESSED(1501, "工单已处理，不可重复审批"),
+
+    // 审计模块 1600-1699
+    AUDIT_LOG_NOT_FOUND(1600, "审计日志不存在"),
+
     // ... 后续按需扩展
     ;
 
