@@ -9,10 +9,10 @@ from typing import AsyncGenerator
 from redis.asyncio import ConnectionPool as RedisConnectionPool
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from config import settings
+from app.core.config import settings
 
 # ==========================================
-# SQL Server - SQLAlchemy 异步连接池
+# MySQL - SQLAlchemy 异步连接池
 # ==========================================
 
 _async_engine = None

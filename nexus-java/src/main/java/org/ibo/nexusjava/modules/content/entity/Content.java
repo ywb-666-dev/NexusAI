@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@TableName("app.content")
+@TableName("content")
 public class Content {
     @TableId(type = IdType.ASSIGN_UUID)
     private UUID id;

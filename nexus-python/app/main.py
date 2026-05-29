@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 import asyncio
 
-from app.services.mcp_servers import MCPPool, SERVERS
+from app.mcp_servers import MCPPool, SERVERS
 
 
 @asynccontextmanager

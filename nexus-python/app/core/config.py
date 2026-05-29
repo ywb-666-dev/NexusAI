@@ -148,31 +148,30 @@ class PlaywrightSettings(BaseSettings):
 
 
 class DatabaseSettings(BaseSettings):
-    """SQL Server 异步数据库配置"""
+    """MySQL 异步数据库配置"""
     model_config = SettingsConfigDict(env_prefix="DB_")
-    
+
     host: str = Field(default="localhost")
-    port: int = Field(default=1433)
-    database: str = Field(default="NexusAI")
-    username: str = Field(default="nexus_app_user")
+    port: int = Field(default=3306)
+    database: str = Field(default="nexusai")
+    username: str = Field(default="root")
     password: str = Field(default="")
-    
+
     # 异步连接池参数
     pool_size: int = Field(default=10, description="连接池大小")
     max_overflow: int = Field(default=20, description="超出 pool_size 的最大连接数")
     pool_timeout: int = Field(default=30, description="获取连接超时秒数")
     echo: bool = Field(
-        default=False, 
+        default=False,
         description="是否打印 SQL 语句（调试开启）"
     )
-    
+
     @property
     def async_url(self) -> str:
         """构建 SQLAlchemy 异步连接串"""
         return (
-            f"mssql+aioodbc://{self.username}:{self.password}"
+            f"mysql+aiomysql://{self.username}:{self.password}"
             f"@{self.host}:{self.port}/{self.database}"
-            f"?driver=ODBC+Driver+17+for+SQL+Server"
         )
 
 

@@ -5,13 +5,12 @@ spring:
   application:
     name: nexus-java
 
-  # ==================== SQL Server ====================
+  # ==================== MySQL ====================
   datasource:
-    # 注意：把 192.168.56.101 换成你 Ubuntu 虚拟机的实际 IP
-    url: jdbc:sqlserver://192.168.56.101:1433;databaseName=NexusAI;encrypt=true;trustServerCertificate=true;loginTimeout=30;
-    username: sa
+    url: jdbc:mysql://localhost:3306/nexusai?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
     password: YourStrong@Passw0rd
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
@@ -49,7 +48,7 @@ mybatis-plus:
     map-underscore-to-camel-case: true
   global-config:
     db-config:
-      # 主键策略：数据库自增（对应 SQL Server IDENTITY）
+      # 主键策略：数据库自增（对应 MySQL AUTO_INCREMENT）
       id-type: auto
 
 # ==================== JWT 自定义配置 ====================

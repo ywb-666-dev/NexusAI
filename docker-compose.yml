@@ -1,15 +1,18 @@
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: nexus-sqlserver
+  mysql:
+    image: mysql:8.0
+    container_name: nexus-mysql
     environment:
-      ACCEPT_EULA: Y
-      SA_PASSWORD: YourStrong@Passw0rd
-      MSSQL_PID: Developer
+      MYSQL_ROOT_PASSWORD: YourStrong@Passw0rd
+      MYSQL_DATABASE: nexusai
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     ports:
-      - "1433:1433"
+      - "3306:3306"
     volumes:
-      - sql_data:/var/opt/mssql
+      - mysql_data:/var/lib/mysql
+      - ./infra/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
 
   redis:
     image: redis:7-alpine
@@ -18,37 +21,57 @@ services:
       - "6379:6379"
 
   rocketmq-namesrv:
+    image: apache/rocketmq:5.1.4
     container_name: nexus-namesrv
     command: sh mqnamesrv
     ports:
       - "9876:9876"
 
   rocketmq-broker:
+    image: apache/rocketmq:5.1.4
     container_name: nexus-broker
     command: sh mqbroker -n rocketmq-namesrv:9876
     ports:
       - "10911:10911"
+      - "10909:10909"
     depends_on:
       - rocketmq-namesrv
 
   milvus-etcd:
+    image: quay.io/coreos/etcd:v3.5.5
     container_name: nexus-etcd
     environment:
       - ETCD_AUTO_COMPACTION_MODE=revision
       - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+    volumes:
+      - etcd_data:/etcd
+    command: etcd -advertise-client-urls http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
     ports:
       - "2379:2379"
 
   milvus-minio:
+    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
     container_name: nexus-minio
-    command: minio server /minio_data
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - minio_data:/minio_data
+    command: minio server /minio_data --console-address ":9001"
     ports:
       - "9000:9000"
       - "9001:9001"
 
   milvus-standalone:
+    image: milvusdb/milvus:v2.3.3
     container_name: nexus-milvus
     command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: milvus-etcd:2379
+      MINIO_ADDRESS: milvus-minio:9000
+    volumes:
+      - milvus_data:/var/lib/milvus
     ports:
       - "19530:19530"
     depends_on:
@@ -56,4 +79,7 @@ services:
       - milvus-minio
 
 volumes:
-  sql_data:
+  mysql_data:
+  etcd_data:
+  minio_data:
+  milvus_data:

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * @date: 2026/5/27
  */
 @Data
-@TableName("app.subscription")
+@TableName("subscription")
 public class Subscription {
     @TableId(type = IdType.AUTO)
     private Long id;
