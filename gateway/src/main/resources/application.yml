@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: nexus-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: false
+            maxAge: 3600
+      routes:
+        - id: nexus-java
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/java/**
+          filters:
+            - StripPrefix=0
+
+        - id: nexus-python
+          uri: http://localhost:8000
+          predicates:
+            - Path=/api/python/**
+          filters:
+            - StripPrefix=0
+
+jwt:
+  secret: nexus-ai-local-secret-key-2026-32chars!!
+  expiration: 86400000
