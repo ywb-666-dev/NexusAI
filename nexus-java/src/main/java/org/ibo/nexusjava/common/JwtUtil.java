@@ -22,7 +22,7 @@ public class JwtUtil {
     private String secret;
     @Value("${jwt.expiration}")
 
-    private String expiration;//单位毫秒
+    private Long expiration;//单位毫秒
     // 构造或初始化时，把 secret 转成 javax.crypto.SecretKey 缓存起来
     //避免每次调用都重新生成密钥对象
     private SecretKey key;

@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
         var code=e.getCode();
         var message=e.getMessage();
         // 2. 可选：用 SLF4J 打印 warn 日志，包含 requestId 和 URL
-        log.warn("[BusinessException] requestId:{},URL{},code:{},message:{}",request.getRequestId(),request.getRequestURL(),code,message);
+        log.warn("[BusinessException] requestId:{},URL:{},code:{},message:{}",request.getAttribute("requestId"),request.getRequestURL(),code,message);
         // 3. 返回 Result.error(e.getCode(), e.getMessage())
         return Result.error(code,message);
     }
