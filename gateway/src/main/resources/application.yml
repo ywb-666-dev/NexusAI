@@ -12,7 +12,7 @@ spring:
             allowedOrigins: "*"
             allowedMethods: "*"
             allowedHeaders: "*"
-            allowCredentials: false
+            allowCredentials: true
             maxAge: 3600
       routes:
         - id: nexus-java

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.ibo.nexusjava.common.BusinessException;
 import org.ibo.nexusjava.common.ErrorCode;
+import org.ibo.nexusjava.interceptor.UserContext;
 import org.ibo.nexusjava.modules.approval.dto.ApprovalTicketDTO;
 import org.ibo.nexusjava.modules.approval.entity.ApprovalTicket;
 import org.ibo.nexusjava.modules.approval.mapper.ApprovalTicketMapper;
@@ -72,8 +73,9 @@ public class ApprovalTicketServiceImpl extends ServiceImpl<ApprovalTicketMapper,
         if (ticket.getStatus() != 0) {
             throw new BusinessException(ErrorCode.APPROVAL_ALREADY_PROCESSED);
         }
+        Long approverId = UserContext.getUserId();
         ticket.setStatus(1);
-        ticket.setApprovedBy(dto.getApprovedBy());
+        ticket.setApprovedBy(approverId);
         ticket.setComment(dto.getComment());
         ticket.setApprovedAt(LocalDateTime.now());
         updateById(ticket);
@@ -88,8 +90,9 @@ public class ApprovalTicketServiceImpl extends ServiceImpl<ApprovalTicketMapper,
         if (ticket.getStatus() != 0) {
             throw new BusinessException(ErrorCode.APPROVAL_ALREADY_PROCESSED);
         }
+        Long approverId = UserContext.getUserId();
         ticket.setStatus(2);
-        ticket.setApprovedBy(dto.getApprovedBy());
+        ticket.setApprovedBy(approverId);
         ticket.setComment(dto.getComment());
         ticket.setApprovedAt(LocalDateTime.now());
         updateById(ticket);
