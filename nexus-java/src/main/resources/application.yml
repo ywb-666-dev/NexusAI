@@ -21,7 +21,7 @@ spring:
 
   # ==================== RocketMQ ====================
   rocketmq:
-    name-server: 192.168.56.101:9876
+    name-server: localhost:9876
     producer:
       group: nexus-java-producer
       send-message-timeout: 3000
@@ -29,7 +29,7 @@ spring:
   # ==================== redis ====================
   data:
     redis:
-      host: 192.168.56.101
+      host: localhost
       port: 6379
       database: 0
       timeout: 3000ms

@@ -11,7 +11,7 @@ class Subscription(Base):
     user_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     keywords: Mapped[dict | None] = mapped_column(JSON)
-    source_platforms: Mapped[str | None] = mapped_column(String(500))
+    source_platforms: Mapped[dict | None] = mapped_column(JSON)
     match_mode: Mapped[int] = mapped_column(default=1)
     trigger_conditions: Mapped[dict | None] = mapped_column(JSON)
     priority: Mapped[int] = mapped_column(default=2)

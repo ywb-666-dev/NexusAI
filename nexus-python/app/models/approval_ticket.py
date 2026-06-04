@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, String, DateTime, func
+from sqlalchemy import BigInteger, String, DateTime, JSON, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
@@ -12,7 +12,7 @@ class ApprovalTicket(Base):
     user_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
     action_type: Mapped[str | None] = mapped_column(String(50))
     risk_level: Mapped[int | None] = mapped_column()
-    context: Mapped[dict | None] = mapped_column(String(65535))
+    context: Mapped[dict | None] = mapped_column(JSON)
     status: Mapped[int] = mapped_column(default=0)
     approved_by: Mapped[int | None] = mapped_column(BigInteger)
     approved_at: Mapped[DateTime | None] = mapped_column(DateTime)

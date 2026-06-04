@@ -1,4 +1,4 @@
-from sqlalchemy import BigInteger, String, DateTime, CHAR, JSON, func, Index
+from sqlalchemy import BigInteger, String, DateTime, CHAR, JSON, Text, func, Index
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
@@ -13,7 +13,7 @@ class Content(Base):
     source_url: Mapped[str] = mapped_column(String(1000), nullable=False)
     title: Mapped[str | None] = mapped_column(String(500))
     summary: Mapped[str | None] = mapped_column(String(2000))
-    content_body: Mapped[str | None] = mapped_column(String(65535))
+    content_body: Mapped[str | None] = mapped_column(Text)
     author: Mapped[str | None] = mapped_column(String(100))
     published_at: Mapped[DateTime | None] = mapped_column(DateTime)
     fetched_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now())
