@@ -12,7 +12,7 @@ function NotificationPage() {
     if (!user?.id) return
     setLoading(true)
     try {
-      const res: any = await request.get('/java/notifications', { params: { userId: user.id } })
+      const res: any = await request.get('/java/notifications')
       setData(res.data?.items || [])
     } finally {
       setLoading(false)
@@ -32,7 +32,7 @@ function NotificationPage() {
   const markAllRead = async () => {
     if (!user?.id) return
     try {
-      await request.post('/java/notifications/read-all', {}, { params: { userId: user.id } })
+      await request.post('/java/notifications/read-all')
       message.success('全部已读')
       fetchData()
     } catch (err: any) {

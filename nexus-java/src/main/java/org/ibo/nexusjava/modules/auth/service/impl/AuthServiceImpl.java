@@ -79,6 +79,11 @@ public class AuthServiceImpl implements AuthService {
         vo.setToken(token);
         vo.setTokenType("Bearer");
         vo.setExpiresIn(86400L); // 24小时，单位秒
+        vo.setUser(java.util.Map.of(
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "role", user.getRole()
+        ));
 
         return vo;
     }

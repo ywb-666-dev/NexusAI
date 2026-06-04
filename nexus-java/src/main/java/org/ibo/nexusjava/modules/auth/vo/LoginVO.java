@@ -6,9 +6,12 @@ import lombok.Data;
  * @author: yi327
  * @date: 2026/5/27
  */
+import java.util.Map;
+
 @Data
 public class LoginVO {
     private String token;
     private String tokenType = "Bearer";
     private Long expiresIn;
+    private Map<String, Object> user;
 }
