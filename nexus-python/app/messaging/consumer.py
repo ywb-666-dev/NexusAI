@@ -43,7 +43,7 @@ class NexusMQConsumer:
             print("[MQ] Consumer stopped")
 
     def _on_message(self, msg):
-        """消息回调（同步上下文）"""
+        """消息回调（同步上下文，后台线程）"""
         try:
             body = json.loads(msg.body)
             subscription_id = body.get("subscriptionId")
@@ -53,8 +53,13 @@ class NexusMQConsumer:
 
             print(f"[MQ] Received task trigger: taskId={task_id}, subscriptionId={subscription_id}")
 
-            # 在独立的事件循环中执行异步 Agent
-            asyncio.run(self._handle_task(task_id, subscription_id, keywords, platforms))
+            # 在独立的事件循环中执行异步 Agent（避免与主循环冲突）
+            loop = asyncio.new_event_loop()
+            try:
+                asyncio.set_event_loop(loop)
+                loop.run_until_complete(self._handle_task(task_id, subscription_id, keywords, platforms))
+            finally:
+                loop.close()
         except Exception as e:
             print(f"[MQ] Message handling error: {e}")
 

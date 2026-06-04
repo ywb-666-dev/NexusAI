@@ -184,7 +184,8 @@ async def store_content(state: ScoutState, db: AsyncSession) -> dict:
     # Milvus 插入
     if vectors_to_insert:
         try:
-            milvus_client.insert_vectors(vectors_to_insert)
+            vector_ids = milvus_client.insert_vectors(vectors_to_insert)
+            # TODO: 将 vector_id 写回 content 表
         except Exception:
             pass
 
@@ -230,7 +231,7 @@ async def handle_error(state: ScoutState) -> dict:
     return {"status": "error"}
 
 
-# ============== Helpers ==============
+# ============== Task execution ==============
 
 async def _update_task_status(task_id: str, status: str) -> None:
     """更新任务状态到 Redis"""
@@ -265,7 +266,8 @@ async def run_scout_task(
     mcp_pool: Any,
     db: AsyncSession,
 ) -> None:
-    """运行完整的 Scout Agent 采集流水线"""
+    """运行完整的 Scout Agent 采集流水线（异步入口）"""
+    import asyncio
     from app.agents.supervisor import build_scout_agent
 
     initial_state = {
@@ -283,8 +285,13 @@ async def run_scout_task(
         "error": None,
     }
 
-    try:
+    def _sync_invoke():
         agent = build_scout_agent(mcp_pool, db)
-        agent.invoke(initial_state)
+        return agent.invoke(initial_state)
+
+    try:
+        # 在独立线程池中运行同步 LangGraph，避免事件循环冲突
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, _sync_invoke)
     except Exception as e:
         await _update_task_status(task_id, f"error: {str(e)}")
