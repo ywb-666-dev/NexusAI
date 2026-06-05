@@ -1,6 +1,8 @@
-import uuid
+import asyncio
 import hashlib
 import json
+import re
+import uuid
 from datetime import datetime
 from typing import Any
 
@@ -12,6 +14,8 @@ from app.memory.milvus_client import milvus_client
 from app.models import Subscription, Content, Notification
 from app.core.dependencies import get_redis_client
 from app.core.config import settings
+import httpx
+from bs4 import BeautifulSoup
 
 
 # ============== Embedding helper ==============
@@ -46,7 +50,7 @@ def _content_hash(text: str) -> str:
 # ============== Graph Nodes ==============
 
 async def fetch_sources(state: ScoutState, mcp_pool: Any, db: AsyncSession) -> dict:
-    """使用 MCP 工具获取原始内容源"""
+    """获取原始内容源：RSS 直接用 feedparser，Web 走 MCP Playwright"""
     task_id = state["task_id"]
     await _update_task_status(task_id, "fetching")
 
@@ -54,40 +58,43 @@ async def fetch_sources(state: ScoutState, mcp_pool: Any, db: AsyncSession) -> d
     platforms = state.get("source_platforms", [])
     keywords = state.get("keywords", [])
 
-    # RSS 采集
-    if "rss" in platforms:
-        for keyword in keywords:
+    for keyword in keywords:
+        # RSS: 直接用 feedparser（无需 MCP 子进程）
+        if "rss" in platforms:
             try:
-                result = await mcp_pool.call_tool("rss", "fetch_rss", {"url": keyword})
-                if isinstance(result, list):
-                    for item in result:
+                import feedparser
+                import asyncio
+                loop = asyncio.get_event_loop()
+                d = await loop.run_in_executor(None, feedparser.parse, keyword)
+                if d.entries:
+                    for entry in d.entries:
                         raw_items.append({
                             "platform": "rss",
-                            "source_url": item.get("link", keyword),
-                            "title": item.get("title", ""),
-                            "summary": item.get("summary", ""),
-                            "published_at": item.get("published_at", ""),
-                            "raw": item,
+                            "source_url": entry.get("link", keyword),
+                            "title": entry.get("title", ""),
+                            "summary": (entry.get("summary", "") or entry.get("description", ""))[:2000],
+                            "published_at": entry.get("published", "") or entry.get("updated", ""),
+                            "raw": {"html": entry.get("summary", "") or entry.get("description", "")},
                         })
-            except Exception:
-                pass
+                    print(f"[fetch_sources] RSS '{keyword}': {len(d.entries)} items")
+            except Exception as e:
+                print(f"[fetch_sources] RSS failed for '{keyword}': {e}")
 
-    # Web 采集（简化：把 keyword 当 URL 尝试抓取）
-    if "web" in platforms:
-        for keyword in keywords:
-            if keyword.startswith("http"):
-                try:
-                    result = await mcp_pool.call_tool("web", "scrape_page", {"url": keyword})
-                    raw_items.append({
-                        "platform": "web",
-                        "source_url": result.get("url", keyword),
-                        "title": result.get("title", ""),
-                        "summary": result.get("html", "")[:500],
-                        "published_at": "",
-                        "raw": result,
-                    })
-                except Exception:
-                    pass
+        # Web: 尝试 MCP Playwright 抓取
+        if "web" in platforms and keyword.startswith("http"):
+            try:
+                result = await mcp_pool.call_tool("web", "scrape_page", {"url": keyword})
+                raw_items.append({
+                    "platform": "web",
+                    "source_url": result.get("url", keyword),
+                    "title": result.get("title", ""),
+                    "summary": result.get("html", "")[:500],
+                    "published_at": "",
+                    "raw": result,
+                })
+                print(f"[fetch_sources] Web '{keyword}': OK")
+            except Exception as e:
+                print(f"[fetch_sources] Web failed for '{keyword}': {e}")
 
     return {"raw_items": raw_items, "status": "fetched"}
 
@@ -258,6 +265,114 @@ async def get_task_status(task_id: str) -> dict:
     return {"status": "unknown"}
 
 
+# ---- HTML strip ----
+
+def _strip_html(html_text: str) -> str:
+    """去掉 HTML 标签，返回纯文本"""
+    try:
+        return BeautifulSoup(html_text, "html.parser").get_text(separator="\n", strip=True)
+    except Exception:
+        return html_text
+
+
+# ---- Metadata detection ----
+
+_META_PATTERNS = [
+    r"Article\s*URL\s*:\s*<a\s",
+    r"Comments\s*URL\s*:\s*<a\s",
+    r"Points?\s*:\s*\d+",
+    r"#\s*Comments?\s*:\s*\d+",
+]
+
+
+def _is_metadata_only(summary: str) -> bool:
+    """检测摘要是否只是 HN 风格的元数据（无实际内容）"""
+    if not summary:
+        return True
+    plain = _strip_html(summary)
+    # 去掉元数据行后，看还剩多少实际内容
+    lines = [l for l in plain.split("\n") if l.strip()]
+    meaningful = [
+        l for l in lines
+        if not re.match(r"^(Article\s*URL|Comments?\s*URL|Points?|#\s*Comments?)\s*[:：]", l, re.IGNORECASE)
+        and not re.match(r"^\d+\s*points?", l, re.IGNORECASE)
+        and not re.match(r"^\d+\s*comments?", l, re.IGNORECASE)
+    ]
+    # 有意义的内容少于 50 个字符 → 视为只有元数据
+    return sum(len(l) for l in meaningful) < 50
+
+
+# ---- Web scraper ----
+
+def _scrape_page(url: str) -> str:
+    """抓取网页并提取正文文本"""
+    try:
+        resp = httpx.get(url, timeout=10, follow_redirects=True)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        # 移除无用标签
+        for tag in soup(["script", "style", "nav", "footer", "header", "aside", "noscript"]):
+            tag.decompose()
+
+        # 优先从 <article> 或 <main> 提取
+        content = soup.find("article") or soup.find("main") or soup.find("body")
+        if not content:
+            return ""
+
+        text = content.get_text(separator="\n", strip=True)
+        # 清理多余空行
+        lines = [l.strip() for l in text.split("\n") if l.strip()]
+        return "\n".join(lines)[:3000]
+    except Exception as e:
+        print(f"[Scout] Scrape failed '{url}': {e}")
+        return ""
+
+
+# ---- Translation ----
+
+# CJK unicode range
+_CJK_RE = re.compile(r"[一-鿿㐀-䶿豈-﫿]")
+
+
+def _is_chinese(text: str) -> bool:
+    """检测文本中是否有足够的中文内容"""
+    if not text:
+        return False
+    cjk_chars = len(_CJK_RE.findall(text))
+    return cjk_chars > len(text) * 0.15  # 超过 15% 是中文字符
+
+
+def _translate_to_chinese(text: str) -> str:
+    """使用 LLM 将文本翻译为中文"""
+    try:
+        if not settings.llm.api_key:
+            return text
+        import openai
+        client = openai.OpenAI(
+            api_key=settings.llm.api_key,
+            base_url=settings.llm.base_url,
+        )
+        prompt = (
+            "请将以下英文内容翻译成中文，保持原意，只输出翻译结果不要额外说明：\n\n"
+            + text[:1500]
+        )
+        resp = client.chat.completions.create(
+            model=settings.llm.chat_model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=1500,
+        )
+        translated = resp.choices[0].message.content.strip()
+        print(f"[Scout] Translated: {text[:80]}... -> {translated[:80]}...")
+        return translated
+    except Exception as e:
+        print(f"[Scout] Translation failed: {e}")
+        return text
+
+
+# ---- Task execution ----
+
 async def run_scout_task(
     task_id: str,
     subscription_id: int,
@@ -266,32 +381,131 @@ async def run_scout_task(
     mcp_pool: Any,
     db: AsyncSession,
 ) -> None:
-    """运行完整的 Scout Agent 采集流水线（异步入口）"""
-    import asyncio
-    from app.agents.supervisor import build_scout_agent
-
-    initial_state = {
-        "task_id": task_id,
-        "subscription_id": subscription_id,
-        "keywords": keywords,
-        "source_platforms": source_platforms,
-        "raw_items": [],
-        "parsed_contents": [],
-        "duplicate_ids": [],
-        "stored_ids": [],
-        "stored_count": 0,
-        "duplicate_count": 0,
-        "status": "queued",
-        "error": None,
-    }
-
-    def _sync_invoke():
-        agent = build_scout_agent(mcp_pool, db)
-        return agent.invoke(initial_state)
-
+    """采集流水线：RSS 抓取 → 网页刮取补全 → 翻译 → 去重存储"""
     try:
-        # 在独立线程池中运行同步 LangGraph，避免事件循环冲突
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, _sync_invoke)
+        await _update_task_status(task_id, "fetching")
+
+        # Step 1: Fetch RSS
+        raw_items: list[dict] = []
+        import feedparser as _feedparser
+
+        for keyword in keywords:
+            if "rss" not in source_platforms:
+                continue
+            try:
+                loop = asyncio.get_running_loop()
+                d = await loop.run_in_executor(None, _feedparser.parse, keyword)
+                if not d.entries:
+                    continue
+
+                for entry in d.entries:
+                    author = ""
+                    if entry.get("author_detail"):
+                        author = entry["author_detail"].get("name", "")
+                    elif entry.get("author"):
+                        author = entry["author"] if isinstance(entry["author"], str) else ""
+
+                    summary_html = entry.get("summary", "") or entry.get("description", "")
+                    raw_html = summary_html
+                    summary = _strip_html(summary_html)[:2000]
+
+                    raw_items.append({
+                        "platform": "rss",
+                        "source_url": entry.get("link", keyword),
+                        "title": entry.get("title", ""),
+                        "summary": summary,
+                        "published_at": entry.get("published", "") or entry.get("updated", ""),
+                        "author": author,
+                        "raw_html": raw_html,
+                    })
+                print(f"[Scout] RSS '{keyword}': {len(d.entries)} items")
+            except Exception as e:
+                print(f"[Scout] RSS failed '{keyword}': {e}")
+
+        if not raw_items:
+            await _update_task_status(task_id, "completed: no items found")
+            return
+
+        # Step 2: Scrape missing content
+        await _update_task_status(task_id, f"scraping {len(raw_items)} items")
+        for item in raw_items:
+            if _is_metadata_only(item["raw_html"]):
+                print(f"[Scout] Metadata-only detected, scraping: {item['source_url']}")
+                scraped = _scrape_page(item["source_url"])
+                if scraped:
+                    item["summary"] = scraped[:2000]
+                    item["raw_html"] = scraped
+                    item["scraped"] = True
+
+        # Step 3: Translate non-Chinese
+        need_translation = settings.llm.api_key and any(
+            not _is_chinese(item["summary"]) for item in raw_items
+        )
+        if need_translation:
+            await _update_task_status(task_id, "translating")
+            for item in raw_items:
+                if not _is_chinese(item["summary"]):
+                    item["summary"] = _translate_to_chinese(item["summary"])
+
+        # Step 4: Dedup + Store
+        await _update_task_status(task_id, "storing")
+        from sqlalchemy import select as sa_select
+
+        stored = 0
+        for item in raw_items:
+            try:
+                content_text = f"{item['title']}\n{item['summary']}"[:2000]
+                c_hash = hashlib.sha256(content_text.encode("utf-8")).hexdigest()
+
+                result = await db.execute(
+                    sa_select(Content).where(Content.content_hash == c_hash)
+                )
+                if result.scalar_one_or_none():
+                    continue
+
+                cid = str(uuid.uuid4())
+                db_content = Content(
+                    id=cid,
+                    subscription_id=subscription_id,
+                    source_platform=item["platform"],
+                    source_url=item["source_url"],
+                    title=item["title"][:500],
+                    summary=item["summary"][:2000],
+                    content_body=item.get("raw_html", ""),
+                    author=item.get("author", ""),
+                    content_hash=c_hash,
+                    status=1,
+                    is_duplicate=0,
+                )
+                db.add(db_content)
+                stored += 1
+            except Exception as e:
+                print(f"[Scout] Store failed: {e}")
+
+        if stored > 0:
+            await db.commit()
+            print(f"[Scout] Stored {stored} new items")
+
+            result = await db.execute(
+                select(Subscription.user_id).where(Subscription.id == subscription_id)
+            )
+            user_id = result.scalar()
+            if user_id:
+                notification = Notification(
+                    user_id=user_id,
+                    type="task",
+                    title=f"采集完成: {task_id[:8]}",
+                    content=f"新增 {stored} 条内容",
+                    is_read=0,
+                    related_id=task_id,
+                )
+                db.add(notification)
+                await db.commit()
+
+        await _update_task_status(task_id, f"completed: {stored} items")
+
     except Exception as e:
+        print(f"[Scout] Task failed: {e}")
+        import traceback
+        traceback.print_exc()
         await _update_task_status(task_id, f"error: {str(e)}")

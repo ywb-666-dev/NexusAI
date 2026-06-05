@@ -20,7 +20,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +38,7 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> impl
         vo.setSourceUrl(content.getSourceUrl());
         vo.setTitle(content.getTitle());
         vo.setSummary(content.getSummary());
+        vo.setContentBody(content.getContentBody());
         vo.setAuthor(content.getAuthor());
         vo.setPublishedAt(content.getPublishedAt());
         vo.setFetchedAt(content.getFetchedAt());
@@ -90,7 +90,7 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> impl
 
     @Override
     public ContentVO getById(String id) {
-        Content content = super.getById(UUID.fromString(id));
+        Content content = super.getById(id);
         if (content == null || content.getStatus() == null || content.getStatus() != 1) {
             throw new BusinessException(ErrorCode.PARAM_ERROR, "内容不存在");
         }

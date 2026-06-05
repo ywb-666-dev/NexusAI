@@ -22,15 +22,14 @@ public class RequestIdGatewayFilter implements GlobalFilter, Ordered {
             requestId = UUID.randomUUID().toString().replace("-", "");
         }
 
-        final String finalRequestId = requestId;
+        // 响应头在 chain.filter 之前写入，避免 ReadOnlyHttpHeaders 异常
+        exchange.getResponse().getHeaders().add(REQUEST_ID_HEADER, requestId);
+
         ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                .header(REQUEST_ID_HEADER, finalRequestId)
+                .header(REQUEST_ID_HEADER, requestId)
                 .build();
 
-        return chain.filter(exchange.mutate().request(mutatedRequest).build())
-                .then(Mono.fromRunnable(() -> {
-                    exchange.getResponse().getHeaders().add(REQUEST_ID_HEADER, finalRequestId);
-                }));
+        return chain.filter(exchange.mutate().request(mutatedRequest).build());
     }
 
     @Override

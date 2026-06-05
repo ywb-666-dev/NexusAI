@@ -9,12 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "antd": "^5.17.0",
     "@ant-design/pro-components": "^2.7.0",
+    "antd": "^5.17.0",
+    "axios": "^1.7.0",
+    "echarts": "^6.1.0",
+    "echarts-for-react": "^3.0.6",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "react-router-dom": "^6.23.0",
-    "axios": "^1.7.0",
     "zustand": "^4.5.0"
   },
   "devDependencies": {

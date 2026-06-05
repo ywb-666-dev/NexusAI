@@ -6,12 +6,26 @@ import SubscriptionPage from '../pages/Subscription'
 import ContentPage from '../pages/Content'
 import ApprovalPage from '../pages/Approval'
 import NotificationPage from '../pages/Notification'
+import { useAuthStore } from '../store/auth'
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const token = useAuthStore((s) => s.token)
+  if (!token) return <Navigate to="/login" replace />
+  return <>{children}</>
+}
 
 function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<BasicLayout />}>
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <BasicLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="subscriptions" element={<SubscriptionPage />} />
@@ -19,6 +33,7 @@ function AppRouter() {
         <Route path="approvals" element={<ApprovalPage />} />
         <Route path="notifications" element={<NotificationPage />} />
       </Route>
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
 }

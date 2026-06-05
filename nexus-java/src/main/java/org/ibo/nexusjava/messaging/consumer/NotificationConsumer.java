@@ -7,12 +7,14 @@ import org.ibo.nexusjava.messaging.dto.NotificationMessage;
 import org.ibo.nexusjava.modules.notification.entity.Notification;
 import org.ibo.nexusjava.modules.notification.mapper.NotificationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "rocketmq.enabled", havingValue = "true")
 @RocketMQMessageListener(
         topic = "nexus-notification",
         consumerGroup = "nexus-java-notification-consumers"

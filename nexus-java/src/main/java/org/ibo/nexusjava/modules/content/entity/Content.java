@@ -6,13 +6,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @TableName("content")
 public class Content {
-    @TableId(type = IdType.ASSIGN_UUID)
-    private UUID id;
+    @TableId
+    private String id;
     private Long subscriptionId;
     private String sourcePlatform;
     private String sourceUrl;
@@ -26,7 +25,7 @@ public class Content {
     private String vectorId;
     private Integer status;
     private Integer isDuplicate;
-    private UUID duplicateOf;
+    private String duplicateOf;
     private String relatedContents; // JSON
     private LocalDateTime createdAt;
 }

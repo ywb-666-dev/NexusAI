@@ -20,11 +20,17 @@ import org.ibo.nexusjava.modules.subscription.entity.Subscription;
 import org.ibo.nexusjava.modules.subscription.mapper.SubscriptionMapper;
 import org.ibo.nexusjava.modules.subscription.service.SubscriptionService;
 import org.ibo.nexusjava.modules.subscription.vo.SubscriptionVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -32,16 +38,21 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Subscription> implements SubscriptionService {
 
     private final ObjectMapper objectMapper=new ObjectMapper();
 
-    @Autowired
+    @Autowired(required = false)
     private RocketMQTemplate rocketMQTemplate;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    private static final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(5))
+            .build();
 
     private static final String LOCK_PREFIX = "lock:subscription:";
     private static final long LOCK_TIMEOUT = 300; // 5分钟，与 Scout Agent 最大执行时间匹配
@@ -208,10 +219,26 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
             msg.setSubscriptionId(id);
             msg.setTriggerTime(LocalDateTime.now().toString());
 
-            // 5. 同步发送 RocketMQ 消息
-            SendResult sendResult = rocketMQTemplate.syncSend("nexus-task-trigger", msg);
-            if (sendResult == null || !sendResult.getSendStatus().equals(SendStatus.SEND_OK)) {
-                throw new BusinessException(ErrorCode.SYSTEM_ERROR, "消息发送失败");
+            // 5. 触发采集：优先 RocketMQ，降级直接调 Python
+            if (rocketMQTemplate != null) {
+                SendResult sendResult = rocketMQTemplate.syncSend("nexus-task-trigger", msg);
+                if (sendResult == null || !sendResult.getSendStatus().equals(SendStatus.SEND_OK)) {
+                    throw new BusinessException(ErrorCode.SYSTEM_ERROR, "消息发送失败");
+                }
+            } else {
+                // RocketMQ 不可用时，直接 HTTP 调 Python Agent
+                try {
+                    String pyUrl = "http://localhost:8000/api/python/agent/tasks?subscription_id=" + id;
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create(pyUrl))
+                            .timeout(Duration.ofSeconds(10))
+                            .POST(HttpRequest.BodyPublishers.noBody())
+                            .build();
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                } catch (Exception e) {
+                    // Python 服务不可用时仅记录日志，不阻塞前端
+                    log.warn("[Trigger] Python agent call failed: {}", e.getMessage());
+                }
             }
 
             // 6. 更新最后执行时间

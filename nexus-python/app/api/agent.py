@@ -26,14 +26,16 @@ async def create_task(
     if sub is None:
         return {"code": 404, "message": "Subscription not found"}
 
-    keywords = []
-    platforms = []
+    keywords = sub.keywords if isinstance(sub.keywords, list) else []
     try:
-        keywords = json.loads(sub.keywords) if sub.keywords else []
+        if isinstance(sub.keywords, str):
+            keywords = json.loads(sub.keywords)
     except Exception:
         pass
+    platforms = sub.source_platforms if isinstance(sub.source_platforms, list) else []
     try:
-        platforms = json.loads(sub.source_platforms) if sub.source_platforms else []
+        if isinstance(sub.source_platforms, str):
+            platforms = json.loads(sub.source_platforms)
     except Exception:
         pass
 

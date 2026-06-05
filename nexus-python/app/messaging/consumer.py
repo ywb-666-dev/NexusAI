@@ -24,16 +24,21 @@ class NexusMQConsumer:
             print("[MQ] rocketmq-client-python not installed, skipping consumer")
             return
 
-        self._consumer = PushConsumer(settings.rocketmq.consumer_group)
-        self._consumer.set_name_server_address(settings.rocketmq.nameserver)
-        self._consumer.subscribe(
-            settings.rocketmq.topic_task_trigger,
-            callback=self._on_message,
-            expression="*",
-        )
-        self._consumer.start()
-        self._running = True
-        print(f"[MQ] Consumer started: group={settings.rocketmq.consumer_group}, topic={settings.rocketmq.topic_task_trigger}")
+        try:
+            self._consumer = PushConsumer(settings.rocketmq.consumer_group)
+            self._consumer.set_name_server_address(settings.rocketmq.nameserver)
+            self._consumer.subscribe(
+                settings.rocketmq.topic_task_trigger,
+                callback=self._on_message,
+                expression="*",
+            )
+            self._consumer.start()
+            self._running = True
+            print(f"[MQ] Consumer started: group={settings.rocketmq.consumer_group}, topic={settings.rocketmq.topic_task_trigger}")
+        except Exception as e:
+            print(f"[MQ] Consumer start failed (is RocketMQ running?): {e}")
+            self._consumer = None
+            self._running = False
 
     def stop(self):
         """优雅关闭消费者"""

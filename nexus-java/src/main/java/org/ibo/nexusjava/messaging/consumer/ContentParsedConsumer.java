@@ -7,6 +7,7 @@ import org.ibo.nexusjava.messaging.dto.ContentParsedMessage;
 import org.ibo.nexusjava.modules.content.entity.Content;
 import org.ibo.nexusjava.modules.content.mapper.ContentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "rocketmq.enabled", havingValue = "true")
 @RocketMQMessageListener(
         topic = "nexus-content-parsed",
         consumerGroup = "nexus-java-content-parsed-consumers"
@@ -29,7 +31,7 @@ public class ContentParsedConsumer implements RocketMQListener<ContentParsedMess
                 message.getTaskId(), message.getSubscriptionId());
 
         Content content = new Content();
-        content.setId(UUID.randomUUID());
+        content.setId(UUID.randomUUID().toString());
         content.setSubscriptionId(message.getSubscriptionId());
         content.setSourcePlatform(message.getSourcePlatform());
         content.setSourceUrl(message.getSourceUrl());

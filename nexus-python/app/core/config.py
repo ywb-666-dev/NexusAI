@@ -15,7 +15,7 @@ class LLMSettings(BaseSettings):
     """LLM 与 Embedding 模型配置"""
     model_config = SettingsConfigDict(env_prefix="LLM_")
     
-    api_key: str = Field(description="LLM API Key")
+    api_key: str = Field(default="", description="LLM API Key")
     base_url: str | None = Field(default=None, description="API 基础地址，本地模型需配置")
     chat_model: str = Field(default="gpt-4", description="对话模型名")
     
@@ -155,7 +155,7 @@ class DatabaseSettings(BaseSettings):
     port: int = Field(default=3306)
     database: str = Field(default="nexusai")
     username: str = Field(default="root")
-    password: str = Field(default="")
+    password: str = Field(default="712693")
 
     # 异步连接池参数
     pool_size: int = Field(default=10, description="连接池大小")

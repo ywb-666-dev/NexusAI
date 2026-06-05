@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS subscription (
     user_id BIGINT NOT NULL,
     name VARCHAR(100) NOT NULL,
     keywords JSON,
-    source_platforms VARCHAR(500),
+    source_platforms JSON,
     match_mode TINYINT DEFAULT 1 COMMENT '1=精确 2=模糊 3=语义',
     trigger_conditions JSON,
     priority TINYINT DEFAULT 2 COMMENT '1=高 2=中 3=低',

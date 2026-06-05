@@ -7,12 +7,14 @@ import org.ibo.nexusjava.messaging.dto.DeadLetterMessage;
 import org.ibo.nexusjava.modules.audit.entity.AuditLog;
 import org.ibo.nexusjava.modules.audit.mapper.AuditLogMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "rocketmq.enabled", havingValue = "true")
 @RocketMQMessageListener(
         topic = "nexus-dead-letter",
         consumerGroup = "nexus-java-dead-letter-consumers"

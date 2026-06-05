@@ -13,7 +13,7 @@ function NotificationPage() {
     setLoading(true)
     try {
       const res: any = await request.get('/java/notifications')
-      setData(res.data?.items || [])
+      setData(res.data?.records ?? res.data?.items ?? [])
     } finally {
       setLoading(false)
     }

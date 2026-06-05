@@ -10,7 +10,7 @@ function ApprovalPage() {
     setLoading(true)
     try {
       const res: any = await request.get('/java/approvals/pending')
-      setData(res.data?.items || [])
+      setData(res.data?.records ?? res.data?.items ?? [])
     } finally {
       setLoading(false)
     }

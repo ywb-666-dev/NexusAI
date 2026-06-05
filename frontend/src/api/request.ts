@@ -23,6 +23,11 @@ request.interceptors.response.use(
     return data
   },
   (err) => {
+    // 提取后端返回的错误消息
+    const backendMsg = err.response?.data?.message
+    if (backendMsg) {
+      err.message = backendMsg
+    }
     if (err.response?.status === 401) {
       useAuthStore.getState().logout()
       window.location.href = '/login'
