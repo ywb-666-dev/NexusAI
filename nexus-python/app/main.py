@@ -37,9 +37,26 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"[Startup] MQ consumer warning: {e}")
 
+    # Scheduler: 每小时轮询活跃订阅并触发采集
+    try:
+        from app.scheduler import start_scheduler
+        scheduler_task = asyncio.create_task(start_scheduler(pool))
+        app.state.scheduler_task = scheduler_task
+        print("[Startup] Scheduler started (hourly poll)")
+    except Exception as e:
+        print(f"[Startup] Scheduler warning: {e}")
+
     yield
 
     # ===== Shutdown =====
+    # Scheduler
+    if hasattr(app.state, "scheduler_task"):
+        app.state.scheduler_task.cancel()
+        try:
+            await app.state.scheduler_task
+        except asyncio.CancelledError:
+            pass
+
     # MQ Consumer
     if hasattr(app.state, "mq_consumer"):
         try:

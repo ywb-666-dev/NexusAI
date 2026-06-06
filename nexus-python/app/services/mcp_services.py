@@ -26,11 +26,9 @@ class MCPService:
             {"url": url}
         )
 
-    async def call_api(self, endpoint: str, method: str = "GET", params: dict | None = None):
-        return await self.pool.call_tool(
-            "api", "call_api",
-            {"endpoint": endpoint, "method": method, "params": params or {}}
-        )
+    async def call_api(self):
+        """调用 API 聚合新闻源，统一返回 Article 列表。无需参数，内部硬编码多源并发。"""
+        return await self.pool.call_tool("api", "call_api", {})
 
 
 def get_mcp_service(request: Request) -> MCPService:

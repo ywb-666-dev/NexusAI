@@ -1,31 +1,16 @@
-import base64
-from typing import Literal
-
 from mcp.server.fastmcp import FastMCP
 from playwright.async_api import async_playwright
-
+from article import Article
+from bs4 import BeautifulSoup
 server = FastMCP("web")
-
-
 @server.tool("scrape_page", description="Playwright 渲染页面，返回 HTML 或截图")
 async def scrape_page(
         url: str,
         wait_for_selector: str | None = None,
         actions: list[dict] | None = None,
-        return_screenshot: bool = False,
         timeout: int = 30000,
-) -> dict:
-    """
-    启动 Chromium 渲染目标页面，支持自动化操作序列。
-
-    返回:
-        {
-            "html": "<完整渲染后的 HTML 字符串>",
-            "screenshot": "base64编码的截图(仅当 return_screenshot=True)" | None,
-            "title": "页面标题",
-            "url": "最终跳转后的 URL"
-        }
-    """
+) -> Article:
+    
     playwright = None
     browser = None
     context = None
@@ -105,22 +90,18 @@ async def scrape_page(
         await page.wait_for_load_state("networkidle")
 
         # 6. 提取结果
-        html = await page.content()
+        content = await page.content()
+        soup = BeautifulSoup(content, 'lxml')  
+        for tag in soup(['script', 'style']):
+            tag.decompose()
+        text = soup.get_text(separator='\n', strip=True)
         title = await page.title()
         final_url = page.url
-
-        screenshot_b64 = None
-        if return_screenshot:
-            # 截图并转 Base64，供 Vision 模式使用
-            screenshot_bytes = await page.screenshot(full_page=True)
-            screenshot_b64 = base64.b64encode(screenshot_bytes).decode("utf-8")
-
-        return {
-            "html": html,
-            "screenshot": screenshot_b64,
-            "title": title,
-            "url": final_url,
-        }
+        return Article(
+            title=title,
+            link=final_url,
+            summary=text[:500]
+        )
 
     except Exception as e:
         # 包装成统一异常，带上 URL 方便上层定位
@@ -134,3 +115,9 @@ async def scrape_page(
             await browser.close()
         if playwright:
             await playwright.stop()
+
+if __name__ == "__main__":
+    import asyncio
+    test_url = "https://jwc.zuel.edu.cn/main.htm#:~:text=%E3%80%90%E6%95%99%E5%8A%A1%E4%B8%80%E6%9C%AC%E9%80%9A%E3%80%91%E7%8B%AC%E5%B1%9E%E4%BA%8E"
+    result = asyncio.run(scrape_page(test_url))
+    print(result)

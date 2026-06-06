@@ -65,6 +65,11 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
             await session.close()
 
 
+def get_session_factory() -> async_sessionmaker:
+    """暴露 session factory，供调度器等非 FastAPI 上下文使用"""
+    return _get_async_session_factory()
+
+
 async def close_db_engine() -> None:
     """应用关闭时释放 SQLAlchemy 连接池"""
     global _async_engine

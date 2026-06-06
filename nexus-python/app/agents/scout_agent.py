@@ -265,6 +265,48 @@ async def get_task_status(task_id: str) -> dict:
     return {"status": "unknown"}
 
 
+# ---- MCP result extraction ----
+
+def _extract_articles(mcp_result: Any) -> list[dict]:
+    """从 MCP CallToolResult / raw list / raw dict 中提取文章 dict 列表。
+    兼容 MCP SDK 的 CallToolResult、Pydantic 模型、原生 list/dict 等返回形式。
+    """
+    data: Any = mcp_result
+
+    # MCP SDK CallToolResult (有 .content 属性)
+    if hasattr(mcp_result, 'content') and mcp_result.content:
+        if hasattr(mcp_result.content[0], 'text'):
+            try:
+                data = json.loads(mcp_result.content[0].text)
+            except (json.JSONDecodeError, TypeError):
+                return []
+        else:
+            return []
+
+    # 单篇文章 dict / Pydantic 模型
+    if isinstance(data, dict):
+        data = [data]
+    elif hasattr(data, 'model_dump'):  # Pydantic v2
+        data = [data.model_dump()]
+    elif hasattr(data, 'dict'):  # Pydantic v1
+        data = [data.dict()]
+    elif not isinstance(data, list):
+        return []
+
+    # 归一化 list 内元素
+    result: list[dict] = []
+    for item in data:
+        if isinstance(item, dict):
+            result.append(item)
+        elif hasattr(item, 'model_dump'):
+            result.append(item.model_dump())
+        elif hasattr(item, 'dict'):
+            result.append(item.dict())
+        else:
+            continue
+    return result
+
+
 # ---- HTML strip ----
 
 def _strip_html(html_text: str) -> str:
@@ -286,19 +328,20 @@ _META_PATTERNS = [
 
 
 def _is_metadata_only(summary: str) -> bool:
-    """检测摘要是否只是 HN 风格的元数据（无实际内容）"""
+    """检测摘要是否只是 HN 风格的元数据（无实际内容）。支持 HTML 和纯文本。"""
     if not summary:
         return True
-    plain = _strip_html(summary)
-    # 去掉元数据行后，看还剩多少实际内容
-    lines = [l for l in plain.split("\n") if l.strip()]
+    # 先尝试作为 HTML 解析，纯文本则直接使用
+    plain = _strip_html(summary) if '<' in summary else summary
+    lines = [l.strip() for l in plain.split("\n") if l.strip()]
     meaningful = [
         l for l in lines
         if not re.match(r"^(Article\s*URL|Comments?\s*URL|Points?|#\s*Comments?)\s*[:：]", l, re.IGNORECASE)
         and not re.match(r"^\d+\s*points?", l, re.IGNORECASE)
         and not re.match(r"^\d+\s*comments?", l, re.IGNORECASE)
+        and not re.match(r"^https?://", l.strip())
+        and len(l.strip()) > 10
     ]
-    # 有意义的内容少于 50 个字符 → 视为只有元数据
     return sum(len(l) for l in meaningful) < 50
 
 
@@ -381,63 +424,109 @@ async def run_scout_task(
     mcp_pool: Any,
     db: AsyncSession,
 ) -> None:
-    """采集流水线：RSS 抓取 → 网页刮取补全 → 翻译 → 去重存储"""
+    """采集流水线：MCP RSS/Web/API → 网页刮取补全 → 翻译 → 去重存储"""
     try:
         await _update_task_status(task_id, "fetching")
 
-        # Step 1: Fetch RSS
+        # Step 1: 通过 MCP 获取原始内容
         raw_items: list[dict] = []
-        import feedparser as _feedparser
 
+        # --- RSS ---
         for keyword in keywords:
             if "rss" not in source_platforms:
                 continue
             try:
-                loop = asyncio.get_running_loop()
-                d = await loop.run_in_executor(None, _feedparser.parse, keyword)
-                if not d.entries:
-                    continue
-
-                for entry in d.entries:
-                    author = ""
-                    if entry.get("author_detail"):
-                        author = entry["author_detail"].get("name", "")
-                    elif entry.get("author"):
-                        author = entry["author"] if isinstance(entry["author"], str) else ""
-
-                    summary_html = entry.get("summary", "") or entry.get("description", "")
-                    raw_html = summary_html
-                    summary = _strip_html(summary_html)[:2000]
-
+                result = await mcp_pool.call_tool("rss", "fetch_rss", {"url": keyword})
+                articles = _extract_articles(result)
+                for a in articles:
+                    summary = a.get("summary", "")
                     raw_items.append({
                         "platform": "rss",
-                        "source_url": entry.get("link", keyword),
-                        "title": entry.get("title", ""),
-                        "summary": summary,
-                        "published_at": entry.get("published", "") or entry.get("updated", ""),
-                        "author": author,
-                        "raw_html": raw_html,
+                        "source_url": a.get("link", keyword),
+                        "title": a.get("title", ""),
+                        "summary": summary[:2000],
+                        "published_at": a.get("published_at", ""),
+                        "author": "",
+                        "raw_html": summary,
                     })
-                print(f"[Scout] RSS '{keyword}': {len(d.entries)} items")
+                print(f"[Scout] MCP RSS '{keyword}': {len(articles)} items")
             except Exception as e:
-                print(f"[Scout] RSS failed '{keyword}': {e}")
+                print(f"[Scout] MCP RSS failed '{keyword}', falling back: {e}")
+                await _rss_fallback(keyword, raw_items)
+
+        # --- Web ---
+        for keyword in keywords:
+            if "web" not in source_platforms or not keyword.startswith("http"):
+                continue
+            try:
+                result = await mcp_pool.call_tool("web", "scrape_page", {"url": keyword})
+                articles = _extract_articles(result)
+                for a in articles:
+                    summary = a.get("summary", "")
+                    raw_items.append({
+                        "platform": "web",
+                        "source_url": a.get("link", keyword),
+                        "title": a.get("title", ""),
+                        "summary": summary[:2000],
+                        "published_at": a.get("published_at", ""),
+                        "author": "",
+                        "raw_html": summary,
+                    })
+                print(f"[Scout] MCP Web '{keyword}': OK")
+            except Exception as e:
+                print(f"[Scout] MCP Web failed '{keyword}': {e}")
+
+        # --- API ---
+        if "api" in source_platforms:
+            try:
+                result = await mcp_pool.call_tool("api", "call_api", {})
+                articles = _extract_articles(result)
+                for a in articles:
+                    summary = a.get("summary", "")
+                    raw_items.append({
+                        "platform": "api",
+                        "source_url": a.get("link", ""),
+                        "title": a.get("title", ""),
+                        "summary": summary[:2000],
+                        "published_at": a.get("published_at", ""),
+                        "author": "",
+                        "raw_html": summary,
+                    })
+                print(f"[Scout] MCP API: {len(articles)} items")
+            except Exception as e:
+                print(f"[Scout] MCP API failed: {e}")
 
         if not raw_items:
             await _update_task_status(task_id, "completed: no items found")
             return
 
-        # Step 2: Scrape missing content
+        # Step 2: 对元数据-only 的内容通过 MCP web 抓取完整正文
         await _update_task_status(task_id, f"scraping {len(raw_items)} items")
         for item in raw_items:
-            if _is_metadata_only(item["raw_html"]):
-                print(f"[Scout] Metadata-only detected, scraping: {item['source_url']}")
-                scraped = _scrape_page(item["source_url"])
+            if not _is_metadata_only(item["raw_html"]):
+                continue
+            source_url = item["source_url"]
+            if not source_url or not source_url.startswith("http"):
+                continue
+            print(f"[Scout] Metadata-only detected, scraping: {source_url}")
+            try:
+                result = await mcp_pool.call_tool("web", "scrape_page", {"url": source_url})
+                articles = _extract_articles(result)
+                if articles:
+                    scraped_text = articles[0].get("summary", "")
+                    if scraped_text:
+                        item["summary"] = scraped_text[:2000]
+                        item["raw_html"] = scraped_text
+                        item["scraped"] = True
+            except Exception:
+                # Fallback to direct httpx scraping
+                scraped = _scrape_page(source_url)
                 if scraped:
                     item["summary"] = scraped[:2000]
                     item["raw_html"] = scraped
                     item["scraped"] = True
 
-        # Step 3: Translate non-Chinese
+        # Step 3: 非中文内容翻译
         need_translation = settings.llm.api_key and any(
             not _is_chinese(item["summary"]) for item in raw_items
         )
@@ -447,7 +536,7 @@ async def run_scout_task(
                 if not _is_chinese(item["summary"]):
                     item["summary"] = _translate_to_chinese(item["summary"])
 
-        # Step 4: Dedup + Store
+        # Step 4: 去重 + 存储
         await _update_task_status(task_id, "storing")
         from sqlalchemy import select as sa_select
 
@@ -509,3 +598,32 @@ async def run_scout_task(
         import traceback
         traceback.print_exc()
         await _update_task_status(task_id, f"error: {str(e)}")
+
+
+async def _rss_fallback(keyword: str, raw_items: list[dict]) -> None:
+    """feedparser 直调降级，MCP RSS 不可用时使用"""
+    try:
+        import feedparser as _feedparser
+        loop = asyncio.get_running_loop()
+        d = await loop.run_in_executor(None, _feedparser.parse, keyword)
+        if not d.entries:
+            return
+        for entry in d.entries:
+            author = ""
+            if entry.get("author_detail"):
+                author = entry["author_detail"].get("name", "")
+            elif entry.get("author"):
+                author = entry["author"] if isinstance(entry["author"], str) else ""
+            summary_html = entry.get("summary", "") or entry.get("description", "")
+            raw_items.append({
+                "platform": "rss",
+                "source_url": entry.get("link", keyword),
+                "title": entry.get("title", ""),
+                "summary": _strip_html(summary_html)[:2000],
+                "published_at": entry.get("published", "") or entry.get("updated", ""),
+                "author": author,
+                "raw_html": summary_html,
+            })
+        print(f"[Scout] RSS fallback '{keyword}': {len(d.entries)} items")
+    except Exception as e:
+        print(f"[Scout] RSS fallback also failed '{keyword}': {e}")

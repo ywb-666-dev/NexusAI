@@ -35,18 +35,18 @@ SERVERS: dict[str, ServerConfig] = {
         name="web",
         command="python",
         args=["-m", "app.mcp_servers.nexus_mcp_web"],
-        idle_ttl=300,
+        idle_ttl=7200,
     ),
     "rss": ServerConfig(
         name="rss",
         command="python",
         args=["-m", "app.mcp_servers.nexus_mcp_rss"],
-        idle_ttl=300,
+        idle_ttl=7200,
     ),
     "api": ServerConfig(
         name="api",
         command="python",
         args=["-m", "app.mcp_servers.nexus_mcp_api"],
-        idle_ttl=300,
+        idle_ttl=7200,  # 2 小时，适配每小时轮询
     ),
 }
