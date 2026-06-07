@@ -4,36 +4,56 @@ NexusAI Python 中台 - 全局配置中心
 使用 Pydantic Settings 管理，支持 .env 文件与环境变量覆盖
 """
 
+import os
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal, List
 
+from dotenv import load_dotenv
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# 加载 .env 到系统环境变量，确保嵌套 Settings 的子模型也能读取
+_env_path = Path(__file__).resolve().parent.parent.parent / ".env"
+if _env_path.exists():
+    load_dotenv(_env_path)
+elif Path(".env").exists():
+    load_dotenv()
 
 
 class LLMSettings(BaseSettings):
     """LLM 与 Embedding 模型配置"""
-    model_config = SettingsConfigDict(env_prefix="LLM_")
-    
+    model_config = SettingsConfigDict(env_prefix="LLM_", populate_by_name=True, extra="ignore")
+
     api_key: str = Field(default="", description="LLM API Key")
-    base_url: str | None = Field(default=None, description="API 基础地址，本地模型需配置")
-    chat_model: str = Field(default="gpt-4", description="对话模型名")
-    
+    base_url: str | None = Field(
+        default=None,
+        alias="BASE_URL",
+        description="API 基础地址，本地模型需配置",
+    )
+    chat_model: str = Field(
+        default="gpt-4",
+        alias="LLM_MODEL_NAME",
+        description="对话模型名",
+    )
+
     # Embedding 运行时切换
     embedding_provider: Literal["openai", "bge"] = Field(
-        default="openai", 
+        default="openai",
         description="Embedding 提供商：openai / bge"
     )
     embedding_model: str = Field(
-        default="text-embedding-3", 
-        description="Embedding 模型名"
+        default="text-embedding-3",
+        alias="EMBEDDING_MODEL_NAME",
+        description="Embedding 模型名",
     )
     embedding_api_key: str | None = Field(
-        default=None, 
-        description="Embedding 专用 API Key（如与主 Key 不同）"
+        default=None,
+        alias="EMBEDDING_API_KEY",
+        description="Embedding 专用 API Key（如与主 Key 不同）",
     )
     embedding_dimensions: int = Field(
-        default=1536, 
+        default=1536,
         description="向量维度：OpenAI=1536, BGE=1024"
     )
     

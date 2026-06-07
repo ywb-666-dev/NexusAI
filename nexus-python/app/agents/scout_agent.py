@@ -23,12 +23,13 @@ from bs4 import BeautifulSoup
 def _get_embedding(text: str) -> list[float]:
     """
     获取文本的 embedding 向量。
-    优先调用 OpenAI API，失败时降级为随机向量（仅用于测试）。
+    优先使用 EMBEDDING_API_KEY，未配置时降级到 LLM_API_KEY，失败时降级为随机向量（仅用于测试）。
     """
     try:
         import openai
+        emb_key = settings.llm.embedding_api_key or settings.llm.api_key
         client = openai.OpenAI(
-            api_key=settings.llm.api_key,
+            api_key=emb_key,
             base_url=settings.llm.base_url,
         )
         resp = client.embeddings.create(
@@ -38,7 +39,7 @@ def _get_embedding(text: str) -> list[float]:
         return resp.data[0].embedding
     except Exception:
         import random
-        dim = settings.milvus.embedding_dimensions
+        dim = settings.llm.embedding_dimensions
         return [random.uniform(-0.1, 0.1) for _ in range(dim)]
 
 

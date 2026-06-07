@@ -1,99 +1,105 @@
 import uuid
+from pathlib import Path
 from typing import List
 
-from pymilvus import (
-    connections,
-    FieldSchema,
-    CollectionSchema,
-    DataType,
-    Collection,
-    utility,
-)
+from milvus_lite import MilvusLite, FieldSchema, CollectionSchema, DataType
 
 from app.core.config import settings
 
 
 class MilvusClient:
-    """Milvus 向量库封装：连接管理、Collection 创建、向量插入、相似度检索"""
+    """Milvus Lite 嵌入式向量库封装"""
 
     _instance = None
 
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
+            cls._instance._db: MilvusLite | None = None
             cls._instance._collection = None
-            cls._instance._connected = False
         return cls._instance
 
-    def connect(self):
-        """建立 Milvus 连接"""
+    def connect(self, data_dir: str | None = None):
+        """打开 Milvus Lite 数据库，默认存储在 nexus-python/milvus_data"""
+        if data_dir is None:
+            data_dir = str(Path(__file__).resolve().parent.parent.parent / "milvus_data")
         try:
-            connections.connect(
-                alias="default",
-                host=settings.milvus.host,
-                port=settings.milvus.port,
-            )
-            self._connected = True
-        except Exception as e:
-            self._connected = False
-            raise e
+            self._db = MilvusLite(data_dir)
+            self._ensure_collection()
+        except Exception:
+            self._db = None
+            raise
 
     def disconnect(self):
-        """断开 Milvus 连接"""
-        if self._connected:
-            connections.disconnect("default")
-            self._connected = False
+        """关闭数据库，释放文件锁"""
+        if self._db is not None:
+            self._db.close()
+            self._db = None
+            self._collection = None
 
     def _check_connected(self) -> bool:
-        if not self._connected:
+        if self._db is None:
             print("[Milvus] Not connected, skipping vector operation")
-        return self._connected
+        return self._db is not None
 
-    def _ensure_collection(self) -> Collection:
-        """懒加载获取 Collection 对象"""
+    def _ensure_collection(self):
+        """懒加载获取 Collection，不存在则创建"""
         if self._collection is not None:
-            return self._collection
+            return
 
         collection_name = settings.milvus.collection
-        dim = settings.milvus.embedding_dimensions
+        dim = settings.llm.embedding_dimensions
 
-        if utility.has_collection(collection_name):
-            self._collection = Collection(collection_name)
+        if self._db.has_collection(collection_name):
+            self._collection = self._db.get_collection(collection_name)
             self._collection.load()
-            return self._collection
+            return
 
-        fields = [
-            FieldSchema(name="id", dtype=DataType.VARCHAR, max_length=36, is_primary=True),
-            FieldSchema(name="content_id", dtype=DataType.VARCHAR, max_length=36),
-            FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=dim),
-        ]
-        schema = CollectionSchema(fields, description="NexusAI content vectors")
-        self._collection = Collection(collection_name, schema)
-
-        index_params = {
-            "metric_type": "COSINE",
-            "index_type": "IVF_FLAT",
-            "params": {"nlist": 128},
-        }
-        self._collection.create_index(field_name="embedding", index_params=index_params)
+        schema = CollectionSchema([
+            FieldSchema(
+                name="id", dtype=DataType.VARCHAR,
+                max_length=36, is_primary=True,
+            ),
+            FieldSchema(
+                name="content_id", dtype=DataType.VARCHAR,
+                max_length=36,
+            ),
+            FieldSchema(
+                name="embedding", dtype=DataType.FLOAT_VECTOR,
+                dim=dim,
+            ),
+        ])
+        self._collection = self._db.create_collection(collection_name, schema)
+        self._collection.create_index(
+            field_name="embedding",
+            index_params={
+                "index_type": "HNSW",
+                "metric_type": "COSINE",
+                "params": {"M": 16, "efConstruction": 200},
+            },
+        )
         self._collection.load()
-        return self._collection
 
     def insert_vectors(self, records: List[dict]) -> List[str]:
         """
         插入向量记录
         :param records: [{"content_id": str, "embedding": List[float]}]
-        :return: 插入的向量 id 列表
+        :return: 插入的 id 列表
         """
         if not self._check_connected():
             return []
-        collection = self._ensure_collection()
-        ids = [str(uuid.uuid4()) for _ in records]
-        content_ids = [r["content_id"] for r in records]
-        embeddings = [r["embedding"] for r in records]
+        self._ensure_collection()
 
-        collection.insert([ids, content_ids, embeddings])
-        collection.flush()
+        rows, ids = [], []
+        for r in records:
+            vid = str(uuid.uuid4())
+            ids.append(vid)
+            rows.append({
+                "id": vid,
+                "content_id": r["content_id"],
+                "embedding": r["embedding"],
+            })
+        self._collection.insert(rows)
         return ids
 
     def search_similar(
@@ -104,41 +110,43 @@ class MilvusClient:
     ) -> List[dict]:
         """
         相似度检索
-        :param embedding: 查询向量
-        :param top_k: 返回数量
-        :param threshold: 相似度阈值（COSINE 距离）
         :return: [{"id": str, "content_id": str, "distance": float}]
         """
         if not self._check_connected():
             return []
-        collection = self._ensure_collection()
-        search_params = {"metric_type": "COSINE", "params": {"nprobe": 10}}
+        self._ensure_collection()
 
-        results = collection.search(
-            data=[embedding],
+        results = self._collection.search(
+            query_vectors=[embedding],
+            top_k=top_k,
+            metric_type="COSINE",
             anns_field="embedding",
-            param=search_params,
-            limit=top_k,
             output_fields=["content_id"],
         )
 
         hits = []
-        for result in results[0]:
-            if result.distance >= threshold:
+        for hit in results[0]:
+            # Milvus Lite returns cosine distance (0=identical); convert to similarity
+            similarity = 1.0 - float(hit["distance"])
+            if similarity >= threshold:
                 hits.append({
-                    "id": result.id,
-                    "content_id": result.entity.get("content_id"),
-                    "distance": float(result.distance),
+                    "id": hit["id"],
+                    "content_id": hit["entity"]["content_id"],
+                    "distance": similarity,
                 })
         return hits
 
     def delete_by_content_id(self, content_id: str) -> None:
-        """根据 content_id 删除向量"""
+        """根据 content_id 删除向量（先查询再按主键删除）"""
         if not self._check_connected():
             return
-        collection = self._ensure_collection()
-        collection.delete(f'content_id == "{content_id}"')
+        self._ensure_collection()
+        rows = self._collection.query(
+            expr=f'content_id == "{content_id}"',
+            output_fields=["id"],
+        )
+        if rows:
+            self._collection.delete([r["id"] for r in rows])
 
 
-# 全局单例
 milvus_client = MilvusClient()
