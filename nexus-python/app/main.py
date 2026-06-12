@@ -1,12 +1,13 @@
 import asyncio
+import json
 import threading
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 
 from app.mcp_servers import MCPPool, SERVERS
 from app.memory.milvus_client import milvus_client
-from app.core.dependencies import close_db_engine, close_redis_client
+from app.core.dependencies import close_db_engine, close_redis_client, get_redis_client
 
 
 @asynccontextmanager
@@ -45,6 +46,46 @@ async def lifespan(app: FastAPI):
         print("[Startup] Scheduler started (hourly poll)")
     except Exception as e:
         print(f"[Startup] Scheduler warning: {e}")
+
+    # Supervisor: 5-Agent LangGraph 状态机编排器
+    try:
+        from app.agents.supervisor import NexusSupervisor
+        from app.core.dependencies import get_session_factory
+
+        db_session_factory = get_session_factory()
+        app.state.db_session_factory = db_session_factory
+
+        supervisor = NexusSupervisor(
+            mcp_pool=pool,
+            session_factory=db_session_factory,
+        )
+        app.state.supervisor = supervisor
+        print("[Startup] NexusSupervisor initialized (5-agent state machine)")
+    except Exception as e:
+        print(f"[Startup] Supervisor warning: {e}")
+
+    # Skill Registry: 注册 Agent 技能
+    try:
+        from app.skills import SkillRegistry
+        from app.skills.builtins import ScoutSkill, TranslateSkill, SummarizeSkill, DedupSkill, DiscoverSourcesSkill
+        from app.harness.base import AgentHarness, LoggingMiddleware
+
+        skill_registry = SkillRegistry()
+        skill_registry.register(ScoutSkill(mcp_pool=pool))
+        skill_registry.register(TranslateSkill())
+        skill_registry.register(SummarizeSkill())
+        skill_registry.register(DedupSkill())
+        skill_registry.register(DiscoverSourcesSkill())
+
+        harness = AgentHarness(max_retries=2)
+        harness.on_before(LoggingMiddleware.before)
+        harness.on_after(LoggingMiddleware.after)
+
+        app.state.skill_registry = skill_registry
+        app.state.harness = harness
+        print(f"[Startup] Skill Registry: {len(skill_registry)} skills registered")
+    except Exception as e:
+        print(f"[Startup] Skill system warning: {e}")
 
     yield
 
@@ -130,12 +171,49 @@ async def mcp_server_health(name: str, request: Request):
     }
 
 
-from app.api import agent, content, subscription, notification
+@app.websocket("/api/python/ws/agent/{task_id}")
+async def agent_status_websocket(websocket: WebSocket, task_id: str):
+    """WebSocket 实时推送 Agent 任务状态（5 节点状态机）"""
+    await websocket.accept()
+    redis = get_redis_client()
+    key = f"agent:status:{task_id}"
+    last_status: str | None = None
+    try:
+        while True:
+            try:
+                data = await redis.get(key)
+                if isinstance(data, bytes):
+                    current = data.decode()
+                else:
+                    current = data
+                if current != last_status:
+                    last_status = current
+                    if current:
+                        await websocket.send_text(current)
+                    else:
+                        await websocket.send_text(json.dumps({
+                            "task_id": task_id,
+                            "status": "unknown",
+                            "nodes": {n: {"status": "idle", "timestamp": None} for n in ["scout", "parser", "connector", "actor", "curator"]},
+                            "updated_at": None,
+                        }))
+                await asyncio.sleep(0.5)
+            except WebSocketDisconnect:
+                break
+            except Exception as e:
+                print(f"[WS] Error for {task_id}: {e}")
+                await asyncio.sleep(1)
+    except WebSocketDisconnect:
+        pass
+
+
+from app.api import agent, content, subscription, notification, skill
 
 app.include_router(agent.router, prefix="/api/python/agent", tags=["agent"])
 app.include_router(content.router, prefix="/api/python/contents", tags=["content"])
 app.include_router(subscription.router, prefix="/api/python/subscriptions", tags=["subscription"])
 app.include_router(notification.router, prefix="/api/python/notifications", tags=["notification"])
+app.include_router(skill.router, prefix="/api/python", tags=["skills"])
 
 
 if __name__ == "__main__":

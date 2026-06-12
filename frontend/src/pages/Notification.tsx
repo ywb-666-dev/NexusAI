@@ -1,9 +1,34 @@
 import { useEffect, useState } from 'react'
-import { Table, Button, Badge, message } from 'antd'
+import { Table, Button, Badge, Space, Tag, Typography, Tooltip } from 'antd'
+import {
+  CheckOutlined,
+  MailOutlined,
+  BellOutlined,
+  InfoCircleOutlined,
+  ClockCircleOutlined,
+  ThunderboltOutlined,
+  SettingOutlined,
+} from '@ant-design/icons'
 import { useAuthStore } from '../store/auth'
 import request from '../api/request'
+import { App } from 'antd'
+
+const { Title, Text } = Typography
+
+const typeIcons: Record<string, React.ReactNode> = {
+  task: <ThunderboltOutlined />,
+  approval: <CheckOutlined />,
+  system: <SettingOutlined />,
+}
+
+const typeColors: Record<string, string> = {
+  task: '#818cf8',
+  approval: '#34d399',
+  system: '#fbbf24',
+}
 
 function NotificationPage() {
+  const { message } = App.useApp()
   const [data, setData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const { user } = useAuthStore()
@@ -40,38 +65,122 @@ function NotificationPage() {
     }
   }
 
-  useEffect(() => {
-    fetchData()
-  }, [user?.id])
+  useEffect(() => { fetchData() }, [user?.id])
+
+  const unreadCount = data.filter((d) => d.isRead === 0).length
 
   const columns = [
-    { title: 'ID', dataIndex: 'id' },
-    { title: '类型', dataIndex: 'type' },
-    { title: '标题', dataIndex: 'title' },
-    { title: '内容', dataIndex: 'content', ellipsis: true },
+    { title: 'ID', dataIndex: 'id', width: 60 },
     {
-      title: '状态',
-      dataIndex: 'isRead',
-      render: (v: number) => (v === 0 ? <Badge status="processing" text="未读" /> : <Badge status="default" text="已读" />),
+      title: '类型',
+      dataIndex: 'type',
+      width: 90,
+      render: (v: string) => (
+        <Tag
+          icon={typeIcons[v] || <InfoCircleOutlined />}
+          color={typeColors[v] || 'default'}
+          style={{ borderRadius: 6, border: 'none' }}
+        >
+          {v === 'task' ? '任务' : v === 'approval' ? '审批' : v === 'system' ? '系统' : v}
+        </Tag>
+      ),
+    },
+    {
+      title: '标题',
+      dataIndex: 'title',
+      render: (v: string, record: any) => (
+        <Space>
+          {record.isRead === 0 && <Badge status="processing" />}
+          <span style={{ fontWeight: record.isRead === 0 ? 600 : 400 }}>{v}</span>
+        </Space>
+      ),
+    },
+    {
+      title: '内容',
+      dataIndex: 'content',
+      ellipsis: true,
+      render: (v: string) => (
+        <Text style={{ color: '#64748b', maxWidth: 360 }} ellipsis>{v}</Text>
+      ),
+    },
+    {
+      title: '时间',
+      dataIndex: 'createdAt',
+      width: 170,
+      render: (v: string) => (
+        <Text style={{ color: '#94a3b8', fontSize: 13 }}>
+          <ClockCircleOutlined style={{ marginRight: 6 }} />{v}
+        </Text>
+      ),
     },
     {
       title: '操作',
+      width: 100,
       render: (_: any, record: any) =>
         record.isRead === 0 ? (
-          <Button type="link" onClick={() => markRead(record.id)}>
-            标记已读
+          <Button
+            type="link"
+            size="small"
+            icon={<MailOutlined />}
+            onClick={() => markRead(record.id)}
+            style={{ color: '#6366f1' }}
+          >
+            已读
           </Button>
-        ) : null,
+        ) : (
+          <Text style={{ color: '#cbd5e1', fontSize: 13 }}>已读</Text>
+        ),
     },
   ]
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>通知中心</h2>
-        <Button onClick={markAllRead}>全部已读</Button>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 20,
+        }}
+      >
+        <div>
+          <Title level={4} style={{ margin: 0, fontWeight: 700 }}>
+            <BellOutlined style={{ marginRight: 8 }} />
+            通知中心
+          </Title>
+          <Space style={{ marginTop: 8 }}>
+            {unreadCount > 0 ? (
+              <Tag color="processing" style={{ borderRadius: 6 }}>
+                {unreadCount} 条未读
+              </Tag>
+            ) : (
+              <Tag style={{ borderRadius: 6, color: '#94a3b8' }}>全部已读</Tag>
+            )}
+          </Space>
+        </div>
+        {unreadCount > 0 && (
+          <Tooltip title="标记所有通知为已读">
+            <Button
+              icon={<CheckOutlined />}
+              onClick={markAllRead}
+              style={{ borderRadius: 8 }}
+            >
+              全部已读
+            </Button>
+          </Tooltip>
+        )}
       </div>
-      <Table rowKey="id" columns={columns} dataSource={data} loading={loading} style={{ marginTop: 16 }} />
+
+      <Table
+        rowKey="id"
+        columns={columns}
+        dataSource={data}
+        loading={loading}
+        pagination={{ pageSize: 15, showTotal: (t) => `共 ${t} 条通知` }}
+        style={{ borderRadius: 12, overflow: 'hidden' }}
+        locale={{ emptyText: '暂无通知' }}
+        rowClassName={(record) => record.isRead === 0 ? '' : 'read-row'}
+      />
     </div>
   )
 }

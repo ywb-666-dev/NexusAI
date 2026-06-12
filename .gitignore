@@ -1,2 +1,40 @@
 nexus-python/.env
 nexus-python/milvus_data/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+.venv/
+venv/
+dist/
+*.egg-info/
+
+# Node / Frontend
+node_modules/
+dist/
+
+# Java
+target/
+*.class
+*.jar
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Claude
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+tempCodeRunnerFile.py
+log.md
+
+# Env (keep example)
+.env

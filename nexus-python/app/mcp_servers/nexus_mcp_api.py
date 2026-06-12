@@ -1,8 +1,8 @@
 import json
 from typing import Any
 from mcp.server.fastmcp import FastMCP
-from api_news.news import get_info
-from article import Article
+from app.mcp_servers.api_news.news import get_info
+from app.mcp_servers.article import Article
 
 server = FastMCP("api")
 

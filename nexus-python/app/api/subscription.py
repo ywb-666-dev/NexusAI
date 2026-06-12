@@ -30,12 +30,30 @@ async def list_subscriptions(
 
     data = []
     for item in items:
+        keywords = item.keywords
+        if isinstance(keywords, str):
+            try:
+                keywords = json.loads(keywords)
+            except Exception:
+                keywords = []
+        elif not isinstance(keywords, list):
+            keywords = []
+
+        platforms = item.source_platforms
+        if isinstance(platforms, str):
+            try:
+                platforms = json.loads(platforms)
+            except Exception:
+                platforms = []
+        elif not isinstance(platforms, list):
+            platforms = []
+
         data.append({
             "id": item.id,
             "user_id": item.user_id,
             "name": item.name,
-            "keywords": json.loads(item.keywords) if item.keywords else [],
-            "source_platforms": json.loads(item.source_platforms) if item.source_platforms else [],
+            "keywords": keywords,
+            "source_platforms": platforms,
             "match_mode": item.match_mode,
             "priority": item.priority,
             "status": item.status,
@@ -111,3 +129,39 @@ async def trigger_subscription(
     ))
 
     return {"code": 200, "data": {"task_id": task_id, "message": "triggered"}}
+
+
+@router.post("/discover-sources")
+async def discover_sources(request: Request):
+    """AI 自动发现 RSS / Web / API 源
+
+    根据主题关键词，通过内置源库匹配 + LLM 推荐，
+    返回可用的 RSS URL、Web 源和 API 源列表。
+    """
+    import json as _json
+    from app.skills.builtins import DiscoverSourcesSkill
+
+    # 解析请求体
+    body: dict = {}
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+
+    topic = body.get("topic", "")
+    keywords = body.get("keywords", [])
+
+    if not topic and not keywords:
+        return {"code": 400, "message": "请提供 topic 或 keywords"}
+
+    skill = DiscoverSourcesSkill()
+    result = await skill.execute(topic=topic, keywords=keywords)
+
+    return {
+        "code": 200,
+        "data": {
+            "topic": topic,
+            "keywords": keywords,
+            **result.data,
+        },
+    }

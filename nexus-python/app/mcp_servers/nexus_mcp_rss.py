@@ -1,7 +1,7 @@
 from typing import List
 import feedparser
 from mcp.server.fastmcp import FastMCP
-from article import Article
+from app.mcp_servers.article import Article
 
 server = FastMCP("rss")
 

@@ -1,6 +1,6 @@
 from mcp.server.fastmcp import FastMCP
 from playwright.async_api import async_playwright
-from article import Article
+from app.mcp_servers.article import Article
 from bs4 import BeautifulSoup
 server = FastMCP("web")
 @server.tool("scrape_page", description="Playwright 渲染页面，返回 HTML 或截图")

@@ -5,7 +5,7 @@
 import sys
 import os
 
-# 将项目根目录加入路径
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'nexus-python'))
 
 try:
@@ -24,7 +24,6 @@ DB_NAME = "nexusai"
 SQL_FILE = os.path.join(os.path.dirname(__file__), '..', 'infra', 'sql', 'init.sql')
 
 def init_database():
-    # 1. 创建数据库
     conn = pymysql.connect(
         host=DB_HOST, port=DB_PORT,
         user=DB_USER, password=DB_PASS,
@@ -38,7 +37,6 @@ def init_database():
     finally:
         conn.close()
 
-    # 2. 执行 init.sql
     conn = pymysql.connect(
         host=DB_HOST, port=DB_PORT,
         user=DB_USER, password=DB_PASS,
