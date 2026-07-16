@@ -15,6 +15,7 @@ public class SubscriptionVO {
     private String name;
     private List<String> keywords;
     private List<String> sourcePlatforms;
+    private List<RssFeedItem> rssFeeds;
     private Integer matchMode;
     private String triggerConditions;
     private Integer priority;
@@ -22,4 +23,17 @@ public class SubscriptionVO {
     private String cronExpression;
     private LocalDateTime lastRunAt;
     private LocalDateTime createdAt;
+
+    static class RssFeedItem {
+        private String url;
+        private String name;
+        private String platform;
+
+        public String getUrl() { return url; }
+        public void setUrl(String url) { this.url = url; }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public String getPlatform() { return platform; }
+        public void setPlatform(String platform) { this.platform = platform; }
+    }
 }

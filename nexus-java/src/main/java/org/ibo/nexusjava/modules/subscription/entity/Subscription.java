@@ -20,6 +20,7 @@ public class Subscription {
     private String name;
     private String keywords;        // JSON数组字符串
     private String sourcePlatforms; // JSON数组字符串
+    private String rssFeeds;
     private Integer matchMode;      // 1=精确 2=模糊 3=语义
     private String triggerConditions; // JSON DSL
     private Integer priority;       // 1⾼ 2中 3低

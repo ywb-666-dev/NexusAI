@@ -53,6 +53,7 @@ class NexusState(TypedDict, total=False):
     keywords: list[str]
     source_platforms: list[str]
     user_id: int | None
+    rss_feeds: list[dict]  # [{url, name, platform}]
 
     # ── 各节点输出 ──
     scout: ScoutResult

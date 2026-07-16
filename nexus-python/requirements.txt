@@ -4,7 +4,7 @@ uvicorn[standard]==0.30.0
 
 # Database
 sqlalchemy[asyncio]==2.0.30
-aiomysql==0.2.9
+aiomysql==0.3.2
 
 # Cache & Messaging
 redis==5.0.4

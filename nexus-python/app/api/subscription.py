@@ -7,7 +7,7 @@ from sqlalchemy import select, func
 from app.core.dependencies import get_db_session
 from app.models import Subscription
 from app.agents.scout_agent import run_scout_task
-import json
+import json as _json
 
 router = APIRouter()
 
@@ -30,23 +30,9 @@ async def list_subscriptions(
 
     data = []
     for item in items:
-        keywords = item.keywords
-        if isinstance(keywords, str):
-            try:
-                keywords = json.loads(keywords)
-            except Exception:
-                keywords = []
-        elif not isinstance(keywords, list):
-            keywords = []
-
-        platforms = item.source_platforms
-        if isinstance(platforms, str):
-            try:
-                platforms = json.loads(platforms)
-            except Exception:
-                platforms = []
-        elif not isinstance(platforms, list):
-            platforms = []
+        keywords = _parse_json(item.keywords)
+        platforms = _parse_json(item.source_platforms)
+        rss_feeds = _parse_json(item.rss_feeds)
 
         data.append({
             "id": item.id,
@@ -54,6 +40,7 @@ async def list_subscriptions(
             "name": item.name,
             "keywords": keywords,
             "source_platforms": platforms,
+            "rss_feeds": rss_feeds,
             "match_mode": item.match_mode,
             "priority": item.priority,
             "status": item.status,
@@ -80,7 +67,8 @@ async def get_subscription(
         "user_id": item.user_id,
         "name": item.name,
         "keywords": json.loads(item.keywords) if item.keywords else [],
-        "source_platforms": json.loads(item.source_platforms) if item.source_platforms else [],
+        "source_platforms": _parse_json(item.source_platforms),
+        "rss_feeds": _parse_json(item.rss_feeds),
         "match_mode": item.match_mode,
         "trigger_conditions": item.trigger_conditions,
         "priority": item.priority,
@@ -104,16 +92,9 @@ async def trigger_subscription(
     if sub is None:
         return {"code": 404, "message": "Subscription not found"}
 
-    keywords = []
-    platforms = []
-    try:
-        keywords = json.loads(sub.keywords) if sub.keywords else []
-    except Exception:
-        pass
-    try:
-        platforms = json.loads(sub.source_platforms) if sub.source_platforms else []
-    except Exception:
-        pass
+    keywords = _parse_json(sub.keywords)
+    platforms = _parse_json(sub.source_platforms)
+    rss_feeds = _parse_json(sub.rss_feeds)
 
     task_id = uuid.uuid4().hex
     mcp_pool = request.app.state.mcp_pool
@@ -126,6 +107,7 @@ async def trigger_subscription(
         source_platforms=platforms,
         mcp_pool=mcp_pool,
         db=db,
+        rss_feeds=rss_feeds,
     ))
 
     return {"code": 200, "data": {"task_id": task_id, "message": "triggered"}}
@@ -154,8 +136,9 @@ async def discover_sources(request: Request):
     if not topic and not keywords:
         return {"code": 400, "message": "请提供 topic 或 keywords"}
 
+    mcp_pool = request.app.state.mcp_pool
     skill = DiscoverSourcesSkill()
-    result = await skill.execute(topic=topic, keywords=keywords)
+    result = await skill.execute(topic=topic, keywords=keywords, mcp_pool=mcp_pool)
 
     return {
         "code": 200,
@@ -165,3 +148,17 @@ async def discover_sources(request: Request):
             **result.data,
         },
     }
+
+
+def _parse_json(value) -> list:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        try:
+            parsed = _json.loads(value)
+            return parsed if isinstance(parsed, list) else []
+        except Exception:
+            return []
+    if isinstance(value, list):
+        return value
+    return []
