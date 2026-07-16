@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import json
 import threading
 from contextlib import asynccontextmanager
@@ -67,7 +67,7 @@ async def lifespan(app: FastAPI):
     # Skill Registry: 注册 Agent 技能
     try:
         from app.skills import SkillRegistry
-        from app.skills.builtins import ScoutSkill, TranslateSkill, SummarizeSkill, DedupSkill, DiscoverSourcesSkill
+        from app.skills.builtins import ScoutSkill, TranslateSkill, SummarizeSkill, DiscoverSourcesSkill
         from app.harness.base import AgentHarness, LoggingMiddleware
 
         skill_registry = SkillRegistry()

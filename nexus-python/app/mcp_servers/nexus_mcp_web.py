@@ -121,3 +121,49 @@ if __name__ == "__main__":
     test_url = "https://jwc.zuel.edu.cn/main.htm#:~:text=%E3%80%90%E6%95%99%E5%8A%A1%E4%B8%80%E6%9C%AC%E9%80%9A%E3%80%91%E7%8B%AC%E5%B1%9E%E4%BA%8E"
     result = asyncio.run(scrape_page(test_url))
     print(result)
+@server.tool("search_rss_feeds", description="Search for RSS feeds by topic using DuckDuckGo HTML search (fast, no API key required)")
+async def search_rss_feeds(
+        topic: str,
+        max_results: int = 15,
+) -> list[dict]:
+    """Search DuckDuckGo Lite for RSS feeds related to a topic."""
+    import httpx
+    from bs4 import BeautifulSoup
+
+    results = []
+    seen = set()
+
+    queries = [f"{topic} RSS feed", f"{topic} site:reddit.com RSS"]
+    async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
+        for query in queries:
+            if len(results) >= max_results:
+                break
+            try:
+                resp = await client.get(
+                    "https://lite.duckduckgo.com/lite/",
+                    params={"q": query},
+                    headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"},
+                )
+                if resp.status_code != 200:
+                    continue
+                soup = BeautifulSoup(resp.text, "html.parser")
+                for row in soup.find_all("tr"):
+                    links = row.find_all("a", href=True)
+                    snippet_el = row.find(class_="result-snippet")
+                    snippet = snippet_el.get_text(strip=True) if snippet_el else ""
+                    for link in links:
+                        href = link.get("href", "")
+                        title = link.get_text(strip=True)
+                        if not href or not title or href in seen:
+                            continue
+                        is_feed = any(kw in href.lower() for kw in ["rss", "feed", "xml", "atom", "/feed/", "feedburner"])
+                        is_title_match = any(kw in title.lower() for kw in ["rss", "feed"])
+                        if not (is_feed or is_title_match):
+                            continue
+                        seen.add(href)
+                        results.append({"url": href, "title": title[:200], "snippet": snippet[:300], "platform": "rss"})
+                        if len(results) >= max_results:
+                            break
+            except Exception as e:
+                print(f"[search_rss_feeds] {query}: {e}")
+    return results

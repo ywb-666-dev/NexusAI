@@ -150,6 +150,28 @@ async def discover_sources(request: Request):
     }
 
 
+@router.get("/preview-feed")
+async def preview_feed(url: str):
+    """Fetch recent articles from an RSS feed URL for preview."""
+    import feedparser, asyncio
+    try:
+        loop = asyncio.get_running_loop()
+        d = await loop.run_in_executor(None, feedparser.parse, url)
+        if not d.entries:
+            return {"code": 200, "data": {"url": url, "title": getattr(d.feed, "title", url), "entries": []}}
+        entries = []
+        for e in d.entries[:5]:
+            entries.append({
+                "title": e.get("title", ""),
+                "link": e.get("link", ""),
+                "published": e.get("published", "") or e.get("updated", ""),
+                "summary": (e.get("summary", "") or "")[:200],
+            })
+        return {"code": 200, "data": {"url": url, "title": getattr(d.feed, "title", url), "entries": entries}}
+    except Exception as e:
+        return {"code": 500, "message": str(e)}
+
+
 def _parse_json(value) -> list:
     if value is None:
         return []

@@ -1,196 +1,49 @@
-import { useEffect, useState } from 'react'
-import { Table, Button, Tag, Modal, Input, Space, Typography, Tooltip } from 'antd'
-import {
-  CheckOutlined,
-  CloseOutlined,
-  SafetyOutlined,
-  ClockCircleOutlined,
-  ExclamationCircleOutlined,
-} from '@ant-design/icons'
+import { useEffect, useState, useRef } from 'react'
+import { Table, Button, Tag, Typography, Space, Popconfirm, message, Skeleton } from 'antd'
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
 import request from '../api/request'
-import { App } from 'antd'
+import { useThemeStore } from '../store/theme'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+gsap.registerPlugin(useGSAP)
+const { Title } = Typography
 
-const { Title, Text } = Typography
-
-const riskColors: Record<number, string> = { 1: 'success', 2: 'warning', 3: 'error' }
-const riskLabels: Record<number, string> = { 1: '低风险', 2: '中风险', 3: '高风险' }
-
-function ApprovalPage() {
-  const { message } = App.useApp()
+export default function ApprovalPage() {
   const [data, setData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
-  const [rejectModal, setRejectModal] = useState<{ open: boolean; id: number | null }>({ open: false, id: null })
-  const [rejectReason, setRejectReason] = useState('')
-
-  const fetchData = async () => {
-    setLoading(true)
-    try {
-      const res: any = await request.get('/java/approvals/pending')
-      setData(res.data?.records ?? res.data?.items ?? [])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleApprove = async (id: number) => {
-    try {
-      await request.post(`/java/approvals/${id}/approve`, { comment: '' })
-      message.success('已通过')
-      fetchData()
-    } catch (err: any) {
-      message.error(err.message)
-    }
-  }
-
-  const handleReject = async () => {
-    const id = rejectModal.id
-    if (!id) return
-    try {
-      await request.post(`/java/approvals/${id}/reject`, { comment: rejectReason })
-      message.success('已拒绝')
-      setRejectModal({ open: false, id: null })
-      setRejectReason('')
-      fetchData()
-    } catch (err: any) {
-      message.error(err.message)
-    }
-  }
+  const dark = useThemeStore((s) => s.dark)
+  const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => { fetchData() }, [])
+  const fetchData = async () => { setLoading(true); try { const r: any = await request.get('/java/approvals/pending'); setData(r.data?.items ?? r.data?.records ?? []) } finally { setLoading(false) } }
+  useGSAP(() => { gsap.from(ref.current, { y: 20, opacity: 0, duration: 0.45, ease: 'power2.out' }) }, { scope: ref })
 
-  const columns = [
+  const approve = async (id: number) => { try { await request.post('/java/approvals/' + id + '/approve'); message.success('Approved'); fetchData() } catch {} }
+  const reject = async (id: number) => { try { await request.post('/java/approvals/' + id + '/reject'); message.success('Rejected'); fetchData() } catch {} }
+
+  const cols = [
     { title: 'ID', dataIndex: 'id', width: 60 },
-    {
-      title: '任务ID',
-      dataIndex: 'taskId',
-      render: (v: string) => <Text code>{v?.slice(0, 12)}...</Text>,
-    },
-    {
-      title: '动作类型',
-      dataIndex: 'actionType',
-      render: (v: string) => (
-        <Tag style={{ borderRadius: 6, border: 'none', background: '#f0f0ff', color: '#6366f1' }}>
-          {v}
-        </Tag>
-      ),
-    },
-    {
-      title: '风险等级',
-      dataIndex: 'riskLevel',
-      width: 100,
-      render: (v: number) => (
-        <Tag
-          icon={v === 3 ? <ExclamationCircleOutlined /> : <SafetyOutlined />}
-          color={riskColors[v]}
-          style={{ borderRadius: 6 }}
-        >
-          {riskLabels[v] || `Level ${v}`}
-        </Tag>
-      ),
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createdAt',
-      width: 170,
-      render: (v: string) => (
-        <Text style={{ color: '#94a3b8', fontSize: 13 }}>
-          <ClockCircleOutlined style={{ marginRight: 6 }} />{v}
-        </Text>
-      ),
-    },
-    {
-      title: '操作',
-      width: 200,
-      render: (_: any, record: any) => (
-        <Space>
-          <Button
-            type="primary"
-            size="small"
-            icon={<CheckOutlined />}
-            onClick={() => handleApprove(record.id)}
-            style={{ borderRadius: 6 }}
-          >
-            通过
-          </Button>
-          <Button
-            danger
-            size="small"
-            icon={<CloseOutlined />}
-            onClick={() => { setRejectModal({ open: true, id: record.id }); setRejectReason('') }}
-            style={{ borderRadius: 6 }}
-          >
-            拒绝
-          </Button>
-        </Space>
-      ),
-    },
+    { title: 'Task', dataIndex: 'taskId', ellipsis: true },
+    { title: 'Type', dataIndex: 'actionType', width: 120 },
+    { title: 'Risk', dataIndex: 'riskLevel', width: 80, render: (v: number) => v === 1 ? <Tag color='green' style={{ borderRadius: 6 }}>Low</Tag> : v === 2 ? <Tag color='orange' style={{ borderRadius: 6 }}>Med</Tag> : <Tag color='red' style={{ borderRadius: 6 }}>High</Tag> },
+    { title: 'Status', dataIndex: 'status', width: 80, render: (v: number) => v === 0 ? <Tag color='processing' style={{ borderRadius: 6 }}>Pending</Tag> : v === 1 ? <Tag color='success' style={{ borderRadius: 6 }}>OK</Tag> : <Tag color='error' style={{ borderRadius: 6 }}>Rejected</Tag> },
+    { title: 'Actions', width: 160, render: (_: any, r: any) => r.status === 0 ? <Space><Button type='primary' size='small' icon={<CheckOutlined />} onClick={() => approve(r.id)}>Approve</Button><Popconfirm title='Reject?' onConfirm={() => reject(r.id)}><Button size='small' danger icon={<CloseOutlined />}>Reject</Button></Popconfirm></Space> : '-' },
   ]
-
-  const highRiskCount = data.filter((d) => d.riskLevel === 3).length
-
-  return (
-    <div>
-      <div style={{ marginBottom: 20 }}>
-        <Title level={4} style={{ margin: 0, fontWeight: 700 }}>审批工单</Title>
-        <Space style={{ marginTop: 8 }}>
-          <Tag style={{ borderRadius: 6 }}>
-            <ClockCircleOutlined /> {data.length} 条待审批
-          </Tag>
-          {highRiskCount > 0 && (
-            <Tag color="error" style={{ borderRadius: 6 }}>
-              <ExclamationCircleOutlined /> {highRiskCount} 条高风险
-            </Tag>
-          )}
-        </Space>
+  if (loading) {
+    return (
+      <div ref={ref}>
+        <Skeleton.Input active style={{ width: 200, height: 28, marginBottom: 20 }} />
+        <Card style={{ borderRadius: 12 }}><Skeleton active paragraph={{ rows: 6 }} /></Card>
       </div>
+    )
+  }
 
-      <Table
-        rowKey="id"
-        columns={columns}
-        dataSource={data}
-        loading={loading}
-        pagination={{ pageSize: 15, showTotal: (t) => `共 ${t} 条工单` }}
-        style={{ borderRadius: 12, overflow: 'hidden' }}
-        locale={{ emptyText: '暂无待审批工单' }}
-      />
-
-      <Modal
-        title={
-          <Space>
-            <ExclamationCircleOutlined style={{ color: '#f59e0b' }} />
-            <span style={{ fontWeight: 600 }}>拒绝原因</span>
-          </Space>
-        }
-        open={rejectModal.open}
-        onOk={handleReject}
-        onCancel={() => { setRejectModal({ open: false, id: null }); setRejectReason('') }}
-        okText="确认拒绝"
-        cancelText="取消"
-        okButtonProps={{ danger: true }}
-        destroyOnClose
-      >
-        <div
-          style={{
-            background: '#fef3c7',
-            borderRadius: 8,
-            padding: '10px 14px',
-            marginBottom: 16,
-            color: '#92400e',
-            fontSize: 13,
-          }}
-        >
-          此操作将拒绝该审批工单，相关任务将不会继续执行
-        </div>
-        <Input.TextArea
-          rows={3}
-          placeholder="请输入拒绝原因（选填）"
-          value={rejectReason}
-          onChange={(e) => setRejectReason(e.target.value)}
-          style={{ borderRadius: 8 }}
-        />
-      </Modal>
+  if (data.length === 0 && !loading) {
+    return <div ref={ref} style={{ textAlign: 'center', padding: 80 }}>
+      <CheckSquareOutlined style={{ fontSize: 56, color: '#cbd5e1', marginBottom: 16 }} />
+      <div style={{ fontSize: 16, color: '#94a3b8', marginBottom: 8 }}>No pending approvals</div>
+      <Text style={{ fontSize: 13, color: '#cbd5e1' }}>All content has been reviewed. Great work!</Text>
     </div>
-  )
+  }
+  return <div ref={ref}><Title level={4} style={{ marginBottom: 20, fontWeight: 700, color: dark ? '#e2e8f0' : '#1e293b' }}>Approvals</Title><Table rowKey='id' columns={cols} dataSource={data} loading={loading} pagination={{ pageSize: 15 }} style={{ borderRadius: 12, overflow: 'hidden' }} /></div>
 }
-
-export default ApprovalPage

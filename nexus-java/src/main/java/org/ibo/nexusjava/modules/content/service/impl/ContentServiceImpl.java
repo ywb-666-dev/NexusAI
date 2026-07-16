@@ -16,9 +16,11 @@ import org.ibo.nexusjava.modules.subscription.entity.Subscription;
 import org.ibo.nexusjava.modules.subscription.mapper.SubscriptionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,9 @@ import java.util.stream.Collectors;
 public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> implements ContentService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
     private SubscriptionMapper subscriptionMapper;
@@ -85,6 +90,7 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> impl
 
         Page<ContentVO> resultPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
         resultPage.setRecords(records);
+        try { stringRedisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(resultPage), 30, TimeUnit.SECONDS); } catch (Exception ignored) {}
         return resultPage;
     }
 

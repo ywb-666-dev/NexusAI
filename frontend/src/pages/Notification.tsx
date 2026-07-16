@@ -1,188 +1,46 @@
-import { useEffect, useState } from 'react'
-import { Table, Button, Badge, Space, Tag, Typography, Tooltip } from 'antd'
-import {
-  CheckOutlined,
-  MailOutlined,
-  BellOutlined,
-  InfoCircleOutlined,
-  ClockCircleOutlined,
-  ThunderboltOutlined,
-  SettingOutlined,
-} from '@ant-design/icons'
-import { useAuthStore } from '../store/auth'
+import { useEffect, useState, useRef } from 'react'
+import { List, Tag, Typography, Button, Space, message } from 'antd'
+import { BellOutlined, CheckOutlined } from '@ant-design/icons'
 import request from '../api/request'
-import { App } from 'antd'
-
+import { useThemeStore } from '../store/theme'
+import { useGSAP } from '@gsap/react'
+import gsap from 'gsap'
+import { timeAgo } from '../utils/time'
+gsap.registerPlugin(useGSAP)
 const { Title, Text } = Typography
 
-const typeIcons: Record<string, React.ReactNode> = {
-  task: <ThunderboltOutlined />,
-  approval: <CheckOutlined />,
-  system: <SettingOutlined />,
-}
-
-const typeColors: Record<string, string> = {
-  task: '#818cf8',
-  approval: '#34d399',
-  system: '#fbbf24',
-}
-
-function NotificationPage() {
-  const { message } = App.useApp()
+export default function NotificationPage() {
   const [data, setData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
-  const { user } = useAuthStore()
+  const dark = useThemeStore((s) => s.dark)
+  const ref = useRef<HTMLDivElement>(null)
 
-  const fetchData = async () => {
-    if (!user?.id) return
-    setLoading(true)
-    try {
-      const res: any = await request.get('/java/notifications')
-      setData(res.data?.records ?? res.data?.items ?? [])
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => { fetchData() }, [])
+  const fetchData = async () => { setLoading(true); try { const r: any = await request.get('/java/notifications'); setData(r.data?.items ?? r.data?.records ?? []) } finally { setLoading(false) } }
+  useGSAP(() => { gsap.from(ref.current, { y: 20, opacity: 0, duration: 0.45, ease: 'power2.out' }) }, { scope: ref })
 
-  const markRead = async (id: number) => {
-    try {
-      await request.post(`/java/notifications/${id}/read`)
-      message.success('已标记为已读')
-      fetchData()
-    } catch (err: any) {
-      message.error(err.message)
-    }
-  }
+  const markRead = async (id: number) => { try { await request.post('/java/notifications/' + id + '/read'); message.success('Marked read'); fetchData() } catch {} }
+  const markAll = async () => { try { await request.post('/java/notifications/read-all'); message.success('All marked read'); fetchData() } catch {} }
 
-  const markAllRead = async () => {
-    if (!user?.id) return
-    try {
-      await request.post('/java/notifications/read-all')
-      message.success('全部已读')
-      fetchData()
-    } catch (err: any) {
-      message.error(err.message)
-    }
-  }
-
-  useEffect(() => { fetchData() }, [user?.id])
-
-  const unreadCount = data.filter((d) => d.isRead === 0).length
-
-  const columns = [
-    { title: 'ID', dataIndex: 'id', width: 60 },
-    {
-      title: '类型',
-      dataIndex: 'type',
-      width: 90,
-      render: (v: string) => (
-        <Tag
-          icon={typeIcons[v] || <InfoCircleOutlined />}
-          color={typeColors[v] || 'default'}
-          style={{ borderRadius: 6, border: 'none' }}
-        >
-          {v === 'task' ? '任务' : v === 'approval' ? '审批' : v === 'system' ? '系统' : v}
-        </Tag>
-      ),
-    },
-    {
-      title: '标题',
-      dataIndex: 'title',
-      render: (v: string, record: any) => (
-        <Space>
-          {record.isRead === 0 && <Badge status="processing" />}
-          <span style={{ fontWeight: record.isRead === 0 ? 600 : 400 }}>{v}</span>
-        </Space>
-      ),
-    },
-    {
-      title: '内容',
-      dataIndex: 'content',
-      ellipsis: true,
-      render: (v: string) => (
-        <Text style={{ color: '#64748b', maxWidth: 360 }} ellipsis>{v}</Text>
-      ),
-    },
-    {
-      title: '时间',
-      dataIndex: 'createdAt',
-      width: 170,
-      render: (v: string) => (
-        <Text style={{ color: '#94a3b8', fontSize: 13 }}>
-          <ClockCircleOutlined style={{ marginRight: 6 }} />{v}
-        </Text>
-      ),
-    },
-    {
-      title: '操作',
-      width: 100,
-      render: (_: any, record: any) =>
-        record.isRead === 0 ? (
-          <Button
-            type="link"
-            size="small"
-            icon={<MailOutlined />}
-            onClick={() => markRead(record.id)}
-            style={{ color: '#6366f1' }}
-          >
-            已读
-          </Button>
-        ) : (
-          <Text style={{ color: '#cbd5e1', fontSize: 13 }}>已读</Text>
-        ),
-    },
-  ]
-
-  return (
-    <div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 20,
-        }}
-      >
-        <div>
-          <Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-            <BellOutlined style={{ marginRight: 8 }} />
-            通知中心
-          </Title>
-          <Space style={{ marginTop: 8 }}>
-            {unreadCount > 0 ? (
-              <Tag color="processing" style={{ borderRadius: 6 }}>
-                {unreadCount} 条未读
-              </Tag>
-            ) : (
-              <Tag style={{ borderRadius: 6, color: '#94a3b8' }}>全部已读</Tag>
-            )}
-          </Space>
-        </div>
-        {unreadCount > 0 && (
-          <Tooltip title="标记所有通知为已读">
-            <Button
-              icon={<CheckOutlined />}
-              onClick={markAllRead}
-              style={{ borderRadius: 8 }}
-            >
-              全部已读
-            </Button>
-          </Tooltip>
-        )}
+  if (loading) {
+    return (
+      <div ref={ref}>
+        <Skeleton.Input active style={{ width: 200, height: 28, marginBottom: 20 }} />
+        {[0,1,2,3,4].map(i => (
+          <Card key={i} style={{ borderRadius: 12, marginBottom: 8 }}>
+            <Skeleton active paragraph={{ rows: 1 }} avatar />
+          </Card>
+        ))}
       </div>
+    )
+  }
 
-      <Table
-        rowKey="id"
-        columns={columns}
-        dataSource={data}
-        loading={loading}
-        pagination={{ pageSize: 15, showTotal: (t) => `共 ${t} 条通知` }}
-        style={{ borderRadius: 12, overflow: 'hidden' }}
-        locale={{ emptyText: '暂无通知' }}
-        rowClassName={(record) => record.isRead === 0 ? '' : 'read-row'}
-      />
+  if (data.length === 0 && !loading) {
+    return <div ref={ref} style={{ textAlign: 'center', padding: 80 }}>
+      <BellOutlined style={{ fontSize: 56, color: '#cbd5e1', marginBottom: 16 }} />
+      <div style={{ fontSize: 16, color: '#94a3b8', marginBottom: 8 }}>No notifications</div>
+      <Text style={{ fontSize: 13, color: '#cbd5e1' }}>New notifications will appear here when content is collected or approved.</Text>
     </div>
-  )
+  }
+  return <div ref={ref}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}><Title level={4} style={{ margin: 0, fontWeight: 700, color: dark ? '#e2e8f0' : '#1e293b' }}>Notifications</Title><Button icon={<CheckOutlined />} onClick={markAll}>Mark All Read</Button></div><List loading={loading} dataSource={data} renderItem={(item: any) => <List.Item style={{ padding: '14px 20px', borderRadius: 12, marginBottom: 8, background: item.isRead ? (dark ? '#1a1a1a' : '#fff') : (dark ? '#1e1a3a' : '#f8faff'), border: '1px solid ' + (item.isRead ? '#f1f5f9' : '#e0e7ff') }}><List.Item.Meta avatar={<BellOutlined style={{ fontSize: 20, color: item.isRead ? '#94a3b8' : '#6366f1' }} />} title={<span style={{ fontWeight: item.isRead ? 400 : 600 }}>{item.title}</span>} description={<span><Text style={{ color: '#64748b' }}>{item.content}</Text><br /><Text style={{ fontSize: 11, color: '#94a3b8' }}>{timeAgo(item.createdAt)}</Text></span>} />{!item.isRead && <Button size='small' onClick={() => markRead(item.id)}>Read</Button>}</List.Item>} /></div>
 }
-
-export default NotificationPage

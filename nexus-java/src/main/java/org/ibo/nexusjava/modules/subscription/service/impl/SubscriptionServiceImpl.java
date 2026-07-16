@@ -1,4 +1,4 @@
-package org.ibo.nexusjava.modules.subscription.service.impl;
+﻿package org.ibo.nexusjava.modules.subscription.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -115,6 +115,7 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
         sub.setPriority(dto.getPriority());
         sub.setStatus(1);
         save(sub);
+        Set<String> keys = stringRedisTemplate.keys("cache:subs:" + UserContext.getUserId() + ":*"); if (keys != null && !keys.isEmpty()) stringRedisTemplate.delete(keys);
     }
 
     @Override
@@ -142,6 +143,7 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
         update.setCronExpression(dto.getCronExpression());
         update.setPriority(dto.getPriority());
         updateById(update);
+        Set<String> keys = stringRedisTemplate.keys("cache:subs:" + UserContext.getUserId() + ":*"); if (keys != null && !keys.isEmpty()) stringRedisTemplate.delete(keys);
     }
 
     @Override
@@ -151,6 +153,7 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
             throw new BusinessException(ErrorCode.SUBSCRIPTION_NOT_FOUND);
         }
         removeById(id);
+        Set<String> keys = stringRedisTemplate.keys("cache:subs:" + UserContext.getUserId() + ":*"); if (keys != null && !keys.isEmpty()) stringRedisTemplate.delete(keys);
     }
 
     @Override
@@ -164,6 +167,15 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
 
     @Override
     public IPage<SubscriptionVO> list(SubscriptionQueryDTO query) {
+        // Redis cache
+        String cacheKey = "cache:subs:" + UserContext.getUserId() + ":" + query.getCurrent() + ":" + query.getSize();
+        if (StringUtils.hasText(query.getName())) cacheKey += ":" + query.getName();
+        String cached = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cached != null) {
+            try { return objectMapper.readValue(cached, new TypeReference<Page<SubscriptionVO>>() {}); }
+            catch (Exception ignored) {}
+        }
+
         LambdaQueryWrapper<Subscription> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Subscription::getUserId, UserContext.getUserId());
 
@@ -184,6 +196,7 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
 
         Page<SubscriptionVO> resultPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
         resultPage.setRecords(records);
+        try { stringRedisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(resultPage), 30, TimeUnit.SECONDS); } catch (Exception ignored) {}
         return resultPage;
     }
 

@@ -28,6 +28,10 @@ import java.util.stream.Collectors;
 public class SystemController {
 
     @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
     private UserMapper userMapper;
     @Autowired
     private SubscriptionMapper subscriptionMapper;
@@ -43,6 +47,13 @@ public class SystemController {
 
     @GetMapping("/metrics")
     public Result<SystemMetricsVO> metrics() {
+        String cacheKey = "cache:metrics";
+        String cached = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cached != null) {
+            try { return objectMapper.readValue(cached, new TypeReference<Result<SystemMetricsVO>>() {}); }
+            catch (Exception ignored) {}
+        }
+
         SystemMetricsVO vo = new SystemMetricsVO();
         vo.setTotalUsers(userMapper.selectCount(null));
         vo.setTotalSubscriptions(subscriptionMapper.selectCount(null));
@@ -52,7 +63,9 @@ public class SystemController {
         wrapper.eq(ApprovalTicket::getStatus, 0);
         vo.setPendingApprovals(approvalTicketMapper.selectCount(wrapper));
 
-        return Result.success(vo);
+        Result<SystemMetricsVO> result = Result.success(vo);
+        try { stringRedisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(result), 30, TimeUnit.SECONDS); } catch (Exception ignored) {}
+        return result;
     }
 
     @GetMapping("/charts")
@@ -99,6 +112,8 @@ public class SystemController {
         ChartsVO vo = new ChartsVO();
         vo.setPlatformDistribution(platformDist);
         vo.setHourlyTrend(hourlyTrend);
-        return Result.success(vo);
+        Result<SystemMetricsVO> result = Result.success(vo);
+        try { stringRedisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(result), 30, TimeUnit.SECONDS); } catch (Exception ignored) {}
+        return result;
     }
 }

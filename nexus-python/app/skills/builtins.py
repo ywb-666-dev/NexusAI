@@ -1,4 +1,4 @@
-"""内置 Agent Skills — 内容采集、翻译、摘要"""
+﻿"""内置 Agent Skills — 内容采集、翻译、摘要"""
 
 import asyncio
 import hashlib
@@ -223,11 +223,64 @@ class DiscoverSourcesSkill(Skill):
             {"url": "https://techcrunch.com/feed/", "name": "TechCrunch", "platform": "rss"},
             {"url": "https://www.producthunt.com/feed", "name": "Product Hunt", "platform": "rss"},
         ],
+        "sports": [
+            {"url": "https://www.espn.com/espn/rss/news", "name": "ESPN", "platform": "rss"},
+            {"url": "https://www.bbc.com/sport/rss.xml", "name": "BBC Sport", "platform": "rss"},
+            {"url": "https://www.reddit.com/r/sports/.rss", "name": "Reddit r/sports", "platform": "rss"},
+            {"url": "https://www.reddit.com/r/soccer/.rss", "name": "Reddit r/soccer", "platform": "rss"},
+        ],
+        "sports": [
+            {"url": "https://www.espn.com/espn/rss/news", "name": "ESPN Top News", "platform": "rss"},
+            {"url": "https://www.skysports.com/rss/12040", "name": "Sky Sports", "platform": "rss"},
+            {"url": "https://bleacherreport.com/rss", "name": "Bleacher Report", "platform": "rss"},
+            {"url": "https://www.bbc.com/sport/rss.xml", "name": "BBC Sport", "platform": "rss"},
+            {"url": "https://www.reddit.com/r/sports/.rss", "name": "Reddit r/sports", "platform": "rss"},
+            {"url": "https://www.reddit.com/r/soccer/.rss", "name": "Reddit r/soccer", "platform": "rss"},
+            {"url": "https://www.reddit.com/r/worldcup/.rss", "name": "Reddit r/worldcup", "platform": "rss"},
+        ],
+        "news": [
+            {"url": "https://feeds.bbci.co.uk/news/rss.xml", "name": "BBC News", "platform": "rss"},
+            {"url": "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml", "name": "NYT Home", "platform": "rss"},
+            {"url": "https://www.reddit.com/r/worldnews/.rss", "name": "Reddit r/worldnews", "platform": "rss"},
+            {"url": "https://feeds.reuters.com/reuters/topNews", "name": "Reuters Top News", "platform": "rss"},
+        ],
+        "finance": [
+            {"url": "https://www.reddit.com/r/stocks/.rss", "name": "Reddit r/stocks", "platform": "rss"},
+            {"url": "https://www.reddit.com/r/investing/.rss", "name": "Reddit r/investing", "platform": "rss"},
+            {"url": "https://feeds.bloomberg.com/markets/news.rss", "name": "Bloomberg Markets", "platform": "rss"},
+        ],
+        "health": [
+            {"url": "https://www.reddit.com/r/health/.rss", "name": "Reddit r/health", "platform": "rss"},
+            {"url": "https://www.medicalnewstoday.com/newsfeeds", "name": "Medical News Today", "platform": "rss"},
+        ],
+        "gaming": [
+            {"url": "https://www.reddit.com/r/gaming/.rss", "name": "Reddit r/gaming", "platform": "rss"},
+            {"url": "https://www.reddit.com/r/Games/.rss", "name": "Reddit r/Games", "platform": "rss"},
+            {"url": "https://www.pcgamer.com/rss/", "name": "PC Gamer", "platform": "rss"},
+        ],
+        "science": [
+            {"url": "https://www.reddit.com/r/science/.rss", "name": "Reddit r/science", "platform": "rss"},
+            {"url": "https://rss.arxiv.org/rss/physics", "name": "arXiv Physics", "platform": "rss"},
+            {"url": "https://www.sciencedaily.com/rss/all.xml", "name": "Science Daily", "platform": "rss"},
+        ],
+        "entertainment": [
+            {"url": "https://www.reddit.com/r/movies/.rss", "name": "Reddit r/movies", "platform": "rss"},
+            {"url": "https://variety.com/feed/", "name": "Variety", "platform": "rss"},
+        ],
+        "design": [
+            {"url": "https://www.reddit.com/r/design/.rss", "name": "Reddit r/design", "platform": "rss"},
+            {"url": "https://www.smashingmagazine.com/feed/", "name": "Smashing Magazine", "platform": "rss"},
+        ],
+        "education": [
+            {"url": "https://www.reddit.com/r/education/.rss", "name": "Reddit r/education", "platform": "rss"},
+            {"url": "https://www.coursera.org/blog/feed", "name": "Coursera Blog", "platform": "rss"},
+        ],
     }
 
     async def execute(self, **kwargs) -> SkillResult:
         topic = kwargs.get("topic", "")
         keywords_input = kwargs.get("keywords", [])
+        mcp_pool = kwargs.get("mcp_pool", None)
 
         if not topic and not keywords_input:
             return SkillResult(success=False, error="No topic or keywords provided")
@@ -241,7 +294,65 @@ class DiscoverSourcesSkill(Skill):
         matched_sources: list[dict] = []
         seen_urls: set[str] = set()
 
+        # Direct category mapping for Chinese keywords
+        _CHINESE_CAT = {
+            "世界杯": "sports", "足球": "sports", "篮球": "sports", "NBA": "sports",
+            "股票": "finance", "比特币": "finance", "投资": "finance",
+            "游戏": "gaming", "电影": "entertainment", "音乐": "entertainment",
+            "健康": "health", "疫情": "health", "科学": "science",
+        }
         search_terms = [topic.lower()] + [k.lower() for k in all_keywords]
+        for kw in all_keywords + [topic]:
+            for ck, cat in _CHINESE_CAT.items():
+                if ck in kw:
+                    search_terms.append(cat); print("[DEBUG_CHK] search_terms BEFORE expand:", search_terms)
+        _KW_MAP = {
+            "sports": ["世界杯","足球","篮球","NBA","联赛","比赛","网球","F1","奥运会","排球","泳泳"],
+            "news": ["新闻","头条","国际","时事"],
+            "finance": ["股票","基金","比特币","加密货币","BTC","ETH","投资","理财","A股","经济"],
+            "health": ["健康","医学","疫情","减肥","健身","养生"],
+            "gaming": ["游戏","手游","端游","PS5","Xbox","Switch","Steam","电竞","LOL","英雄联盟"],
+            "science": ["科学","物理","化学","生物","太空","量子","基因","天文"],
+            "entertainment": ["电影","音乐","娱乐","明星","综艺","剧集","动漫","韩剧","美剧"],
+            "design": ["设计","UI","UX","平面","室内"],
+            "education": ["教育","学习","课程","考试","留学","研究生"],
+        }
+        expanded_terms = list(search_terms)
+        
+        # Hard-coded: if topic contains sports keywords, add sports feeds
+        _SPORTS_KW = ["世界杯","足球","篮球","NBA","英超","西甲","欧冠","网球","F1","奥运会","排球","游泳","棒球","橄榄球","高尔夫"]
+        if any(kw in topic.lower() for kw in _SPORTS_KW) or any(any(kw in k.lower() for kw in _SPORTS_KW) for k in all_keywords):
+            sports_feeds = [
+                {"url": "https://www.espn.com/espn/rss/news", "name": "ESPN", "platform": "rss"},
+                {"url": "https://www.bbc.com/sport/rss.xml", "name": "BBC Sport", "platform": "rss"},
+                {"url": "https://www.reddit.com/r/sports/.rss", "name": "Reddit r/sports", "platform": "rss"},
+                {"url": "https://www.reddit.com/r/soccer/.rss", "name": "Reddit r/soccer", "platform": "rss"},
+            ]
+            for f in sports_feeds:
+                if f["url"] not in seen_urls:
+                    seen_urls.add(f["url"])
+                    matched_sources.append(dict(f))
+
+        for term in search_terms:
+            for cat, kws in _KW_MAP.items():
+                if any(kw in term for kw in kws):
+                    expanded_terms.append(cat)
+        search_terms = list(dict.fromkeys(expanded_terms)); print("[DEBUG_CHK] search_terms AFTER expand:", search_terms)
+        
+        # Hard-coded: if topic contains sports keywords, add sports feeds
+        _SPORTS_KW = ["世界杯","足球","篮球","NBA","英超","西甲","欧冠","网球","F1","奥运会","排球","游泳","棒球","橄榄球","高尔夫"]
+        if any(kw in topic.lower() for kw in _SPORTS_KW) or any(any(kw in k.lower() for kw in _SPORTS_KW) for k in all_keywords):
+            sports_feeds = [
+                {"url": "https://www.espn.com/espn/rss/news", "name": "ESPN", "platform": "rss"},
+                {"url": "https://www.bbc.com/sport/rss.xml", "name": "BBC Sport", "platform": "rss"},
+                {"url": "https://www.reddit.com/r/sports/.rss", "name": "Reddit r/sports", "platform": "rss"},
+                {"url": "https://www.reddit.com/r/soccer/.rss", "name": "Reddit r/soccer", "platform": "rss"},
+            ]
+            for f in sports_feeds:
+                if f["url"] not in seen_urls:
+                    seen_urls.add(f["url"])
+                    matched_sources.append(dict(f))
+
         for term in search_terms:
             for category, feeds in self._KNOWN_FEEDS.items():
                 if category in term or any(
@@ -288,117 +399,13 @@ class DiscoverSourcesSkill(Skill):
                 "topic": topic,
                 "keywords": all_keywords,
                 "suggested_name": suggested_name,
-                "rss_urls": rss_urls,
-                "web_sources": web_sources,
-                "api_sources": api_sources,
-                "recommended_platforms": list(set(
-                    s["platform"] for s in matched_sources
-                )),
+                "sources": [
+                    {"id": str(idx), "url": s["url"], "name": s["name"],
+                     "platform": s["platform"], "description": "Built-in source",
+                     "relevance": 0.9, "source_type": "builtin"}
+                    for idx, s in enumerate(matched_sources)
+                ],
                 "total_sources": len(matched_sources),
+                "recommended_platforms": list(set(s["platform"] for s in matched_sources)),
             },
         )
-
-    async def _llm_discover(self, topic: str, keywords: list[str]) -> list[dict]:
-        """使用 LLM 发现相关的 RSS 源"""
-        from app.core.config import settings
-
-        if not settings.llm.api_key:
-            return []
-
-        import openai
-        client = openai.OpenAI(
-            api_key=settings.llm.api_key,
-            base_url=settings.llm.base_url,
-        )
-        keyword_str = ", ".join(keywords) if keywords else topic
-        prompt = (
-            f"请为以下主题推荐最多 8 个高质量的英文 RSS 订阅源 URL（必须是真实存在的 RSS/XML feed 地址）：\n"
-            f"主题：{topic}\n关键词：{keyword_str}\n\n"
-            f"请严格按以下 JSON 格式输出，不要输出其他内容：\n"
-            f'[{{"url": "https://...", "name": "源名称", "platform": "rss"}}, ...]\n\n'
-            f"优先推荐：Reddit 子版块 RSS、arXiv RSS、知名科技博客 RSS、Hacker News RSS。"
-        )
-
-        try:
-            resp = client.chat.completions.create(
-                model=settings.llm.chat_model,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.3,
-                max_tokens=800,
-            )
-            raw = resp.choices[0].message.content.strip()
-            # 提取 JSON 数组
-            import re
-            match = re.search(r"\[.*\]", raw, re.DOTALL)
-            if match:
-                sources = json.loads(match.group())
-                return sources
-            return []
-        except Exception:
-            return []
-
-
-class DedupSkill(Skill):
-    """去重 Skill：语义相似度 + 硬哈希去重"""
-
-    name = "dedup"
-    description = "语义去重：Milvus 向量相似度 + SHA-256 哈希双重去重"
-    version = "1.0.0"
-    tags = ["content", "dedup", "milvus"]
-
-    async def execute(self, **kwargs) -> SkillResult:
-        items = kwargs.get("items", [])
-        if not items:
-            return SkillResult(success=True, data={"duplicates": [], "unique": []})
-
-        try:
-            from app.memory.milvus_client import milvus_client as mc
-            from app.core.config import settings
-
-            seen_hashes: set[str] = set()
-            duplicates: list[str] = []
-            unique: list[dict] = []
-
-            for item in items:
-                content_text = f"{item.get('title', '')}\n{item.get('summary', '')}"[:2000]
-                c_hash = hashlib.sha256(content_text.encode("utf-8")).hexdigest()
-
-                if c_hash in seen_hashes:
-                    duplicates.append(item.get("id", c_hash))
-                    continue
-                seen_hashes.add(c_hash)
-
-                # Milvus semantic check
-                try:
-                    emb = self._get_embedding(content_text)
-                    similar = mc.search_similar(
-                        embedding=emb,
-                        top_k=1,
-                        threshold=settings.milvus.dedup_threshold,
-                    )
-                    if similar:
-                        duplicates.append(item.get("id", c_hash))
-                        continue
-                except Exception:
-                    pass
-
-                unique.append(item)
-
-            return SkillResult(
-                success=True,
-                data={"unique": unique, "duplicate_ids": duplicates, "unique_count": len(unique)},
-            )
-        except Exception as e:
-            return SkillResult(success=False, error=str(e))
-
-    @staticmethod
-    def _get_embedding(text: str) -> list[float]:
-        try:
-            from app.core.config import settings
-            import openai
-            emb_key = settings.llm.embedding_api_key or settings.llm.api_key
-            client = openai.OpenAI(api_key=emb_key, base_url=settings.llm.base_url)
-            resp = client.embeddings.create(model=settings.llm.embedding_model, input=text[:8000])
-            return resp.data[0].embedding
-        except Exception:
-            return []

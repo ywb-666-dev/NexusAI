@@ -1,4 +1,4 @@
-"""Skill API — 技能发现、调用、指标查询"""
+﻿"""Skill API — 技能发现、调用、指标查询"""
 
 from fastapi import APIRouter, Request, Query
 from app.harness.base import get_metrics_store
@@ -19,9 +19,12 @@ async def list_skills(request: Request, tag: str | None = Query(None)):
 
 @router.post("/skills/{name}/invoke")
 async def invoke_skill(name: str, request: Request):
-    """调用一个 Skill"""
+    """Invoke a Skill with optional parameters from request body."""
     registry = request.app.state.skill_registry
-    result = await registry.invoke(name)
+    body = {}
+    try: body = await request.json()
+    except: pass
+    result = await registry.invoke(name, **body)
     return {
         "code": 200 if result.success else 500,
         "data": {

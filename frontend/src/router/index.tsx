@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+﻿import { Routes, Route, Navigate } from 'react-router-dom'
 import BasicLayout from '../layout/BasicLayout'
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
@@ -6,7 +6,6 @@ import SubscriptionPage from '../pages/Subscription'
 import ContentPage from '../pages/Content'
 import ApprovalPage from '../pages/Approval'
 import NotificationPage from '../pages/Notification'
-import AgentMonitor from '../pages/AgentMonitor'
 import { useAuthStore } from '../store/auth'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -33,7 +32,7 @@ function AppRouter() {
         <Route path="contents" element={<ContentPage />} />
         <Route path="approvals" element={<ApprovalPage />} />
         <Route path="notifications" element={<NotificationPage />} />
-        <Route path="agent-monitor" element={<AgentMonitor />} />
+        
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
