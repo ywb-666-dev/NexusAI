@@ -26,6 +26,7 @@ async def _collect_one(
     async with sem:
         task_id = uuid.uuid4().hex
         keywords = sub.keywords if isinstance(sub.keywords, list) else []
+        rss_feeds = sub.rss_feeds if isinstance(sub.rss_feeds, list) else []
         try:
             if isinstance(sub.keywords, str):
                 keywords = json.loads(sub.keywords)
@@ -36,6 +37,12 @@ async def _collect_one(
         try:
             if isinstance(sub.source_platforms, str):
                 platforms = json.loads(sub.source_platforms)
+        except Exception:
+            pass
+
+        try:
+            if isinstance(sub.rss_feeds, str):
+                rss_feeds = json.loads(sub.rss_feeds)
         except Exception:
             pass
 
@@ -54,7 +61,10 @@ async def _collect_one(
                     source_platforms=platforms,
                     mcp_pool=mcp_pool,
                     db=db,
+                    rss_feeds=rss_feeds,
                 )
+                # Update last_run_at
+                sub.last_run_at = datetime.utcnow()
                 await db.commit()
             except Exception as e:
                 await db.rollback()
