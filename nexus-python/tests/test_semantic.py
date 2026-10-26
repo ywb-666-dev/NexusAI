@@ -87,6 +87,9 @@ def test_unconfigured_model_never_falls_back(monkeypatch):
         {"id": "unknown"},
         {"evidence": []},
         {"evidence": ["Fabricated quote does not exist"]},
+        {"evidence": ["      "]},
+        {"evidence": ["A\n\n\n\n\nf"]},
+        {"reason": "      "},
     ],
 )
 def test_invalid_model_results_cannot_be_published(change):
@@ -105,6 +108,19 @@ def test_missing_and_duplicate_judgments_fail_closed():
     ]:
         with pytest.raises(semantic.SemanticError):
             semantic.validate_verdicts(raw, inputs)
+
+
+def test_evidence_allows_real_quotes_with_normalized_whitespace():
+    result = semantic.validate_verdicts(
+        {"items": [verdict(evidence=["A fully\n\n offline open-weight model"])]},
+        [semantic.article_input(article(), 0)],
+    )
+    assert result["0"]["matches"] is True
+
+
+def test_intent_plan_rejects_blank_interpretation():
+    with pytest.raises(ValueError):
+        semantic.IntentPlan.model_validate({**PLAN, "include": ["   "]})
 
 
 def test_exclusion_overrides_high_score_and_cache_avoids_repeat_cost(monkeypatch):

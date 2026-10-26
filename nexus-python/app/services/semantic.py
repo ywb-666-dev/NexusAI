@@ -36,7 +36,7 @@ class SemanticPolicy(BaseModel):
 
 
 class IntentPlan(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     summary: str = Field(min_length=1, max_length=500)
     include: list[Annotated[str, Field(min_length=1, max_length=150)]] = Field(
         min_length=1, max_length=8
@@ -63,7 +63,7 @@ class IntentPlan(BaseModel):
 
 
 class Verdict(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     id: str
     score: Annotated[StrictInt, Field(ge=0, le=100)]
     matches: StrictBool
@@ -116,7 +116,7 @@ def model_identity():
     return {
         "model": settings.llm.chat_model,
         "endpoint": settings.llm.base_url,
-        "version": "semantic-v1",
+        "version": "semantic-v2",
     }
 
 
@@ -199,9 +199,8 @@ def validate_verdicts(raw, articles):
         normalized = re.sub(r"\s+", " ", text)
         if row["matches"] and not row["evidence"]:
             raise SemanticError("模型未提供文章依据，未发布内容")
-        if any(
-            re.sub(r"\s+", " ", quote) not in normalized for quote in row["evidence"]
-        ):
+        quotes = [re.sub(r"\s+", " ", quote).strip() for quote in row["evidence"]]
+        if any(len(quote) < 6 or quote not in normalized for quote in quotes):
             raise SemanticError("模型给出的依据不在文章中，未发布内容")
     return {row["id"]: row for row in rows}
 
