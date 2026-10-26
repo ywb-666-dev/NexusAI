@@ -46,8 +46,7 @@ public class SubscriptionController {
     }
 
     @PostMapping("/{id}/trigger")
-    public Result<Void> trigger(@PathVariable Long id) {
-        subscriptionService.trigger(id);
-        return Result.success();
+    public Result<java.util.Map<String,String>> trigger(@PathVariable Long id) {
+        return Result.success(java.util.Map.of("task_id", subscriptionService.trigger(id)));
     }
 }

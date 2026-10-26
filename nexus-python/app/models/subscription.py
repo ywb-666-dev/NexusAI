@@ -22,6 +22,4 @@ class Subscription(Base):
     created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[DateTime | None] = mapped_column(DateTime)
 
-    __table_args__ = (
-        Index("idx_subscription_user_status", "user_id", "status"),
-    )
+    __table_args__ = (Index("idx_subscription_user_status", "user_id", "status"),)

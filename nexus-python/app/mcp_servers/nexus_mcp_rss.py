@@ -5,9 +5,9 @@ from app.mcp_servers.article import Article
 
 server = FastMCP("rss")
 
+
 @server.tool(
-    "fetch_rss",
-    description="输入 RSS URL，输出文章列表（标题、链接、摘要、发布时间）"
+    "fetch_rss", description="输入 RSS URL，输出文章列表（标题、链接、摘要、发布时间）"
 )
 def fetch_rss(url: str) -> List[Article]:
     """
@@ -49,3 +49,5 @@ def fetch_rss(url: str) -> List[Article]:
     return articles
 
 
+if __name__ == "__main__":
+    server.run(transport="stdio")

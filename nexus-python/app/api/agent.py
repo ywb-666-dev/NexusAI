@@ -1,203 +1,153 @@
-"""Agent API — 触发采集任务、查询状态、审批恢复"""
+"""Authenticated, durable task API."""
 
-import asyncio
 import json
-import uuid
-
-from fastapi import APIRouter, Request
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-
-from app.core.dependencies import get_db_session, get_redis_client
-from app.agents.scout_agent import _update_task_status, get_task_status, AGENT_NODES
-from app.agents.state import NexusState
-from app.models import Subscription
+from fastapi import APIRouter, Request, HTTPException, Query
+from sqlalchemy import select, func
+from app.core.auth import current_user
+from app.core.dependencies import get_session_factory
+from app.models.task import AgentTask
+from app.models import ApprovalTicket, Content, Notification
+from app.services.task_service import create_task as enqueue, save_state, spawn
 
 router = APIRouter()
 
 
-def _get_supervisor(request: Request):
-    """从 app state 获取 NexusSupervisor"""
-    return request.app.state.supervisor
-
-
-def _get_session_factory(request: Request):
-    """从 app state 获取 DB session factory"""
-    return request.app.state.db_session_factory
+async def owned_task(task_id, user):
+    async with get_session_factory()() as db:
+        task = await db.get(AgentTask, task_id)
+        if not task or (task.user_id != user["id"] and user["role"] != "admin"):
+            raise HTTPException(404, "任务不存在")
+        return task
 
 
 @router.post("/tasks")
-async def create_task(
-    subscription_id: int,
-    request: Request,
-):
-    """通过 Supervisor 触发完整的 5-Agent 采集流水线"""
-    # 查询订阅
-    factory = _get_session_factory(request)
-    async with factory() as db:
-        result = await db.execute(
-            select(Subscription).where(Subscription.id == subscription_id)
-        )
-        sub = result.scalar_one_or_none()
-        if sub is None:
-            return {"code": 404, "message": "Subscription not found"}
-
-        keywords = sub.keywords if isinstance(sub.keywords, list) else []
-        try:
-            if isinstance(sub.keywords, str):
-                keywords = json.loads(sub.keywords)
-        except Exception:
-            pass
-        platforms = sub.source_platforms if isinstance(sub.source_platforms, list) else []
-        try:
-            if isinstance(sub.source_platforms, str):
-                platforms = json.loads(sub.source_platforms)
-        except Exception:
-            pass
-
-    task_id = uuid.uuid4().hex
-    supervisor = _get_supervisor(request)
-
-    # 构建初始状态
-    initial_state: NexusState = NexusState(
-        task_id=task_id,
-        subscription_id=subscription_id,
-        keywords=keywords,
-        source_platforms=platforms,
-        user_id=sub.user_id if sub else None,
-        next_node="scout",
-        status="queued",
-    )
-
-    # 持久化初始状态到 Redis（用于审批恢复）
-    await _save_task_state(task_id, initial_state, subscription_id, keywords, platforms)
-
-    # 异步执行流水线（后台运行，不阻塞 HTTP 响应）
-    asyncio.create_task(_run_pipeline(supervisor, initial_state))
-
+async def create_task(subscription_id: int, request: Request):
+    user = current_user(request)
+    task_id = await enqueue(subscription_id, user["id"], request.app.state.supervisor)
     return {"code": 200, "data": {"task_id": task_id, "status": "queued"}}
 
 
-async def _save_task_state(
-    task_id: str,
-    state: NexusState,
-    subscription_id: int,
-    keywords: list[str],
-    platforms: list[str],
-) -> None:
-    """将完整任务状态持久化到 Redis"""
-    try:
-        redis = get_redis_client()
-        payload = {
-            "task_id": task_id,
-            "subscription_id": subscription_id,
-            "keywords": keywords,
-            "source_platforms": platforms,
-            "user_id": state.get("user_id"),
-            "scout": state.get("scout", {}),
-            "parser": state.get("parser", {}),
-            "connector": state.get("connector", {}),
-            "actor": state.get("actor", {}),
-            "curator": state.get("curator", {}),
-            "status": state.get("status"),
-            "updated_at": None,
-        }
-        await redis.setex(
-            f"agent:state:{task_id}",
-            3600,
-            json.dumps(payload, ensure_ascii=False, default=str),
-        )
-    except Exception:
-        pass
-
-
-async def _run_pipeline(supervisor, state: NexusState) -> None:
-    """后台执行 Supervisor 流水线"""
-    try:
-        final_state = await supervisor.run(state)
-        task_id = final_state.get("task_id", "")
-        status = final_state.get("status", "unknown")
-        print(f"[Agent API] Pipeline finished: {task_id} → {status}")
-
-        # 持久化最终状态
-        await _save_task_state(
-            task_id, final_state,
-            final_state.get("subscription_id", 0),
-            final_state.get("keywords", []),
-            final_state.get("source_platforms", []),
-        )
-    except Exception as e:
-        print(f"[Agent API] Pipeline error: {e}")
-        import traceback
-        traceback.print_exc()
-
-
 @router.get("/tasks")
-async def list_tasks(page: int = 1, size: int = 20):
-    """列出最近的 Agent 任务及其状态"""
-    redis = get_redis_client()
-    keys = await redis.keys("agent:status:*")
-    tasks = []
-    for key in keys:
-        task_id = key.split(":")[-1] if isinstance(key, str) else key.decode().split(":")[-1]
-        data = await redis.get(key)
-        if data:
-            try:
-                status = json.loads(data)
-                status["task_id"] = task_id
-                tasks.append(status)
-            except Exception:
-                tasks.append({"task_id": task_id, "status": "unknown"})
-    tasks.sort(key=lambda t: t.get("updated_at", ""), reverse=True)
-    total = len(tasks)
-    start = (page - 1) * size
-    items = tasks[start:start + size]
-    return {"code": 200, "data": {"items": items, "total": total, "page": page, "size": size}}
+async def list_tasks(
+    request: Request, page: int = Query(1, ge=1), size: int = Query(20, ge=1, le=100)
+):
+    user = current_user(request)
+    async with get_session_factory()() as db:
+        query = select(AgentTask)
+        if user["role"] != "admin":
+            query = query.where(AgentTask.user_id == user["id"])
+        total = (
+            await db.execute(select(func.count()).select_from(query.subquery()))
+        ).scalar()
+        rows = (
+            (
+                await db.execute(
+                    query.order_by(AgentTask.created_at.desc())
+                    .offset((page - 1) * size)
+                    .limit(size)
+                )
+            )
+            .scalars()
+            .all()
+        )
+        return {
+            "code": 200,
+            "data": {"items": [serialize(t) for t in rows], "total": total},
+        }
+
+
+def serialize(task):
+    state = task.state or {}
+    return {
+        "task_id": task.id,
+        "subscription_id": task.subscription_id,
+        "status": task.status,
+        "nodes": task.nodes or {},
+        "error": task.error,
+        "created_at": task.created_at.isoformat(),
+        "updated_at": task.updated_at.isoformat(),
+        "counts": {
+            k: state.get("connector", {}).get(k, 0)
+            for k in ["stored_count", "duplicate_count"]
+        },
+        "source_errors": state.get("scout", {}).get("source_errors", []),
+        "report": state.get("curator", {}).get("report", ""),
+    }
 
 
 @router.get("/tasks/{task_id}/status")
-async def get_task_status_endpoint(task_id: str):
-    """查询任务执行状态（5 节点）"""
-    status = await get_task_status(task_id)
-    return {"code": 200, "data": {"task_id": task_id, **status}}
+async def status(task_id: str, request: Request):
+    return {
+        "code": 200,
+        "data": serialize(await owned_task(task_id, current_user(request))),
+    }
+
+
+@router.post("/tasks/{task_id}/retry")
+async def retry(task_id: str, request: Request):
+    user = current_user(request)
+    task = await owned_task(task_id, user)
+    if task.status not in ["failed"] and not task.status.startswith("error"):
+        raise HTTPException(409, "仅失败的任务可重试，拒绝的内容不会自动重新发布")
+    new_id = await enqueue(
+        task.subscription_id, user["id"], request.app.state.supervisor
+    )
+    return {"code": 200, "data": {"task_id": new_id}}
 
 
 @router.post("/tasks/{task_id}/resume")
-async def resume_task(
-    task_id: str,
-    request: Request,
-    approved: bool = True,
-    comment: str = "",
+async def resume(
+    task_id: str, request: Request, approved: bool | None = None, comment: str = ""
 ):
-    """审批回调：Java 审批完成后恢复 Agent 状态机执行"""
-    status = await get_task_status(task_id)
-    if status.get("status") != "interrupted: awaiting approval":
-        return {"code": 400, "message": "Task is not in interrupted state"}
+    user = current_user(request)
+    if user["role"] != "admin":
+        raise HTTPException(403, "需要管理员权限")
+    async with get_session_factory()() as db:
+        task = (
+            await db.execute(
+                select(AgentTask).where(AgentTask.id == task_id).with_for_update()
+            )
+        ).scalar_one_or_none()
+        if not task:
+            raise HTTPException(404, "任务不存在")
+        if task.status != "interrupted: awaiting approval":
+            raise HTTPException(409, "任务不在待审状态")
+        ticket = (
+            await db.execute(
+                select(ApprovalTicket).where(ApprovalTicket.task_id == task_id)
+            )
+        ).scalar_one_or_none()
+        if not ticket or ticket.status not in (1, 2):
+            raise HTTPException(409, "请先在审批中心处理工单")
+        if approved is None:
+            approved = ticket.status == 1
+        if ticket.status != (1 if approved else 2):
+            raise HTTPException(409, "审批结果不一致")
+        state = dict(task.state)
+        ids = state.get("connector", {}).get("stored_ids", [])
+        if ids:
+            from sqlalchemy import update
 
-    supervisor = _get_supervisor(request)
-
+            await db.execute(
+                update(Content)
+                .where(Content.id.in_(ids), Content.status == 2)
+                .values(status=1 if approved else 0)
+            )
+        state["status"] = "curating" if approved else "rejected"
+        task.status = state["status"]
+        if not approved:
+            db.add(Notification(user_id=task.user_id, type='approval', title='内容审核未通过',
+                                content=ticket.comment or '管理员已拒绝发布该批内容', related_id=task_id, is_read=0))
+        await db.commit()
+    await save_state(state)
     if approved:
-        asyncio.create_task(_resume_after_approval(supervisor, task_id, approved, comment))
-        return {"code": 200, "data": {"task_id": task_id, "status": "resumed"}}
-    else:
-        await _update_task_status(task_id, "rejected", {
-            "scout": "success", "parser": "success", "connector": "success", "actor": "failed",
-        })
-        return {"code": 200, "data": {"task_id": task_id, "status": "rejected"}}
+        spawn(resume_curator(request.app.state.supervisor, state))
+    return {"code": 200, "data": {"task_id": task_id, "status": state["status"]}}
 
 
-async def _resume_after_approval(
-    supervisor,
-    task_id: str,
-    approved: bool,
-    comment: str,
-) -> None:
-    """后台恢复执行（审批通过后）"""
+async def resume_curator(supervisor, state):
     try:
-        final_state = await supervisor.resume_after_approval(task_id, approved, comment)
-        status = final_state.get("status", "unknown")
-        print(f"[Agent API] Resume finished: {task_id} → {status}")
-    except Exception as e:
-        print(f"[Agent API] Resume error: {e}")
-        import traceback
-        traceback.print_exc()
+        state = await supervisor._curator_node(state)
+    except Exception as exc:
+        state.update(status="failed", error=str(exc))
+    await save_state(state)

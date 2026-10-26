@@ -1,6 +1,7 @@
 package org.ibo.nexusjava.modules.subscription.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import lombok.Data;
 
 import java.util.List;
@@ -12,17 +13,27 @@ import java.util.List;
 @Data
 public class SubscriptionDTO {
     @NotBlank(message = "规则名称不能为空")
+    @Size(max=100)
     private String name;
-    private List<String> keywords;
+    @Size(max=20)
+    private List<@Size(max=200) String> keywords;
     private List<String> sourcePlatforms;
+    @Valid @NotEmpty(message="至少添加一个采集源") @Size(max=20)
     private List<RssFeedItem> rssFeeds;
-    private Integer matchMode;
+    private Integer matchMode = 1;
     private String cronExpression;
-    private Integer priority;
+    @Min(1) @Max(3)
+    private Integer priority = 2;
+    @Min(0) @Max(1)
+    private Integer status;
+    @Size(max=2000)
+    private String triggerConditions;
 
-    static class RssFeedItem {
+    public static class RssFeedItem {
+        @NotBlank @Pattern(regexp="https?://[^\\s]+",message="请输入 HTTP/HTTPS 地址") @Size(max=1000)
         private String url;
         private String name;
+        @NotBlank @Pattern(regexp="rss|web|api",message="来源类型必须为 rss、web 或 api")
         private String platform;
 
         public String getUrl() { return url; }

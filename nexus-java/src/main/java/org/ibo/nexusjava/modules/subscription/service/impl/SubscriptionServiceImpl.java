@@ -1,4 +1,4 @@
-﻿package org.ibo.nexusjava.modules.subscription.service.impl;
+package org.ibo.nexusjava.modules.subscription.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -34,6 +34,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Subscription> implements SubscriptionService {
 
     private final ObjectMapper objectMapper=new ObjectMapper();
+    @Autowired private org.ibo.nexusjava.common.JwtUtil jwtUtil;
 
     @Autowired(required = false)
     private RocketMQTemplate rocketMQTemplate;
@@ -83,6 +85,8 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
         vo.setName(sub.getName());
         vo.setKeywords(fromJson(sub.getKeywords()));
         vo.setSourcePlatforms(fromJson(sub.getSourcePlatforms()));
+        try { vo.setRssFeeds(objectMapper.readValue(sub.getRssFeeds() == null ? "[]" : sub.getRssFeeds(), new TypeReference<>() {})); }
+        catch (Exception e) { vo.setRssFeeds(Collections.emptyList()); }
         vo.setMatchMode(sub.getMatchMode());
         vo.setTriggerConditions(sub.getTriggerConditions());
         vo.setPriority(sub.getPriority());
@@ -93,6 +97,19 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
         return vo;
     }
 
+    private String validateConditions(String value) {
+        if (value == null || value.isBlank()) return "{\"interval_minutes\":60,\"enable_ai\":false}";
+        try {
+            var node = objectMapper.readTree(value);
+            if (!node.isObject()) throw new IllegalArgumentException();
+            if (node.has("interval_minutes") && (!node.get("interval_minutes").isIntegralNumber()
+                    || node.get("interval_minutes").asInt() < 15 || node.get("interval_minutes").asInt() > 10080))
+                throw new IllegalArgumentException();
+            if (node.has("enable_ai") && !node.get("enable_ai").isBoolean()) throw new IllegalArgumentException();
+            return objectMapper.writeValueAsString(node);
+        } catch (Exception e) { throw new BusinessException(ErrorCode.PARAM_ERROR, "采集间隔必须为15至10080分钟，AI开关必须为布尔值"); }
+    }
+
     // ==================== CRUD ====================
 
     @Override
@@ -100,7 +117,7 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
         // 检查同用户下名称是否重复
         LambdaQueryWrapper<Subscription> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Subscription::getUserId, UserContext.getUserId())
-                .eq(Subscription::getName, dto.getName());
+                .eq(Subscription::getName, dto.getName()).ne(Subscription::getStatus, -1);
         if (count(wrapper) > 0) {
             throw new BusinessException(ErrorCode.SUBSCRIPTION_NAME_EXISTS);
         }
@@ -110,25 +127,27 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
         sub.setName(dto.getName());
         sub.setKeywords(toJson(dto.getKeywords()));
         sub.setSourcePlatforms(toJson(dto.getSourcePlatforms()));
+        try { sub.setRssFeeds(objectMapper.writeValueAsString(dto.getRssFeeds() == null ? List.of() : dto.getRssFeeds())); }
+        catch (Exception e) { throw new BusinessException(ErrorCode.PARAM_ERROR, "RSS source serialization failed"); }
         sub.setMatchMode(dto.getMatchMode());
         sub.setCronExpression(dto.getCronExpression());
         sub.setPriority(dto.getPriority());
         sub.setStatus(1);
+        sub.setTriggerConditions(validateConditions(dto.getTriggerConditions()));
         save(sub);
-        Set<String> keys = stringRedisTemplate.keys("cache:subs:" + UserContext.getUserId() + ":*"); if (keys != null && !keys.isEmpty()) stringRedisTemplate.delete(keys);
     }
 
     @Override
     public void update(Long id, SubscriptionDTO dto) {
         Subscription existing = super.getById(id);
-        if (existing == null || !existing.getUserId().equals(UserContext.getUserId())) {
+        if (existing == null || !existing.getUserId().equals(UserContext.getUserId()) || existing.getStatus() == -1) {
             throw new BusinessException(ErrorCode.SUBSCRIPTION_NOT_FOUND);
         }
 
         // 检查名称重复（排除自己）
         LambdaQueryWrapper<Subscription> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Subscription::getUserId, UserContext.getUserId())
-                .eq(Subscription::getName, dto.getName())
+                .eq(Subscription::getName, dto.getName()).ne(Subscription::getStatus, -1)
                 .ne(Subscription::getId, id);
         if (count(wrapper) > 0) {
             throw new BusinessException(ErrorCode.SUBSCRIPTION_NAME_EXISTS);
@@ -139,27 +158,30 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
         update.setName(dto.getName());
         update.setKeywords(toJson(dto.getKeywords()));
         update.setSourcePlatforms(toJson(dto.getSourcePlatforms()));
+        try { update.setRssFeeds(objectMapper.writeValueAsString(dto.getRssFeeds() == null ? List.of() : dto.getRssFeeds())); }
+        catch (Exception e) { throw new BusinessException(ErrorCode.PARAM_ERROR, "RSS source serialization failed"); }
         update.setMatchMode(dto.getMatchMode());
         update.setCronExpression(dto.getCronExpression());
         update.setPriority(dto.getPriority());
+        update.setStatus(dto.getStatus());
+        update.setTriggerConditions(validateConditions(dto.getTriggerConditions()));
         updateById(update);
-        Set<String> keys = stringRedisTemplate.keys("cache:subs:" + UserContext.getUserId() + ":*"); if (keys != null && !keys.isEmpty()) stringRedisTemplate.delete(keys);
     }
 
     @Override
     public void delete(Long id) {
         Subscription existing =super.getById(id);
-        if (existing == null || !existing.getUserId().equals(UserContext.getUserId())) {
+        if (existing == null || !existing.getUserId().equals(UserContext.getUserId()) || existing.getStatus() == -1) {
             throw new BusinessException(ErrorCode.SUBSCRIPTION_NOT_FOUND);
         }
-        removeById(id);
-        Set<String> keys = stringRedisTemplate.keys("cache:subs:" + UserContext.getUserId() + ":*"); if (keys != null && !keys.isEmpty()) stringRedisTemplate.delete(keys);
+        existing.setStatus(-1);
+        updateById(existing);
     }
 
     @Override
     public SubscriptionVO getById(Long id) {
         Subscription sub = super.getById(id);
-        if (sub == null || !sub.getUserId().equals(UserContext.getUserId())) {
+        if (sub == null || !sub.getUserId().equals(UserContext.getUserId()) || sub.getStatus() == -1) {
             throw new BusinessException(ErrorCode.SUBSCRIPTION_NOT_FOUND);
         }
         return convertToVO(sub);
@@ -167,17 +189,8 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
 
     @Override
     public IPage<SubscriptionVO> list(SubscriptionQueryDTO query) {
-        // Redis cache
-        String cacheKey = "cache:subs:" + UserContext.getUserId() + ":" + query.getCurrent() + ":" + query.getSize();
-        if (StringUtils.hasText(query.getName())) cacheKey += ":" + query.getName();
-        String cached = stringRedisTemplate.opsForValue().get(cacheKey);
-        if (cached != null) {
-            try { return objectMapper.readValue(cached, new TypeReference<Page<SubscriptionVO>>() {}); }
-            catch (Exception ignored) {}
-        }
-
         LambdaQueryWrapper<Subscription> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Subscription::getUserId, UserContext.getUserId());
+        wrapper.eq(Subscription::getUserId, UserContext.getUserId()).ne(Subscription::getStatus, -1);
 
         if (StringUtils.hasText(query.getName())) {
             wrapper.like(Subscription::getName, query.getName());
@@ -196,75 +209,27 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
 
         Page<SubscriptionVO> resultPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
         resultPage.setRecords(records);
-        try { stringRedisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(resultPage), 30, TimeUnit.SECONDS); } catch (Exception ignored) {}
         return resultPage;
     }
 
     // ==================== 核心：手动触发采集 ====================
 
     @Override
-    public void trigger(Long id) {
-        // 1. 查询并校验权限
+    public String trigger(Long id) {
         Subscription sub = super.getById(id);
-        if (sub == null || !sub.getUserId().equals(UserContext.getUserId())) {
+        if (sub == null || !sub.getUserId().equals(UserContext.getUserId()) || sub.getStatus() == -1)
             throw new BusinessException(ErrorCode.SUBSCRIPTION_NOT_FOUND);
-        }
-        if (sub.getStatus() == null || sub.getStatus() != 1) {
-            throw new BusinessException(ErrorCode.PARAM_ERROR, "订阅规则已暂停");
-        }
-
-        // 2. 生成任务ID
-        String taskId = UUID.randomUUID().toString().replace("-", "");
-
-        // 3. 尝试获取 Redis 分布式锁（SET NX EX）
-        String lockKey = LOCK_PREFIX + id;
-        Boolean locked = stringRedisTemplate.opsForValue()
-                .setIfAbsent(lockKey, taskId, LOCK_TIMEOUT, TimeUnit.SECONDS);
-
-        if (Boolean.FALSE.equals(locked)) {
-            throw new BusinessException(ErrorCode.PARAM_ERROR, "该规则正在执行中，请勿重复触发");
-        }
-
+        if (sub.getStatus() != 1) throw new BusinessException(ErrorCode.PARAM_ERROR, "订阅已暂停");
         try {
-            // 4. 构造消息体
-            TaskTriggerMessage msg = new TaskTriggerMessage();
-            msg.setTaskId(taskId);
-            msg.setSubscriptionId(id);
-            msg.setTriggerTime(LocalDateTime.now().toString());
-
-            // 5. 触发采集：优先 RocketMQ，降级直接调 Python
-            if (rocketMQTemplate != null) {
-                SendResult sendResult = rocketMQTemplate.syncSend("nexus-task-trigger", msg);
-                if (sendResult == null || !sendResult.getSendStatus().equals(SendStatus.SEND_OK)) {
-                    throw new BusinessException(ErrorCode.SYSTEM_ERROR, "消息发送失败");
-                }
-            } else {
-                // RocketMQ 不可用时，直接 HTTP 调 Python Agent
-                try {
-                    String pyUrl = "http://localhost:8000/api/python/agent/tasks?subscription_id=" + id;
-                    HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(pyUrl))
-                            .timeout(Duration.ofSeconds(10))
-                            .POST(HttpRequest.BodyPublishers.noBody())
-                            .build();
-                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                } catch (Exception e) {
-                    // Python 服务不可用时仅记录日志，不阻塞前端
-                    log.warn("[Trigger] Python agent call failed: {}", e.getMessage());
-                }
-            }
-
-            // 6. 更新最后执行时间
-            Subscription update = new Subscription();
-            update.setId(id);
-            update.setLastRunAt(LocalDateTime.now());
-            updateById(update);
-
-        } catch (Exception e) {
-            // 发送失败时立即释放锁，允许用户重试
-            stringRedisTemplate.delete(lockKey);
-            throw e;
-        }
-        // 发送成功时锁不释放，等 TTL 自动过期（防止 5 分钟内重复触发）
+            var request = HttpRequest.newBuilder(URI.create("http://localhost:8000/api/python/agent/tasks?subscription_id=" + id))
+                .header("Authorization", "Bearer " + jwtUtil.generateToken(UserContext.getUserId(), UserContext.getUsername(), UserContext.getRole()))
+                .timeout(Duration.ofSeconds(15)).POST(HttpRequest.BodyPublishers.noBody()).build();
+            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            var result = objectMapper.readTree(response.body());
+            if (response.statusCode() != 200 || result.path("code").asInt() != 200)
+                throw new BusinessException(ErrorCode.SYSTEM_ERROR, result.path("message").asText("采集任务创建失败"));
+            return result.path("data").path("task_id").asText();
+        } catch (BusinessException e) { throw e; }
+        catch (Exception e) { throw new BusinessException(ErrorCode.SYSTEM_ERROR, "采集服务不可用，请稍后重试"); }
     }
 }

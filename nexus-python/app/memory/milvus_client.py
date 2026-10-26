@@ -22,7 +22,9 @@ class MilvusClient:
     def connect(self, data_dir: str | None = None):
         """打开 Milvus Lite 数据库，默认存储在 nexus-python/milvus_data"""
         if data_dir is None:
-            data_dir = str(Path(__file__).resolve().parent.parent.parent / "milvus_data")
+            data_dir = str(
+                Path(__file__).resolve().parent.parent.parent / "milvus_data"
+            )
         try:
             self._db = MilvusLite(data_dir)
             self._ensure_collection()
@@ -55,20 +57,26 @@ class MilvusClient:
             self._collection.load()
             return
 
-        schema = CollectionSchema([
-            FieldSchema(
-                name="id", dtype=DataType.VARCHAR,
-                max_length=36, is_primary=True,
-            ),
-            FieldSchema(
-                name="content_id", dtype=DataType.VARCHAR,
-                max_length=36,
-            ),
-            FieldSchema(
-                name="embedding", dtype=DataType.FLOAT_VECTOR,
-                dim=dim,
-            ),
-        ])
+        schema = CollectionSchema(
+            [
+                FieldSchema(
+                    name="id",
+                    dtype=DataType.VARCHAR,
+                    max_length=36,
+                    is_primary=True,
+                ),
+                FieldSchema(
+                    name="content_id",
+                    dtype=DataType.VARCHAR,
+                    max_length=36,
+                ),
+                FieldSchema(
+                    name="embedding",
+                    dtype=DataType.FLOAT_VECTOR,
+                    dim=dim,
+                ),
+            ]
+        )
         self._collection = self._db.create_collection(collection_name, schema)
         self._collection.create_index(
             field_name="embedding",
@@ -94,11 +102,13 @@ class MilvusClient:
         for r in records:
             vid = str(uuid.uuid4())
             ids.append(vid)
-            rows.append({
-                "id": vid,
-                "content_id": r["content_id"],
-                "embedding": r["embedding"],
-            })
+            rows.append(
+                {
+                    "id": vid,
+                    "content_id": r["content_id"],
+                    "embedding": r["embedding"],
+                }
+            )
         self._collection.insert(rows)
         return ids
 
@@ -129,11 +139,13 @@ class MilvusClient:
             # Milvus Lite returns cosine distance (0=identical); convert to similarity
             similarity = 1.0 - float(hit["distance"])
             if similarity >= threshold:
-                hits.append({
-                    "id": hit["id"],
-                    "content_id": hit["entity"]["content_id"],
-                    "distance": similarity,
-                })
+                hits.append(
+                    {
+                        "id": hit["id"],
+                        "content_id": hit["entity"]["content_id"],
+                        "distance": similarity,
+                    }
+                )
         return hits
 
     def delete_by_content_id(self, content_id: str) -> None:

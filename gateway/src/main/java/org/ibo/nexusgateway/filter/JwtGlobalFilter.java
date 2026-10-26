@@ -1,4 +1,4 @@
-﻿package org.ibo.nexusgateway.filter;
+package org.ibo.nexusgateway.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -32,7 +32,7 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
             "/api/java/auth/login",
             "/api/java/auth",
             "/api/python/health",
-            "/api/python/subscriptions/discover-sources",
+            "/api/python/ws/agent/",
             "/health"
     );
 

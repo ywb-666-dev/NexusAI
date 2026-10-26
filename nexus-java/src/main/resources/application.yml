@@ -1,4 +1,5 @@
 server:
+  address: ${APP_BIND_ADDRESS:127.0.0.1}
   port: 8081
 
 spring:
@@ -7,9 +8,9 @@ spring:
 
   # ==================== MySQL ====================
   datasource:
-    url: jdbc:mysql://localhost:3306/nexusai?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root
-    password: 712693
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_DATABASE:nexusai}?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:712693}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
@@ -46,8 +47,7 @@ spring:
 # ==================== MyBatis-Plus ====================
 mybatis-plus:
   configuration:
-    # 开发阶段打印 SQL 到控制台
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
     # 驼峰映射：数据库 create_at → 实体 createAt
     map-underscore-to-camel-case: true
   global-config:
@@ -58,7 +58,7 @@ mybatis-plus:
 # ==================== JWT 自定义配置 ====================
 jwt:
   # 密钥长度必须 >= 32 个字符，否则 jjwt 启动报错
-  secret: nexus-ai-local-secret-key-2026-32chars!!
+  secret: ${JWT_SECRET:nexus-ai-local-secret-key-2026-32chars!!}
   # Token 有效期，单位毫秒。86400000 = 24 小时
   expiration: 86400000
 

@@ -1,144 +1,514 @@
-import { useEffect, useState, useRef } from 'react'
-import { Table, Button, Tag, Modal, Form, Input, Select, Space, Popconfirm, Typography, Steps, Checkbox, Collapse, Empty } from 'antd'
+import { useEffect, useState } from "react";
 import {
-  PlusOutlined, EditOutlined, DeleteOutlined, ThunderboltOutlined,
-  ClockCircleOutlined, CheckCircleOutlined, PauseCircleOutlined, SearchOutlined,
-  LoadingOutlined, BulbOutlined, LinkOutlined, ArrowLeftOutlined, ArrowRightOutlined, CheckOutlined,
-} from '@ant-design/icons'
-import request from '../api/request'
-import { App } from 'antd'
-import { useThemeStore } from '../store/theme'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
-
-gsap.registerPlugin(useGSAP)
-
-const { Title, Text } = Typography
-const platformColor: Record<string, string> = { rss: '#f59e0b', web: '#6366f1', api: '#10b981' }
-const stLabel: Record<string, { label: string; color: string }> = {
-  builtin: { label: 'Built-in', color: '#10b981' },
-  web_search: { label: 'Web', color: '#6366f1' },
-  llm: { label: 'AI', color: '#f59e0b' },
-}
-
+  Alert,
+  App,
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Popconfirm,
+  Select,
+  Space,
+  Table,
+  Tag,
+  Typography,
+} from "antd";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+  PlayCircleOutlined,
+} from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import request from "../api/request";
+import PageHeading from "../components/PageHeading";
 export default function SubscriptionPage() {
-  const { message } = App.useApp()
-  const [data, setData] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [editing, setEditing] = useState<any>(null)
-  const [form] = Form.useForm()
-  const [wizardStep, setWizardStep] = useState(0)
-  const [interestInput, setInterestInput] = useState('')
-  const [discovering, setDiscovering] = useState(false)
-  const [discoveryResult, setDiscoveryResult] = useState<any>(null)
-  const [selectedSourceIds, setSelectedSourceIds] = useState<string[]>([])
-  const [creating, setCreating] = useState(false)
-  const [manualUrl, setManualUrl] = useState('')
-  const dark = useThemeStore((s) => s.dark)
-  const [previewData, setPreviewData] = useState<any>(null)
-  const [previewing, setPreviewing] = useState<string | null>(null)
-  const [searchPhase, setSearchPhase] = useState('')
-  const stepRef = useRef<HTMLDivElement>(null)
-
-  useGSAP(() => { if (stepRef.current) gsap.from(stepRef.current, { y: 16, opacity: 0, duration: 0.35, ease: 'power2.out' }) }, [wizardStep])
-
-  const fetchData = async () => { setLoading(true); try { const r: any = await request.get('/java/subscriptions'); setData(r.data?.items ?? r.data?.records ?? []) } finally { setLoading(false) } }
-  const openCreate = () => { setEditing(null); form.resetFields(); form.setFieldsValue({ matchMode: 1, priority: 2 }); setWizardStep(0); setInterestInput(''); setDiscoveryResult(null); setSelectedSourceIds([]); setCreating(false); setModalOpen(true) }
-  const openEdit = (rec: any) => { setEditing(rec); form.setFieldsValue({ name: rec.name, matchMode: rec.matchMode, priority: rec.priority, cronExpression: rec.cronExpression, keywords: Array.isArray(rec.keywords) ? rec.keywords.join(', ') : rec.keywords, sourcePlatforms: Array.isArray(rec.sourcePlatforms) ? rec.sourcePlatforms.join(', ') : rec.sourcePlatforms }); setModalOpen(true) }
-
-  const handleDiscover = async () => {
-    if (!interestInput.trim()) { message.warning('Please describe what you want to follow'); return }
-    setDiscovering(true); setDiscoveryResult(null); setSelectedSourceIds([]); setSearchPhase('Scanning built-in sources...')
+  const { message } = App.useApp(),
+    navigate = useNavigate(),
+    [form] = Form.useForm();
+  const [data, setData] = useState<any[]>([]),
+    [total, setTotal] = useState(0),
+    [page, setPage] = useState(1),
+    [loading, setLoading] = useState(false),
+    [error, setError] = useState(""),
+    [open, setOpen] = useState(false),
+    [editing, setEditing] = useState<any>(null),
+    [saving, setSaving] = useState(false),
+    [topic, setTopic] = useState(""),
+    [discovering, setDiscovering] = useState(false),
+    [sources, setSources] = useState<any[]>([]),
+    [selected, setSelected] = useState<string[]>([]),
+    [preview, setPreview] = useState<any>(null),
+    [triggering, setTriggering] = useState<number | null>(null);
+  const load = async () => {
+    setLoading(true);
+    setError("");
     try {
-      const res: any = await request.post('/python/subscriptions/discover-sources', { topic: interestInput.trim(), keywords: [] })
-      const d = res.data
-      if (!d.sources || d.sources.length === 0) { message.info('No matching sources found') }
-      setDiscoveryResult(d); setSelectedSourceIds((d.sources || []).map((s: any) => s.id)); setSearchPhase(''); setWizardStep(1)
-    } catch (err: any) { message.error(err.response?.data?.message || err.message || 'Search failed') }
-    finally { setDiscovering(false) }
-  }
-
-  const previewSource = async (url: string, id: string) => {
-    setPreviewing(id); setPreviewData(null)
-    try { const res: any = await request.get('/python/subscriptions/preview-feed', { params: { url } }); setPreviewData(res.data) }
-    catch { setPreviewData(null) }
-    finally { setPreviewing(null) }
-  }
-
-  const toggleSource = (id: string) => { setSelectedSourceIds(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]) }
-  const selectAll = () => { if (discoveryResult) setSelectedSourceIds(discoveryResult.sources.map((s: any) => s.id)) }
-  const deselectAll = () => { setSelectedSourceIds([]) }
-
-  const handleCreate = async () => {
-    if (!discoveryResult) return
-    const sel = (discoveryResult.sources || []).filter((s: any) => selectedSourceIds.includes(s.id))
-    const feeds = sel.map((s: any) => ({ url: s.url, name: s.name, platform: s.platform }))
-    const av = form.getFieldsValue()
-    const payload = { name: av.name || discoveryResult.suggested_name || interestInput.trim(), keywords: discoveryResult.keywords || [], sourcePlatforms: discoveryResult.recommended_platforms || ['rss'], rssFeeds: feeds, matchMode: av.matchMode ?? 1, priority: av.priority ?? 2, cronExpression: av.cronExpression || null }
-    setCreating(true)
-    try { await request.post('/java/subscriptions', payload); message.success('Created'); setModalOpen(false); fetchData() }
-    catch (err: any) { message.error(err.response?.data?.message || 'Creation failed') }
-    finally { setCreating(false) }
-  }
-
-  const handleSubmit = async () => {
-    const values = await form.validateFields()
-    const payload = { ...values, keywords: values.keywords ? values.keywords.split(/[,;,\uFF0C,\uFF1B]\s*/).map((s: string) => s.trim()).filter(Boolean) : [], sourcePlatforms: values.sourcePlatforms ? values.sourcePlatforms.split(/[,;,\uFF0C,\uFF1B]\s*/).map((s: string) => s.trim()).filter(Boolean) : [], rssFeeds: editing?.rssFeeds ?? [] }
-    try { if (editing) { await request.put('/java/subscriptions/' + editing.id, payload); message.success('Updated') } else { await request.post('/java/subscriptions', payload); message.success('Created') }; setModalOpen(false); fetchData() }
-    catch (err: any) { message.error(err.response?.data?.message || err.message) }
-  }
-
-  const handleDelete = async (id: number) => { try { await request.delete('/java/subscriptions/' + id); message.success('Deleted'); fetchData() } catch {} }
-  const trigger = async (id: number) => { try { await request.post('/java/subscriptions/' + id + '/trigger'); message.success('Triggered') } catch {} }
-  useEffect(() => { fetchData() }, [])
-
-  const columns = [
-    { title: 'ID', dataIndex: 'id', width: 60 },
-    { title: 'Name', dataIndex: 'name', render: (v: string) => <span style={{ fontWeight: 600 }}>{v}</span> },
-    { title: 'Keywords', dataIndex: 'keywords', render: (v: any) => { const l = Array.isArray(v) ? v : []; return l.length > 0 ? <Space size={4} wrap>{l.slice(0, 3).map((k: string, i: number) => <Tag key={i} style={{ borderRadius: 6, background: '#f0f0ff', color: '#6366f1', border: 'none' }}>{k}</Tag>)}{l.length > 3 && <Tag style={{ borderRadius: 6 }}>+{l.length - 3}</Tag>}</Space> : '-' } },
-    { title: 'Feeds', dataIndex: 'rssFeeds', width: 90, render: (v: any) => { const l = Array.isArray(v) ? v : []; return l.length > 0 ? <Tag color='orange' style={{ borderRadius: 6 }}>{l.length}</Tag> : '-' } },
-    { title: 'Match', dataIndex: 'matchMode', width: 80, render: (v: number) => <Tag style={{ borderRadius: 6 }}>{v === 1 ? 'Exact' : v === 2 ? 'Fuzzy' : 'Semantic'}</Tag> },
-    { title: 'Priority', dataIndex: 'priority', width: 80, render: (v: number) => v === 1 ? <Tag color='error' style={{ borderRadius: 6 }}>High</Tag> : v === 2 ? <Tag color='warning' style={{ borderRadius: 6 }}>Med</Tag> : <Tag style={{ borderRadius: 6 }}>Low</Tag> },
-    { title: 'Status', dataIndex: 'status', width: 80, render: (v: number) => v === 1 ? <Tag icon={<CheckCircleOutlined />} color='success' style={{ borderRadius: 6 }}>Active</Tag> : <Tag icon={<PauseCircleOutlined />} style={{ borderRadius: 6 }}>Paused</Tag> },
-    { title: 'Actions', width: 200, render: (_: any, rec: any) => <Space size='small'><Button type='link' size='small' icon={<ThunderboltOutlined />} onClick={() => trigger(rec.id)} style={{ color: '#6366f1' }}>Trigger</Button><Button type='link' size='small' icon={<EditOutlined />} onClick={() => openEdit(rec)}>Edit</Button><Popconfirm title='Delete?' onConfirm={() => handleDelete(rec.id)} okButtonProps={{ danger: true }}><Button type='link' size='small' danger icon={<DeleteOutlined />}>Delete</Button></Popconfirm></Space> },
-  ]
-
-  const wizardFooter = () => {
-    if (wizardStep === 0) return <Button onClick={() => setModalOpen(false)}>Cancel</Button>
-    return <Space><Button icon={<ArrowLeftOutlined />} onClick={() => setWizardStep(wizardStep - 1)}>Back</Button>
-      {wizardStep === 1 && <Button type='primary' icon={<ArrowRightOutlined />} onClick={() => { if (selectedSourceIds.length === 0) { message.warning('Select at least one'); return }; setWizardStep(2) }} disabled={!discoveryResult || !discoveryResult.sources?.length} style={{ borderRadius: 8 }}>Next</Button>}
-      {wizardStep === 2 && <Button type='primary' icon={<CheckOutlined />} onClick={handleCreate} loading={creating} style={{ borderRadius: 8, background: 'linear-gradient(135deg, #818cf8, #6366f1)', border: 'none' }}>Create Subscription</Button>}
-    </Space>
-  }
-
+      const r: any = await request.get("/java/subscriptions", {
+        params: { current: page, size: 10 },
+      });
+      setData(r.data.records);
+      setTotal(r.data.total);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    load();
+  }, [page]);
+  const show = (row: any = null) => {
+    setEditing(row);
+    setSources([]);
+    setSelected([]);
+    setTopic("");
+    let conditions: any = {};
+    try {
+      conditions = JSON.parse(row?.triggerConditions || "{}");
+    } catch {}
+    form.resetFields();
+    form.setFieldsValue(
+      row
+        ? {
+            ...row,
+            interval: conditions.interval_minutes || 60,
+            enableAi: conditions.enable_ai || false,
+          }
+        : {
+            keywords: [],
+            rssFeeds: [{ url: "", platform: "rss" }],
+            priority: 2,
+            interval: 60,
+          },
+    );
+    setOpen(true);
+  };
+  const save = async () => {
+    const v = await form.validateFields();
+    setSaving(true);
+    try {
+      const payload = {
+        name: v.name,
+        keywords: v.keywords || [],
+        rssFeeds: v.rssFeeds,
+        sourcePlatforms: [...new Set(v.rssFeeds.map((f: any) => f.platform))],
+        matchMode: 1,
+        priority: v.priority,
+        status: editing?.status ?? 1,
+        triggerConditions: JSON.stringify({
+          interval_minutes: v.interval,
+          enable_ai: !!v.enableAi,
+        }),
+      };
+      if (editing)
+        await request.put("/java/subscriptions/" + editing.id, payload);
+      else await request.post("/java/subscriptions", payload);
+      setOpen(false);
+      message.success("订阅已保存");
+      load();
+    } catch (e: any) {
+      message.error(e.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+  const discover = async () => {
+    if (!topic.trim()) return;
+    setDiscovering(true);
+    try {
+      const r: any = await request.post(
+        "/python/subscriptions/discover-sources",
+        { topic, keywords: [] },
+      );
+      setSources(r.data.sources || []);
+      setSelected([]);
+    } catch (e: any) {
+      message.error(e.message);
+    } finally {
+      setDiscovering(false);
+    }
+  };
+  const addSelected = () => {
+    const next = sources
+      .filter((s) => selected.includes(s.id))
+      .map((s) => ({ url: s.url, name: s.name, platform: s.platform }));
+    const existing = (form.getFieldValue("rssFeeds") || []).filter(
+      (f: any) => f.url,
+    );
+    const seen = new Set(existing.map((f: any) => f.url));
+    form.setFieldValue("rssFeeds", [
+      ...existing,
+      ...next.filter((f) => !seen.has(f.url)),
+    ]);
+    if (!form.getFieldValue("name")) form.setFieldValue("name", topic);
+    message.success("已添加到订阅源列表");
+  };
+  const trigger = async (id: number) => {
+    setTriggering(id);
+    try {
+      await request.post("/java/subscriptions/" + id + "/trigger");
+      message.success("任务已创建");
+      navigate("/tasks");
+    } catch (e: any) {
+      message.error(e.message);
+    } finally {
+      setTriggering(null);
+    }
+  };
+  const pause = async (row: any) => {
+    try {
+      await request.put("/java/subscriptions/" + row.id, {
+        ...row,
+        status: row.status === 1 ? 0 : 1,
+      });
+      load();
+    } catch (e: any) {
+      message.error(e.message);
+    }
+  };
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <Title level={4} style={{ margin: 0, fontWeight: 700, color: dark ? '#e2e8f0' : '#1e293b' }}>Subscriptions</Title>
-        <Button type='primary' icon={<PlusOutlined />} onClick={openCreate} style={{ borderRadius: 8, height: 38 }}>Create Subscription</Button>
+    <>
+      <PageHeading
+        label="SUBSCRIPTIONS / 订阅管理"
+        title="建立你的信息雷达"
+        subtitle="将采集源与关注关键词分别配置，按设定频率持续获取内容。"
+        extra={
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => show()}>
+            新建订阅
+          </Button>
+        }
+      />
+      {error && (
+        <Alert type="error" message={error} style={{ marginBottom: 20 }} />
+      )}
+      <div className="panel">
+        <Table
+          rowKey="id"
+          dataSource={data}
+          loading={loading}
+          scroll={{ x: 850 }}
+          pagination={{
+            current: page,
+            total,
+            pageSize: 10,
+            onChange: setPage,
+            showSizeChanger: false,
+          }}
+          columns={[
+            {
+              title: "订阅名称",
+              dataIndex: "name",
+              render: (v: string) => (
+                <Typography.Text strong>{v}</Typography.Text>
+              ),
+            },
+            {
+              title: "采集源",
+              dataIndex: "rssFeeds",
+              render: (v: any) => <Tag>{v?.length || 0} 个源</Tag>,
+            },
+            {
+              title: "关注词",
+              dataIndex: "keywords",
+              render: (v: string[]) =>
+                (v || [])
+                  .filter((k) => !k.startsWith("http"))
+                  .map((k) => <Tag key={k}>{k}</Tag>),
+            },
+            {
+              title: "状态",
+              dataIndex: "status",
+              render: (v) => (
+                <Tag color={v === 1 ? "success" : "default"}>
+                  {v === 1 ? "已启用" : "已暂停"}
+                </Tag>
+              ),
+            },
+            {
+              title: "最近运行",
+              dataIndex: "lastRunAt",
+              render: (v) =>
+                v ? new Date(v + "Z").toLocaleString("zh-CN") : "尚未执行",
+            },
+            {
+              title: "操作",
+              render: (_, row) => (
+                <Space>
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<PlayCircleOutlined />}
+                    disabled={row.status !== 1}
+                    loading={triggering === row.id}
+                    onClick={() => trigger(row.id)}
+                  >
+                    采集
+                  </Button>
+                  <Button type="link" size="small" onClick={() => show(row)}>
+                    编辑
+                  </Button>
+                  <Button type="link" size="small" onClick={() => pause(row)}>
+                    {row.status === 1 ? "暂停" : "启用"}
+                  </Button>
+                  <Popconfirm
+                    title="删除此订阅？已采集内容将保留在数据库中。"
+                    onConfirm={async () => {
+                      try {
+                        await request.delete("/java/subscriptions/" + row.id);
+                        load();
+                      } catch (e: any) {
+                        message.error(e.message);
+                      }
+                    }}
+                  >
+                    <Button
+                      type="text"
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                    />
+                  </Popconfirm>
+                </Space>
+              ),
+            },
+          ]}
+        />
       </div>
-      <Table rowKey='id' columns={columns} dataSource={data} loading={loading} pagination={{ pageSize: 15, showTotal: (t: any) => 'Total ' + t + ' rules' }} style={{ borderRadius: 12, overflow: 'hidden' }} />
-      <Modal title={!editing ? <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}><span style={{ fontWeight: 600 }}>Create Subscription</span><Steps current={wizardStep} size='small' style={{ flex: 1, maxWidth: 360 }} items={[{ title: 'Describe' }, { title: 'Select' }, { title: 'Confirm' }]} /></div> : <span style={{ fontWeight: 600 }}>Edit Subscription</span>}
-        open={modalOpen} onOk={editing ? handleSubmit : undefined} onCancel={() => { setModalOpen(false); setDiscoveryResult(null) }} destroyOnClose width={640} footer={!editing ? wizardFooter : undefined} okText={editing ? 'Save' : undefined} cancelText='Cancel'>
-        {editing ? (
-          <Form form={form} layout='vertical' style={{ marginTop: 16 }}>
-            <Form.Item name='name' label='Name' rules={[{ required: true }]}><Input placeholder='Rule name' style={{ borderRadius: 8 }} /></Form.Item>
-            <Form.Item name='keywords' label='Keywords'><Input placeholder='e.g. LLM, Agent' style={{ borderRadius: 8 }} /></Form.Item>
-            <Form.Item name='sourcePlatforms' label='Platforms'><Input placeholder='e.g. rss, web' style={{ borderRadius: 8 }} /></Form.Item>
-            <Space size='middle'><Form.Item name='matchMode' label='Match'><Select style={{ width: 120 }}><Select.Option value={1}>Exact</Select.Option><Select.Option value={2}>Fuzzy</Select.Option><Select.Option value={3}>Semantic</Select.Option></Select></Form.Item><Form.Item name='priority' label='Priority'><Select style={{ width: 100 }}><Select.Option value={1}>High</Select.Option><Select.Option value={2}>Medium</Select.Option><Select.Option value={3}>Low</Select.Option></Select></Form.Item></Space>
-            <Form.Item name='cronExpression' label='Cron'><Input placeholder='e.g. 0 */2 * * *' style={{ borderRadius: 8 }} /></Form.Item>
-          </Form>
-        ) : (
-          <div style={{ marginTop: 8 }} ref={stepRef}>
-            {wizardStep === 0 && <div style={{ textAlign: 'center', padding: '24px 16px' }}><BulbOutlined style={{ fontSize: 48, color: '#6366f1', marginBottom: 16 }} /><Title level={5} style={{ fontWeight: 600 }}>What content do you want to follow?</Title><Text style={{ color: '#94a3b8', display: 'block', marginBottom: 20 }}>Describe your interests. AI will find RSS sources for you.</Text><Input.TextArea value={interestInput} onChange={e => setInterestInput(e.target.value)} placeholder='e.g. I want to follow AI Agent and RAG progress...' autoSize={{ minRows: 3, maxRows: 6 }} style={{ borderRadius: 10, fontSize: 14, maxWidth: 480 }} /><div style={{ marginTop: 20 }}><Button type='primary' size='large' icon={discovering ? <LoadingOutlined spin /> : <SearchOutlined />} onClick={handleDiscover} loading={discovering} style={{ borderRadius: 10, height: 44, paddingInline: 32, background: 'linear-gradient(135deg, #818cf8, #6366f1)', border: 'none' }}>{searchPhase || (discovering ? 'Searching...' : 'AI Search RSS Sources')}</Button></div>
-              <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #e2e8f0' }}><Text style={{ color: '#94a3b8', fontSize: 12 }}>Or paste a known RSS URL:</Text><Space.Compact style={{ width: '100%', maxWidth: 480, marginTop: 8 }}><Input value={manualUrl} onChange={e => setManualUrl(e.target.value)} placeholder='https://example.com/feed.xml' style={{ borderRadius: '8px 0 0 8px' }} /><Button icon={<LinkOutlined />} onClick={() => { if (!manualUrl.trim()) { message.warning('Enter a URL'); return }; const d = { topic: manualUrl, keywords: [], suggested_name: 'Custom', sources: [{ id: 'm', url: manualUrl.trim(), name: manualUrl.trim(), platform: 'rss', description: 'Manual', relevance: 1, source_type: 'builtin' }], total_sources: 1, recommended_platforms: ['rss'] }; setDiscoveryResult(d); setSelectedSourceIds(['m']); setWizardStep(1) }} style={{ borderRadius: '0 8px 8px 0', borderColor: '#6366f1', color: '#6366f1' }}>Add</Button></Space.Compact></div>
-            </div>}
-            {wizardStep === 1 && discoveryResult && <div><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, padding: '12px 16px', background: 'linear-gradient(135deg, #f0f0ff, #faf5ff)', borderRadius: 10 }}><Text strong style={{ fontSize: 14, color: '#4338ca' }}><BulbOutlined style={{ marginRight: 6 }} />Found {(discoveryResult.sources || []).length} sources</Text><Space><Text style={{ color: '#6366f1', fontWeight: 600 }}>{selectedSourceIds.length}/{(discoveryResult.sources || []).length} selected</Text><Button size='small' type='link' onClick={selectAll}>All</Button><Button size='small' type='link' onClick={deselectAll}>None</Button></Space></div><div style={{ maxHeight: 340, overflow: 'auto', paddingRight: 4 }}>{(discoveryResult.sources || []).map((s: any) => <div key={s.id} onClick={() => toggleSource(s.id)} style={{ display: 'flex', alignItems: 'flex-start', padding: '10px 12px', marginBottom: 6, borderRadius: 8, border: '1px solid ' + (selectedSourceIds.includes(s.id) ? '#c7d2fe' : '#f1f5f9'), background: selectedSourceIds.includes(s.id) ? (dark ? '#1e1a3a' : '#f8faff') : (dark ? '#1a1a1a' : '#fff'), cursor: 'pointer' }}><Checkbox checked={selectedSourceIds.includes(s.id)} style={{ marginRight: 10, marginTop: 2 }} /><div style={{ flex: 1, minWidth: 0 }}><div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}><Text strong style={{ fontSize: 13 }}>{s.name}</Text><Tag color={platformColor[s.platform] || 'default'} style={{ borderRadius: 6, fontSize: 11 }}>{s.platform}</Tag><Tag style={{ borderRadius: 6, fontSize: 11, color: (stLabel[s.source_type] || {}).color }}>{(stLabel[s.source_type] || {}).label || s.source_type}</Tag></div><Text style={{ fontSize: 11, color: '#94a3b8', wordBreak: 'break-all' }}>{s.url}</Text></div></div>)}</div></div>}
-            {wizardStep === 2 && discoveryResult && <div><div style={{ padding: '14px 16px', background: dark ? '#1a1a1a' : '#f8fafc', borderRadius: 10, border: dark ? '1px solid #2a2a2a' : '1px solid #e2e8f0', marginBottom: 16 }}><Text strong style={{ fontSize: 13, color: '#475569', display: 'block', marginBottom: 8 }}>Summary</Text><Space direction='vertical' size={6}><div><Text style={{ color: '#94a3b8', fontSize: 12 }}>Name: </Text><Text strong>{form.getFieldValue('name') || discoveryResult.suggested_name}</Text></div><div><Text style={{ color: '#94a3b8', fontSize: 12 }}>Sources: </Text><Text strong style={{ color: '#6366f1' }}>{(discoveryResult.sources || []).filter((s: any) => selectedSourceIds.includes(s.id)).length}</Text></div></Space></div><Collapse ghost items={[{ key: 'adv', label: <Text style={{ fontSize: 13, color: '#64748b' }}>Advanced</Text>, children: <Form form={form} layout='vertical'><Form.Item name='name' label='Name'><Input placeholder={discoveryResult.suggested_name} style={{ borderRadius: 8 }} /></Form.Item><Space size='middle'><Form.Item name='matchMode' label='Match'><Select style={{ width: 120 }}><Select.Option value={1}>Exact</Select.Option><Select.Option value={2}>Fuzzy</Select.Option><Select.Option value={3}>Semantic</Select.Option></Select></Form.Item><Form.Item name='priority' label='Priority'><Select style={{ width: 100 }}><Select.Option value={1}>High</Select.Option><Select.Option value={2}>Medium</Select.Option><Select.Option value={3}>Low</Select.Option></Select></Form.Item></Space><Form.Item name='cronExpression' label='Cron'><Input placeholder='Optional' style={{ borderRadius: 8 }} /></Form.Item></Form>}]} /></div>}
+      <Modal
+        open={open}
+        title={editing ? "编辑订阅" : "新建订阅"}
+        onCancel={() => setOpen(false)}
+        onOk={save}
+        confirmLoading={saving}
+        width={760}
+        okText="保存订阅"
+        cancelText="取消"
+        forceRender
+      >
+        <Alert
+          type="info"
+          message="先添加 RSS 或网页地址。关注关键词留空时采集全部内容，填写后只保留匹配条目。"
+          style={{ margin: "16px 0" }}
+        />
+        <Space.Compact style={{ width: "100%", marginBottom: 12 }}>
+          <Input
+            placeholder="例如：人工智能、Python、安全、科技"
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            onPressEnter={discover}
+          />
+          <Button
+            icon={<SearchOutlined />}
+            loading={discovering}
+            onClick={discover}
+          >
+            推荐订阅源
+          </Button>
+        </Space.Compact>
+        {sources.length > 0 && (
+          <div
+            style={{
+              maxHeight: 220,
+              overflow: "auto",
+              marginBottom: 16,
+              border: "1px solid #38c9db40",
+              padding: 12,
+              borderRadius: 8,
+            }}
+          >
+            <Typography.Text type="secondary">
+              以下为内置目录推荐，可先预览确认。
+            </Typography.Text>
+            {sources.map((s) => (
+              <div
+                key={s.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  margin: "10px 0",
+                }}
+              >
+                <Checkbox
+                  checked={selected.includes(s.id)}
+                  onChange={(e) =>
+                    setSelected((p) =>
+                      e.target.checked
+                        ? [...p, s.id]
+                        : p.filter((x) => x !== s.id),
+                    )
+                  }
+                />
+                <div style={{ flex: 1 }}>
+                  {s.name}
+                  <div
+                    style={{
+                      fontSize: 11,
+                      opacity: 0.6,
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {s.url}
+                  </div>
+                </div>
+                <Button
+                  size="small"
+                  onClick={async () => {
+                    try {
+                      const r: any = await request.get(
+                        "/python/subscriptions/preview-feed",
+                        { params: { url: s.url } },
+                      );
+                      setPreview(r.data);
+                    } catch (e: any) {
+                      message.error(e.message);
+                    }
+                  }}
+                >
+                  预览
+                </Button>
+              </div>
+            ))}
+            <Button
+              size="small"
+              disabled={!selected.length}
+              onClick={addSelected}
+            >
+              添加选中的源
+            </Button>
           </div>
         )}
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={{
+            keywords: [],
+            rssFeeds: [{ url: "", platform: "rss" }],
+            priority: 2,
+            interval: 60,
+          }}
+        >
+          <Form.Item
+            name="name"
+            label="订阅名称"
+            rules={[{ required: true, message: "请输入名称" }, { max: 100 }]}
+          >
+            <Input maxLength={100} />
+          </Form.Item>
+          <Form.List
+            name="rssFeeds"
+            rules={[
+              {
+                validator: async (_, value) => {
+                  if (!value?.length) throw Error("至少添加一个采集源");
+                },
+              },
+            ]}
+          >
+            {(fields, { add, remove }, { errors }) => (
+              <>
+                <Typography.Text strong>采集源</Typography.Text>
+                {fields.map((field) => (
+                  <Space
+                    key={field.key}
+                    style={{ display: "flex", marginTop: 10 }}
+                    align="start"
+                  >
+                    <Form.Item
+                      name={[field.name, "platform"]}
+                    >
+                      <Select
+                        style={{ width: 95 }}
+                        options={[
+                          { label: "RSS", value: "rss" },
+                          { label: "网页", value: "web" },
+                          { label: "JSON API", value: "api" },
+                        ]}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name={[field.name, "url"]}
+                      rules={[
+                        { required: true, message: "请输入源地址" },
+                        { type: "url", message: "请输入有效 URL" },
+                        {
+                          pattern: /^https?:\/\//,
+                          message: "仅支持 HTTP/HTTPS",
+                        },
+                      ]}
+                    >
+                      <Input
+                        placeholder="https://example.com/feed.xml"
+                        style={{ width: window.innerWidth < 600 ? 190 : 460 }}
+                      />
+                    </Form.Item>
+                    <Button
+                      icon={<DeleteOutlined />}
+                      onClick={() => remove(field.name)}
+                    />
+                  </Space>
+                ))}
+                <Form.ErrorList errors={errors} />
+                <Button
+                  type="dashed"
+                  onClick={() => add({ platform: "rss", url: "" })}
+                  icon={<PlusOutlined />}
+                  style={{ marginBottom: 20 }}
+                >
+                  添加采集源
+                </Button>
+              </>
+            )}
+          </Form.List>
+          <Form.Item name="enableAi" valuePropName="checked">
+            <Checkbox>自动生成 AI 翻译与简报（需配置模型）</Checkbox>
+          </Form.Item>
+          <Form.Item name="keywords" label="关注关键词（可选）">
+            <Select
+              mode="tags"
+              tokenSeparators={[",", "，"]}
+              placeholder="输入关键词，回车添加"
+            />
+          </Form.Item>
+          <Space size={24}>
+            <Form.Item
+              name="interval"
+              label="采集间隔（分钟）"
+              rules={[{ required: true }]}
+            >
+              <InputNumber min={15} max={10080} />
+            </Form.Item>
+            <Form.Item name="priority" label="优先级">
+              <Select
+                style={{ width: 120 }}
+                options={[
+                  { label: "高", value: 1 },
+                  { label: "中", value: 2 },
+                  { label: "低", value: 3 },
+                ]}
+              />
+            </Form.Item>
+          </Space>
+        </Form>
       </Modal>
-    </div>
-  )
+      <Modal
+        open={!!preview}
+        title="订阅源预览"
+        footer={null}
+        onCancel={() => setPreview(null)}
+      >
+        {preview?.entries?.length
+          ? preview.entries.map((e: any) => (
+              <div key={e.link} style={{ marginBottom: 16 }}>
+                <Typography.Text strong>{e.title}</Typography.Text>
+                <p>{e.summary}</p>
+              </div>
+            ))
+          : "该订阅源暂时没有条目"}
+      </Modal>
+    </>
+  );
 }

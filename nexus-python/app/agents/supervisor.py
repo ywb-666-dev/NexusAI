@@ -31,6 +31,7 @@ from app.agents.curator_agent import run_curator
 
 # ── 路由函数 ──
 
+
 def _route_after_scout(state: NexusState) -> Literal["parser", "__end__"]:
     """Scout 完成后的路由"""
     if state.get("error"):
@@ -57,7 +58,9 @@ def _route_after_connector(state: NexusState) -> Literal["actor", "__end__"]:
     return "actor"
 
 
-def _route_after_actor(state: NexusState) -> Literal["curator", "__interrupt__", "__end__"]:
+def _route_after_actor(
+    state: NexusState,
+) -> Literal["curator", "__interrupt__", "__end__"]:
     """Actor 完成后的路由：高风险时中断等待审批"""
     if state.get("error"):
         return "__end__"
@@ -72,6 +75,7 @@ def _route_after_curator(state: NexusState) -> Literal["__end__"]:
 
 
 # ── Supervisor 类 ──
+
 
 class NexusSupervisor:
     """
@@ -105,26 +109,46 @@ class NexusSupervisor:
         workflow.set_entry_point("scout")
 
         # 条件边：每个节点完成后决定下一步
-        workflow.add_conditional_edges("scout", _route_after_scout, {
-            "parser": "parser",
-            "__end__": END,
-        })
-        workflow.add_conditional_edges("parser", _route_after_parser, {
-            "connector": "connector",
-            "__end__": END,
-        })
-        workflow.add_conditional_edges("connector", _route_after_connector, {
-            "actor": "actor",
-            "__end__": END,
-        })
-        workflow.add_conditional_edges("actor", _route_after_actor, {
-            "curator": "curator",
-            "__interrupt__": END,  # 中断时结束当前执行，等待 resume
-            "__end__": END,
-        })
-        workflow.add_conditional_edges("curator", _route_after_curator, {
-            "__end__": END,
-        })
+        workflow.add_conditional_edges(
+            "scout",
+            _route_after_scout,
+            {
+                "parser": "parser",
+                "__end__": END,
+            },
+        )
+        workflow.add_conditional_edges(
+            "parser",
+            _route_after_parser,
+            {
+                "connector": "connector",
+                "__end__": END,
+            },
+        )
+        workflow.add_conditional_edges(
+            "connector",
+            _route_after_connector,
+            {
+                "actor": "actor",
+                "__end__": END,
+            },
+        )
+        workflow.add_conditional_edges(
+            "actor",
+            _route_after_actor,
+            {
+                "curator": "curator",
+                "__interrupt__": END,  # 中断时结束当前执行，等待 resume
+                "__end__": END,
+            },
+        )
+        workflow.add_conditional_edges(
+            "curator",
+            _route_after_curator,
+            {
+                "__end__": END,
+            },
+        )
 
         return workflow.compile()
 
@@ -142,12 +166,14 @@ class NexusSupervisor:
         except Exception as e:
             print(f"[Supervisor] Scout node error: {e}")
             state["error"] = f"Scout failed: {e}"
-            state["status"] = f"error: {e}"
+            state["status"] = "failed"
             await _update_task_status(task_id, state["status"], {"scout": "failed"})
             return state
 
         node_status = "success" if state.get("scout", {}).get("items") else "success"
-        await _update_task_status(task_id, "parsing", {"scout": node_status, "parser": "running"})
+        await _update_task_status(
+            task_id, "parsing", {"scout": node_status, "parser": "running"}
+        )
         state["status"] = "parsing"
         return state
 
@@ -160,13 +186,21 @@ class NexusSupervisor:
         except Exception as e:
             print(f"[Supervisor] Parser node error: {e}")
             state["error"] = f"Parser failed: {e}"
-            state["status"] = f"error: {e}"
-            await _update_task_status(task_id, state["status"], {"scout": "success", "parser": "failed"})
+            state["status"] = "failed"
+            await _update_task_status(
+                task_id, state["status"], {"scout": "success", "parser": "failed"}
+            )
             return state
 
-        await _update_task_status(task_id, "storing", {
-            "scout": "success", "parser": "success", "connector": "running",
-        })
+        await _update_task_status(
+            task_id,
+            "storing",
+            {
+                "scout": "success",
+                "parser": "success",
+                "connector": "running",
+            },
+        )
         state["status"] = "storing"
         return state
 
@@ -176,7 +210,7 @@ class NexusSupervisor:
 
         if not self.session_factory:
             state["error"] = "No DB session factory configured"
-            state["status"] = "error: no db"
+            state["status"] = "failed"
             await _update_task_status(task_id, state["status"])
             return state
 
@@ -186,15 +220,28 @@ class NexusSupervisor:
         except Exception as e:
             print(f"[Supervisor] Connector node error: {e}")
             state["error"] = f"Connector failed: {e}"
-            state["status"] = f"error: {e}"
-            await _update_task_status(task_id, state["status"], {
-                "scout": "success", "parser": "success", "connector": "failed",
-            })
+            state["status"] = "failed"
+            await _update_task_status(
+                task_id,
+                state["status"],
+                {
+                    "scout": "success",
+                    "parser": "success",
+                    "connector": "failed",
+                },
+            )
             return state
 
-        await _update_task_status(task_id, "deciding", {
-            "scout": "success", "parser": "success", "connector": "success", "actor": "running",
-        })
+        await _update_task_status(
+            task_id,
+            "deciding",
+            {
+                "scout": "success",
+                "parser": "success",
+                "connector": "success",
+                "actor": "running",
+            },
+        )
         state["status"] = "deciding"
         return state
 
@@ -203,28 +250,55 @@ class NexusSupervisor:
         task_id = state.get("task_id", "")
 
         try:
-            async with (self.session_factory() if self.session_factory else _null_ctx()) as db:
+            async with (
+                self.session_factory() if self.session_factory else _null_ctx()
+            ) as db:
                 state = await run_actor(state, db if self.session_factory else None)
         except Exception as e:
             print(f"[Supervisor] Actor node error: {e}")
             state["error"] = f"Actor failed: {e}"
-            state["status"] = f"error: {e}"
-            await _update_task_status(task_id, state["status"], {
-                "scout": "success", "parser": "success", "connector": "success", "actor": "failed",
-            })
+            state["status"] = "failed"
+            await _update_task_status(
+                task_id,
+                state["status"],
+                {
+                    "scout": "success",
+                    "parser": "success",
+                    "connector": "success",
+                    "actor": "failed",
+                },
+            )
             return state
 
         action = state.get("actor", {}).get("action", "proceed")
         if action == "approval_required":
-            await _update_task_status(task_id, "interrupted: awaiting approval", {
-                "scout": "success", "parser": "success", "connector": "success", "actor": "interrupted",
-            })
+            await _update_task_status(
+                task_id,
+                "interrupted: awaiting approval",
+                {
+                    "scout": "success",
+                    "parser": "success",
+                    "connector": "success",
+                    "actor": "interrupted",
+                },
+            )
         else:
-            await _update_task_status(task_id, "curating", {
-                "scout": "success", "parser": "success", "connector": "success",
-                "actor": "success", "curator": "running",
-            })
-        state["status"] = "curating" if action != "approval_required" else "interrupted: awaiting approval"
+            await _update_task_status(
+                task_id,
+                "curating",
+                {
+                    "scout": "success",
+                    "parser": "success",
+                    "connector": "success",
+                    "actor": "success",
+                    "curator": "running",
+                },
+            )
+        state["status"] = (
+            "curating"
+            if action != "approval_required"
+            else "interrupted: awaiting approval"
+        )
         return state
 
     async def _curator_node(self, state: NexusState) -> NexusState:
@@ -232,22 +306,38 @@ class NexusSupervisor:
         task_id = state.get("task_id", "")
 
         try:
-            async with (self.session_factory() if self.session_factory else _null_ctx()) as db:
+            async with (
+                self.session_factory() if self.session_factory else _null_ctx()
+            ) as db:
                 state = await run_curator(state, db if self.session_factory else None)
         except Exception as e:
             print(f"[Supervisor] Curator node error: {e}")
             state["error"] = f"Curator failed: {e}"
-            state["status"] = f"error: {e}"
-            await _update_task_status(task_id, state["status"], {
-                "scout": "success", "parser": "success", "connector": "success",
-                "actor": "success", "curator": "failed",
-            })
+            state["status"] = "failed"
+            await _update_task_status(
+                task_id,
+                state["status"],
+                {
+                    "scout": "success",
+                    "parser": "success",
+                    "connector": "success",
+                    "actor": "success",
+                    "curator": "failed",
+                },
+            )
             return state
 
-        await _update_task_status(task_id, "completed", {
-            "scout": "success", "parser": "success", "connector": "success",
-            "actor": "success", "curator": "success",
-        })
+        await _update_task_status(
+            task_id,
+            "completed",
+            {
+                "scout": "success",
+                "parser": "success",
+                "connector": "success",
+                "actor": "success",
+                "curator": "success",
+            },
+        )
         state["status"] = "completed"
         return state
 
@@ -264,11 +354,24 @@ class NexusSupervisor:
             最终 NexusState（包含所有阶段的输出）
         """
         if not self.mcp_pool:
-            print("[Supervisor] WARNING: No MCP pool configured — Scout will have no tools")
+            pass  # Direct asynchronous fetching is the default transport.
         if not self.session_factory:
-            print("[Supervisor] WARNING: No DB session factory — Connector/Actor/Curator will skip DB ops")
+            print(
+                "[Supervisor] WARNING: No DB session factory — Connector/Actor/Curator will skip DB ops"
+            )
 
-        result = await self.graph.ainvoke(initial_state)
+        from app.services.task_service import save_state
+
+        result = initial_state
+        async for snapshot in self.graph.astream(initial_state, stream_mode="values"):
+            result = snapshot
+            if (
+                result.get("scout")
+                and not result.get("scout", {}).get("items")
+                and not result.get("error")
+            ):
+                result["status"] = "completed: no items"
+            await save_state(result)
         return result
 
     async def resume_after_approval(
@@ -284,9 +387,16 @@ class NexusSupervisor:
         调用此方法恢复流程。通过则继续 Curator 阶段，拒绝则标记失败。
         """
         if not approved:
-            await _update_task_status(task_id, "rejected", {
-                "scout": "success", "parser": "success", "connector": "success", "actor": "failed",
-            })
+            await _update_task_status(
+                task_id,
+                "rejected",
+                {
+                    "scout": "success",
+                    "parser": "success",
+                    "connector": "success",
+                    "actor": "failed",
+                },
+            )
             return NexusState(
                 task_id=task_id,
                 status="rejected",
@@ -309,10 +419,17 @@ class NexusSupervisor:
             status="curating",
         )
 
-        await _update_task_status(task_id, "curating", {
-            "scout": "success", "parser": "success", "connector": "success",
-            "actor": "success", "curator": "running",
-        })
+        await _update_task_status(
+            task_id,
+            "curating",
+            {
+                "scout": "success",
+                "parser": "success",
+                "connector": "success",
+                "actor": "success",
+                "curator": "running",
+            },
+        )
 
         # 从 Curator 节点继续执行
         state = await self._curator_node(resume_state)
@@ -323,6 +440,7 @@ async def _get_task_state(task_id: str) -> dict:
     """从 Redis 读取完整的任务状态（用于审批后恢复）"""
     try:
         from app.core.dependencies import get_redis_client
+
         redis = get_redis_client()
         data = await redis.get(f"agent:state:{task_id}")
         if data:
@@ -334,5 +452,9 @@ async def _get_task_state(task_id: str) -> dict:
 
 class _null_ctx:
     """异步空上下文，当 db session factory 不可用时使用"""
-    async def __aenter__(self): return None
-    async def __aexit__(self, *args): pass
+
+    async def __aenter__(self):
+        return None
+
+    async def __aexit__(self, *args):
+        pass

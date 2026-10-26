@@ -24,7 +24,9 @@ _META_PATTERNS = [
 def _strip_html(html_text: str) -> str:
     """去掉 HTML 标签，返回纯文本"""
     try:
-        return BeautifulSoup(html_text, "html.parser").get_text(separator="\n", strip=True)
+        return BeautifulSoup(html_text, "html.parser").get_text(
+            separator="\n", strip=True
+        )
     except Exception:
         return html_text
 
@@ -33,11 +35,16 @@ def _is_metadata_only(summary: str) -> bool:
     """检测摘要是否只是 HN 风格的元数据（无实际内容）"""
     if not summary:
         return True
-    plain = _strip_html(summary) if '<' in summary else summary
+    plain = _strip_html(summary) if "<" in summary else summary
     lines = [l.strip() for l in plain.split("\n") if l.strip()]
     meaningful = [
-        l for l in lines
-        if not re.match(r"^(Article\s*URL|Comments?\s*URL|Points?|#\s*Comments?)\s*[:：]", l, re.IGNORECASE)
+        l
+        for l in lines
+        if not re.match(
+            r"^(Article\s*URL|Comments?\s*URL|Points?|#\s*Comments?)\s*[:：]",
+            l,
+            re.IGNORECASE,
+        )
         and not re.match(r"^\d+\s*points?", l, re.IGNORECASE)
         and not re.match(r"^\d+\s*comments?", l, re.IGNORECASE)
         and not re.match(r"^https?://", l.strip())
@@ -54,42 +61,34 @@ def _is_chinese(text: str) -> bool:
     return cjk_chars > len(text) * 0.15
 
 
-def _scrape_page(url: str) -> str:
+async def _scrape_page(url: str) -> str:
     """抓取网页并提取正文文本"""
     try:
-        resp = httpx.get(url, timeout=10, follow_redirects=True)
-        resp.raise_for_status()
-        soup = BeautifulSoup(resp.text, "html.parser")
-        for tag in soup(["script", "style", "nav", "footer", "header", "aside", "noscript"]):
+        from app.services.fetching import fetch
+
+        body, _ = await fetch(url)
+        soup = BeautifulSoup(body, "html.parser")
+        for tag in soup(
+            ["script", "style", "nav", "footer", "header", "aside", "noscript"]
+        ):
             tag.decompose()
         content = soup.find("article") or soup.find("main") or soup.find("body")
         if not content:
             return ""
         text = content.get_text(separator="\n", strip=True)
         lines = [l.strip() for l in text.split("\n") if l.strip()]
-        return "\n".join(lines)[:3000]
+        return "\n".join(lines)[:100000]
     except Exception:
         return ""
 
 
 async def _translate_to_chinese(text: str) -> str:
-    """使用 LLM 将文本翻译为中文"""
     try:
-        if not settings.llm.api_key:
-            return text
-        import openai
-        client = openai.OpenAI(
-            api_key=settings.llm.api_key,
-            base_url=settings.llm.base_url,
+        from app.services.llm import chat
+
+        return await chat(
+            "将以下内容翻译成中文，只输出译文：\n\n" + text[:1500], max_tokens=1500
         )
-        prompt = f"请将以下英文内容翻译成中文，保持原意，只输出翻译结果不要额外说明：\n\n{text[:1500]}"
-        resp = client.chat.completions.create(
-            model=settings.llm.chat_model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.3,
-            max_tokens=1500,
-        )
-        return resp.choices[0].message.content.strip()
     except Exception:
         return text
 
@@ -104,7 +103,9 @@ async def run_parser(state: NexusState, mcp_pool: Any = None) -> NexusState:
     raw_items: list[dict] = state.get("scout", {}).get("items", [])
     if not raw_items:
         state["status"] = "parsing: no items"
-        state["parser"] = ParserResult(items=[], cleaned_count=0, scraped_count=0, translated_count=0)
+        state["parser"] = ParserResult(
+            items=[], cleaned_count=0, scraped_count=0, translated_count=0
+        )
         state["next_node"] = "connector"
         return state
 
@@ -122,7 +123,9 @@ async def run_parser(state: NexusState, mcp_pool: Any = None) -> NexusState:
         scraped_text = ""
         if mcp_pool:
             try:
-                result = await mcp_pool.call_tool("web", "scrape_page", {"url": source_url})
+                result = await mcp_pool.call_tool(
+                    "web", "scrape_page", {"url": source_url}
+                )
                 articles = _extract_articles_from_mcp(result)
                 if articles:
                     scraped_text = articles[0].get("summary", "")
@@ -130,7 +133,7 @@ async def run_parser(state: NexusState, mcp_pool: Any = None) -> NexusState:
                 pass
 
         if not scraped_text:
-            scraped_text = _scrape_page(source_url)
+            scraped_text = await _scrape_page(source_url)
 
         if scraped_text:
             item["summary"] = scraped_text[:2000]
@@ -138,11 +141,24 @@ async def run_parser(state: NexusState, mcp_pool: Any = None) -> NexusState:
             item["scraped"] = True
             scraped_count += 1
 
+    from app.services.fetching import plain_text
+
+    for item in raw_items:
+        item["raw_html"] = plain_text(item.get("raw_html", ""))[:100000]
+        item["summary"] = plain_text(item.get("summary", ""))[:2000]
     # Step 2: 非中文内容翻译
-    if settings.llm.api_key:
-        for item in raw_items:
-            if not _is_chinese(item.get("summary", "")):
-                item["summary"] = await _translate_to_chinese(item["summary"])
+    if settings.llm.api_key and state.get("enable_ai", False):
+        import asyncio
+
+        targets = [
+            item for item in raw_items if not _is_chinese(item.get("summary", ""))
+        ][:10]
+        results = await asyncio.gather(
+            *(_translate_to_chinese(item["summary"]) for item in targets)
+        )
+        for item, translated in zip(targets, results):
+            if translated != item["summary"]:
+                item["translated_summary"] = translated
                 translated_count += 1
 
     state["parser"] = ParserResult(
@@ -158,6 +174,7 @@ async def run_parser(state: NexusState, mcp_pool: Any = None) -> NexusState:
 def _extract_articles_from_mcp(mcp_result: Any) -> list[dict]:
     """从 MCP 结果中提取文章列表"""
     import json
+
     data = mcp_result
     if hasattr(mcp_result, "content") and mcp_result.content:
         if hasattr(mcp_result.content[0], "text"):

@@ -21,6 +21,20 @@ import java.util.stream.Collectors;
 @Service
 public class ApprovalTicketServiceImpl extends ServiceImpl<ApprovalTicketMapper, ApprovalTicket> implements ApprovalTicketService {
 
+    @org.springframework.beans.factory.annotation.Autowired private org.ibo.nexusjava.common.JwtUtil jwtUtil;
+    private void requireAdmin() {
+        if (!"admin".equals(UserContext.getRole())) throw new BusinessException(ErrorCode.PARAM_ERROR, "需要管理员权限");
+    }
+    private void resume(ApprovalTicket ticket, boolean approved) {
+        try {
+            var client = java.net.http.HttpClient.newHttpClient();
+            var req = java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://localhost:8000/api/python/agent/tasks/" + ticket.getTaskId() + "/resume?approved=" + approved))
+                .header("Authorization", "Bearer " + jwtUtil.generateToken(UserContext.getUserId(), UserContext.getUsername(), UserContext.getRole()))
+                .timeout(java.time.Duration.ofSeconds(15)).POST(java.net.http.HttpRequest.BodyPublishers.noBody()).build();
+            var response = client.send(req, java.net.http.HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) throw new IllegalStateException();
+        } catch (Exception e) { throw new BusinessException(ErrorCode.SYSTEM_ERROR, "工单已处理，但任务恢复失败，请在任务中心重试恢复"); }
+    }
     private ApprovalTicketVO convertToVO(ApprovalTicket ticket) {
         ApprovalTicketVO vo = new ApprovalTicketVO();
         vo.setId(ticket.getId());
@@ -39,6 +53,7 @@ public class ApprovalTicketServiceImpl extends ServiceImpl<ApprovalTicketMapper,
 
     @Override
     public IPage<ApprovalTicketVO> listPending(Long current, Long size) {
+        requireAdmin();
         LambdaQueryWrapper<ApprovalTicket> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(ApprovalTicket::getStatus, 0);
         wrapper.orderByDesc(ApprovalTicket::getCreatedAt);
@@ -57,6 +72,7 @@ public class ApprovalTicketServiceImpl extends ServiceImpl<ApprovalTicketMapper,
 
     @Override
     public ApprovalTicketVO getById(Long id) {
+        requireAdmin();
         ApprovalTicket ticket = super.getById(id);
         if (ticket == null) {
             throw new BusinessException(ErrorCode.APPROVAL_TICKET_NOT_FOUND);
@@ -66,6 +82,7 @@ public class ApprovalTicketServiceImpl extends ServiceImpl<ApprovalTicketMapper,
 
     @Override
     public void approve(Long id, ApprovalTicketDTO dto) {
+        requireAdmin();
         ApprovalTicket ticket = super.getById(id);
         if (ticket == null) {
             throw new BusinessException(ErrorCode.APPROVAL_TICKET_NOT_FOUND);
@@ -78,11 +95,16 @@ public class ApprovalTicketServiceImpl extends ServiceImpl<ApprovalTicketMapper,
         ticket.setApprovedBy(approverId);
         ticket.setComment(dto.getComment());
         ticket.setApprovedAt(LocalDateTime.now());
-        updateById(ticket);
+        boolean changed = lambdaUpdate().eq(ApprovalTicket::getId, id).eq(ApprovalTicket::getStatus, 0)
+            .set(ApprovalTicket::getStatus, ticket.getStatus()).set(ApprovalTicket::getApprovedBy, approverId)
+            .set(ApprovalTicket::getComment, dto.getComment()).set(ApprovalTicket::getApprovedAt, ticket.getApprovedAt()).update();
+        if (!changed) throw new BusinessException(ErrorCode.APPROVAL_ALREADY_PROCESSED);
+        resume(ticket, ticket.getStatus() == 1);
     }
 
     @Override
     public void reject(Long id, ApprovalTicketDTO dto) {
+        requireAdmin();
         ApprovalTicket ticket = super.getById(id);
         if (ticket == null) {
             throw new BusinessException(ErrorCode.APPROVAL_TICKET_NOT_FOUND);
@@ -95,6 +117,10 @@ public class ApprovalTicketServiceImpl extends ServiceImpl<ApprovalTicketMapper,
         ticket.setApprovedBy(approverId);
         ticket.setComment(dto.getComment());
         ticket.setApprovedAt(LocalDateTime.now());
-        updateById(ticket);
+        boolean changed = lambdaUpdate().eq(ApprovalTicket::getId, id).eq(ApprovalTicket::getStatus, 0)
+            .set(ApprovalTicket::getStatus, ticket.getStatus()).set(ApprovalTicket::getApprovedBy, approverId)
+            .set(ApprovalTicket::getComment, dto.getComment()).set(ApprovalTicket::getApprovedAt, ticket.getApprovedAt()).update();
+        if (!changed) throw new BusinessException(ErrorCode.APPROVAL_ALREADY_PROCESSED);
+        resume(ticket, ticket.getStatus() == 1);
     }
 }

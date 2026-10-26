@@ -54,12 +54,18 @@ async def get_hacker_news() -> Any:
             articles = []
             for s in stories:
                 if s and s.get("title") and s.get("url"):
-                    articles.append({
-                        "title": s["title"],
-                        "link": s.get("url", f"https://news.ycombinator.com/item?id={s['id']}"),
-                        "summary": s.get("text", "")[:500] if s.get("text") else "",
-                        "published_at": datetime.fromtimestamp(s.get("time", 0)).isoformat(),
-                    })
+                    articles.append(
+                        {
+                            "title": s["title"],
+                            "link": s.get(
+                                "url", f"https://news.ycombinator.com/item?id={s['id']}"
+                            ),
+                            "summary": s.get("text", "")[:500] if s.get("text") else "",
+                            "published_at": datetime.fromtimestamp(
+                                s.get("time", 0)
+                            ).isoformat(),
+                        }
+                    )
             print(f"[HN] Fetched {len(articles)} stories")
             return articles
     except Exception as e:
@@ -83,12 +89,14 @@ async def get_newsapi_news() -> Any:
             data = resp.json()
             articles = []
             for a in data.get("articles", []):
-                articles.append({
-                    "title": a.get("title", ""),
-                    "link": a.get("url", ""),
-                    "summary": (a.get("description") or "")[:500],
-                    "published_at": a.get("publishedAt", ""),
-                })
+                articles.append(
+                    {
+                        "title": a.get("title", ""),
+                        "link": a.get("url", ""),
+                        "summary": (a.get("description") or "")[:500],
+                        "published_at": a.get("publishedAt", ""),
+                    }
+                )
             print(f"[NewsAPI] Fetched {len(articles)} articles")
             return articles
     except Exception as e:

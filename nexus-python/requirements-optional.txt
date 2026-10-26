@@ -1,0 +1,4 @@
+# Optional MCP transport. The default HTTP/RSS pipeline does not require it.
+mcp==1.27.1
+# Vector storage may be enabled separately after installing a supported backend.
+# Native RocketMQ clients are intentionally excluded from the Windows baseline.

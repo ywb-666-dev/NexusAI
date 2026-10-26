@@ -8,6 +8,7 @@ from typing import Any
 @dataclass
 class ExecutionRecord:
     """单次执行记录"""
+
     task_id: str
     skill_name: str
     status: str  # running | success | failed
@@ -35,7 +36,7 @@ class MetricsStore:
     def record(self, rec: ExecutionRecord) -> None:
         self._records.append(rec)
         if len(self._records) > self._max_records:
-            self._records = self._records[-self._max_records:]
+            self._records = self._records[-self._max_records :]
 
     def stats(self) -> dict:
         total = len(self._records)
@@ -50,7 +51,12 @@ class MetricsStore:
         by_skill: dict[str, dict] = {}
         for r in self._records:
             if r.skill_name not in by_skill:
-                by_skill[r.skill_name] = {"total": 0, "success": 0, "failed": 0, "durations": []}
+                by_skill[r.skill_name] = {
+                    "total": 0,
+                    "success": 0,
+                    "failed": 0,
+                    "durations": [],
+                }
             by_skill[r.skill_name]["total"] += 1
             by_skill[r.skill_name]["success"] += 1 if r.status == "success" else 0
             by_skill[r.skill_name]["failed"] += 1 if r.status == "failed" else 0

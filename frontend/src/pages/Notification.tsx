@@ -1,46 +1,120 @@
-import { useEffect, useState, useRef } from 'react'
-import { List, Tag, Typography, Button, Space, message } from 'antd'
-import { BellOutlined, CheckOutlined } from '@ant-design/icons'
-import request from '../api/request'
-import { useThemeStore } from '../store/theme'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
-import { timeAgo } from '../utils/time'
-gsap.registerPlugin(useGSAP)
-const { Title, Text } = Typography
-
+import { useEffect, useState } from "react";
+import {
+  Alert,
+  App,
+  Button,
+  Empty,
+  List,
+  Pagination,
+  Space,
+  Tag,
+  Typography,
+} from "antd";
+import request from "../api/request";
+import PageHeading from "../components/PageHeading";
 export default function NotificationPage() {
-  const [data, setData] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
-  const dark = useThemeStore((s) => s.dark)
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => { fetchData() }, [])
-  const fetchData = async () => { setLoading(true); try { const r: any = await request.get('/java/notifications'); setData(r.data?.items ?? r.data?.records ?? []) } finally { setLoading(false) } }
-  useGSAP(() => { gsap.from(ref.current, { y: 20, opacity: 0, duration: 0.45, ease: 'power2.out' }) }, { scope: ref })
-
-  const markRead = async (id: number) => { try { await request.post('/java/notifications/' + id + '/read'); message.success('Marked read'); fetchData() } catch {} }
-  const markAll = async () => { try { await request.post('/java/notifications/read-all'); message.success('All marked read'); fetchData() } catch {} }
-
-  if (loading) {
-    return (
-      <div ref={ref}>
-        <Skeleton.Input active style={{ width: 200, height: 28, marginBottom: 20 }} />
-        {[0,1,2,3,4].map(i => (
-          <Card key={i} style={{ borderRadius: 12, marginBottom: 8 }}>
-            <Skeleton active paragraph={{ rows: 1 }} avatar />
-          </Card>
-        ))}
+  const [data, setData] = useState<any[]>([]),
+    [page, setPage] = useState(1),
+    [total, setTotal] = useState(0),
+    [loading, setLoading] = useState(false),
+    [error, setError] = useState("");
+  const { message } = App.useApp();
+  const load = async () => {
+    setLoading(true);
+    try {
+      const r: any = await request.get("/java/notifications", {
+        params: { current: page, size: 10 },
+      });
+      setData(r.data.records);
+      setTotal(r.data.total);
+      setError("");
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    load();
+  }, [page]);
+  const mark = async (id?: number) => {
+    try {
+      await request.post(
+        id
+          ? "/java/notifications/" + id + "/read"
+          : "/java/notifications/read-all",
+      );
+      window.dispatchEvent(new Event("nexus:notifications"));
+      load();
+    } catch (e: any) {
+      message.error(e.message);
+    }
+  };
+  return (
+    <>
+      <PageHeading
+        label="INBOX / 通知中心"
+        title="最新动态，不再错过"
+        subtitle="采集结果和任务提醒集中查看。"
+        extra={<Button onClick={() => mark()}>全部标记已读</Button>}
+      />
+      {error && (
+        <Alert type="error" message={error} style={{ marginBottom: 20 }} />
+      )}
+      <div className="panel">
+        <List
+          loading={loading}
+          dataSource={data}
+          locale={{ emptyText: <Empty description="暂时没有通知" /> }}
+          renderItem={(item) => (
+            <List.Item
+              actions={
+                !item.isRead
+                  ? [
+                      <Button
+                        key="read"
+                        size="small"
+                        onClick={() => mark(item.id)}
+                      >
+                        标记已读
+                      </Button>,
+                    ]
+                  : []
+              }
+            >
+              <List.Item.Meta
+                title={
+                  <Space>
+                    {!item.isRead && <Tag color="cyan">未读</Tag>}
+                    <Typography.Text strong={!item.isRead}>
+                      {item.title}
+                    </Typography.Text>
+                  </Space>
+                }
+                description={
+                  <>
+                    <p>{item.content}</p>
+                    <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+                      {item.createdAt
+                        ? new Date(item.createdAt + "Z").toLocaleString("zh-CN")
+                        : ""}
+                    </Typography.Text>
+                  </>
+                }
+              />
+            </List.Item>
+          )}
+        />
+        <Pagination
+          current={page}
+          total={total}
+          pageSize={10}
+          onChange={setPage}
+          showSizeChanger={false}
+          hideOnSinglePage
+          style={{ marginTop: 20 }}
+        />
       </div>
-    )
-  }
-
-  if (data.length === 0 && !loading) {
-    return <div ref={ref} style={{ textAlign: 'center', padding: 80 }}>
-      <BellOutlined style={{ fontSize: 56, color: '#cbd5e1', marginBottom: 16 }} />
-      <div style={{ fontSize: 16, color: '#94a3b8', marginBottom: 8 }}>No notifications</div>
-      <Text style={{ fontSize: 13, color: '#cbd5e1' }}>New notifications will appear here when content is collected or approved.</Text>
-    </div>
-  }
-  return <div ref={ref}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}><Title level={4} style={{ margin: 0, fontWeight: 700, color: dark ? '#e2e8f0' : '#1e293b' }}>Notifications</Title><Button icon={<CheckOutlined />} onClick={markAll}>Mark All Read</Button></div><List loading={loading} dataSource={data} renderItem={(item: any) => <List.Item style={{ padding: '14px 20px', borderRadius: 12, marginBottom: 8, background: item.isRead ? (dark ? '#1a1a1a' : '#fff') : (dark ? '#1e1a3a' : '#f8faff'), border: '1px solid ' + (item.isRead ? '#f1f5f9' : '#e0e7ff') }}><List.Item.Meta avatar={<BellOutlined style={{ fontSize: 20, color: item.isRead ? '#94a3b8' : '#6366f1' }} />} title={<span style={{ fontWeight: item.isRead ? 400 : 600 }}>{item.title}</span>} description={<span><Text style={{ color: '#64748b' }}>{item.content}</Text><br /><Text style={{ fontSize: 11, color: '#94a3b8' }}>{timeAgo(item.createdAt)}</Text></span>} />{!item.isRead && <Button size='small' onClick={() => markRead(item.id)}>Read</Button>}</List.Item>} /></div>
+    </>
+  );
 }

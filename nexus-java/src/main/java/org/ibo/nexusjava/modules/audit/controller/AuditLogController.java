@@ -21,6 +21,7 @@ public class AuditLogController {
     public Result<IPage<AuditLogVO>> list(
             @RequestParam(required = false, defaultValue = "1") Long current,
             @RequestParam(required = false, defaultValue = "10") Long size) {
+        if (!"admin".equals(org.ibo.nexusjava.interceptor.UserContext.getRole())) throw new org.ibo.nexusjava.common.BusinessException(org.ibo.nexusjava.common.ErrorCode.PARAM_ERROR, "需要管理员权限");
         return Result.success(auditLogService.list(current, size));
     }
 }

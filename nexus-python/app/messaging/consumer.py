@@ -34,7 +34,9 @@ class NexusMQConsumer:
             )
             self._consumer.start()
             self._running = True
-            print(f"[MQ] Consumer started: group={settings.rocketmq.consumer_group}, topic={settings.rocketmq.topic_task_trigger}")
+            print(
+                f"[MQ] Consumer started: group={settings.rocketmq.consumer_group}, topic={settings.rocketmq.topic_task_trigger}"
+            )
         except Exception as e:
             print(f"[MQ] Consumer start failed (is RocketMQ running?): {e}")
             self._consumer = None
@@ -56,19 +58,25 @@ class NexusMQConsumer:
             platforms = body.get("sourcePlatforms", [])
             task_id = body.get("taskId") or uuid.uuid4().hex
 
-            print(f"[MQ] Received task trigger: taskId={task_id}, subscriptionId={subscription_id}")
+            print(
+                f"[MQ] Received task trigger: taskId={task_id}, subscriptionId={subscription_id}"
+            )
 
             # 在独立的事件循环中执行异步 Agent（避免与主循环冲突）
             loop = asyncio.new_event_loop()
             try:
                 asyncio.set_event_loop(loop)
-                loop.run_until_complete(self._handle_task(task_id, subscription_id, keywords, platforms))
+                loop.run_until_complete(
+                    self._handle_task(task_id, subscription_id, keywords, platforms)
+                )
             finally:
                 loop.close()
         except Exception as e:
             print(f"[MQ] Message handling error: {e}")
 
-    async def _handle_task(self, task_id: str, subscription_id: int, keywords: list, platforms: list):
+    async def _handle_task(
+        self, task_id: str, subscription_id: int, keywords: list, platforms: list
+    ):
         """异步处理：创建 DB Session 并运行 Scout Agent"""
         async for db in get_db_session():
             try:

@@ -23,7 +23,10 @@ public class RequestIdFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         //1、生成UUID(去掉横线是为了缩短长度)
-        String  requestId= UUID.randomUUID().toString().replace("-","");
+        String requestId = request.getHeader("X-Request-Id");
+        if (requestId == null || !requestId.matches("[A-Za-z0-9-]{1,64}")) {
+            requestId = UUID.randomUUID().toString().replace("-", "");
+        }
         //2、放入MDC
         MDC.put("requestId",requestId);
         //3、放入响应头，让前端拿到这个ID(报错时可以把ID贴给后端排查)

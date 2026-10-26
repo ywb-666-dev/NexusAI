@@ -77,7 +77,11 @@ class MCPPool:
     async def _health_check_loop(self) -> None:
         """每 30 秒检查一次所有活跃连接的健康状态"""
         while self._running:
-            await asyncio.sleep(self._registry[list(self._registry)[0]].health_check_interval if self._registry else 30)
+            await asyncio.sleep(
+                self._registry[list(self._registry)[0]].health_check_interval
+                if self._registry
+                else 30
+            )
             for name, wrapper in list(self._clients.items()):
                 ok = await wrapper.health_check()
                 if not ok and wrapper._health_fail_count >= 3:
@@ -91,6 +95,9 @@ class MCPPool:
             now = datetime.now()
             for name, wrapper in list(self._clients.items()):
                 cfg = self._registry[name]
-                if wrapper.last_used and (now - wrapper.last_used).total_seconds() > cfg.idle_ttl:
+                if (
+                    wrapper.last_used
+                    and (now - wrapper.last_used).total_seconds() > cfg.idle_ttl
+                ):
                     await wrapper.close()
                     self._clients.pop(name, None)

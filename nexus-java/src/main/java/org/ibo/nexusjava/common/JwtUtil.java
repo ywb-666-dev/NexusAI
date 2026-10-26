@@ -54,6 +54,7 @@ public class JwtUtil {
                 .claim("username",username)
                 .claim("role",role)
                 .issuedAt(now)
+                .expiration(exp)
                 .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }

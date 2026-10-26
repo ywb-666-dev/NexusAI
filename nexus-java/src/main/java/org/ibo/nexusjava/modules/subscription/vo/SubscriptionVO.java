@@ -24,7 +24,7 @@ public class SubscriptionVO {
     private LocalDateTime lastRunAt;
     private LocalDateTime createdAt;
 
-    static class RssFeedItem {
+    public static class RssFeedItem {
         private String url;
         private String name;
         private String platform;

@@ -12,6 +12,7 @@ from .metrics import MetricsStore, ExecutionRecord
 @dataclass
 class BenchmarkCase:
     """单个基准测试用例"""
+
     name: str
     description: str
     skill_name: str
@@ -25,6 +26,7 @@ class BenchmarkCase:
 @dataclass
 class BenchmarkResult:
     """单个基准测试的执行结果"""
+
     case_name: str
     skill_name: str
     passed: bool
@@ -38,6 +40,7 @@ class BenchmarkResult:
 @dataclass
 class BenchmarkRun:
     """一次完整的基准测试运行"""
+
     run_id: str
     started_at: datetime
     finished_at: datetime | None = None
@@ -110,7 +113,9 @@ class AgentBenchmarkRunner:
             field_match = 0
             if case.expected_fields:
                 matches = sum(1 for f in case.expected_fields if f in output_fields)
-                field_match = matches / len(case.expected_fields) if case.expected_fields else 1.0
+                field_match = (
+                    matches / len(case.expected_fields) if case.expected_fields else 1.0
+                )
 
             duration_ok = duration_ms <= case.max_duration_ms
             duration_score = min(1.0, case.max_duration_ms / max(duration_ms, 1))
@@ -125,7 +130,10 @@ class AgentBenchmarkRunner:
                 score=score,
                 duration_ms=round(duration_ms, 1),
                 output_fields=output_fields,
-                metadata={"field_match": round(field_match, 2), "duration_score": round(duration_score, 2)},
+                metadata={
+                    "field_match": round(field_match, 2),
+                    "duration_score": round(duration_score, 2),
+                },
             )
         except Exception as e:
             duration_ms = (time.perf_counter() - start) * 1000
@@ -158,8 +166,12 @@ class AgentBenchmarkRunner:
         run.results = results
         run.finished_at = datetime.utcnow()
         run.total_score = round(sum(r.score for r in results) / max(len(results), 1), 2)
-        run.pass_rate = round(sum(1 for r in results if r.passed) / max(len(results), 1) * 100, 1)
-        run.avg_duration_ms = round(sum(r.duration_ms for r in results) / max(len(results), 1), 1)
+        run.pass_rate = round(
+            sum(1 for r in results if r.passed) / max(len(results), 1) * 100, 1
+        )
+        run.avg_duration_ms = round(
+            sum(r.duration_ms for r in results) / max(len(results), 1), 1
+        )
 
         passed_count = sum(1 for r in results if r.passed)
         run.summary = (
@@ -192,114 +204,164 @@ class AgentBenchmarkRunner:
                 if res.passed:
                     successes += 1
 
-            comparisons.append({
-                "skill_name": name,
-                "iterations": iterations,
-                "success_rate": round(successes / iterations * 100, 1),
-                "avg_duration_ms": round(sum(durations) / len(durations), 1),
-                "min_duration_ms": round(min(durations), 1),
-                "max_duration_ms": round(max(durations), 1),
-            })
+            comparisons.append(
+                {
+                    "skill_name": name,
+                    "iterations": iterations,
+                    "success_rate": round(successes / iterations * 100, 1),
+                    "avg_duration_ms": round(sum(durations) / len(durations), 1),
+                    "min_duration_ms": round(min(durations), 1),
+                    "max_duration_ms": round(max(durations), 1),
+                }
+            )
 
-        comparisons.sort(key=lambda x: (x["success_rate"], -x["avg_duration_ms"]), reverse=True)
+        comparisons.sort(
+            key=lambda x: (x["success_rate"], -x["avg_duration_ms"]), reverse=True
+        )
         return comparisons
 
     def build_presets(self) -> None:
         """构建内置预设基准测试套件"""
-        self.register_suite("smoke", [
-            BenchmarkCase(
-                name="scout-basic",
-                description="Scout Skill basic RSS collection",
-                skill_name="scout",
-                inputs={"keywords": ["https://hnrss.org/frontpage"], "platforms": ["rss"]},
-                expected_fields=["items", "count"],
-                min_score=0.3,
-                max_duration_ms=15000,
-                tags=["rss", "smoke"],
-            ),
-            BenchmarkCase(
-                name="translate-basic",
-                description="Translate Skill basic translation",
-                skill_name="translate",
-                inputs={"text": "Hello, this is a test sentence for translation."},
-                expected_fields=["translated"],
-                min_score=0.4,
-                max_duration_ms=10000,
-                tags=["translate", "smoke"],
-            ),
-            BenchmarkCase(
-                name="summarize-basic",
-                description="Summarize Skill basic summary",
-                skill_name="summarize",
-                inputs={"items_text": "Item 1: AI news about LLM\nItem 2: New open source release", "style": "daily_report"},
-                expected_fields=["summary"],
-                min_score=0.4,
-                max_duration_ms=10000,
-                tags=["summary", "smoke"],
-            ),
-            BenchmarkCase(
-                name="dedup-basic",
-                description="Dedup Skill with sample items",
-                skill_name="dedup",
-                inputs={"items": [
-                    {"id": "1", "title": "Test article", "summary": "This is a test article about AI"},
-                    {"id": "2", "title": "Test article", "summary": "This is a test article about AI"},
-                ]},
-                expected_fields=["unique", "duplicate_ids", "unique_count"],
-                min_score=0.5,
-                max_duration_ms=5000,
-                tags=["dedup", "smoke"],
-            ),
-        ])
+        self.register_suite(
+            "smoke",
+            [
+                BenchmarkCase(
+                    name="scout-basic",
+                    description="Scout Skill basic RSS collection",
+                    skill_name="scout",
+                    inputs={
+                        "keywords": ["https://hnrss.org/frontpage"],
+                        "platforms": ["rss"],
+                    },
+                    expected_fields=["items", "count"],
+                    min_score=0.3,
+                    max_duration_ms=15000,
+                    tags=["rss", "smoke"],
+                ),
+                BenchmarkCase(
+                    name="translate-basic",
+                    description="Translate Skill basic translation",
+                    skill_name="translate",
+                    inputs={"text": "Hello, this is a test sentence for translation."},
+                    expected_fields=["translated"],
+                    min_score=0.4,
+                    max_duration_ms=10000,
+                    tags=["translate", "smoke"],
+                ),
+                BenchmarkCase(
+                    name="summarize-basic",
+                    description="Summarize Skill basic summary",
+                    skill_name="summarize",
+                    inputs={
+                        "items_text": "Item 1: AI news about LLM\nItem 2: New open source release",
+                        "style": "daily_report",
+                    },
+                    expected_fields=["summary"],
+                    min_score=0.4,
+                    max_duration_ms=10000,
+                    tags=["summary", "smoke"],
+                ),
+                BenchmarkCase(
+                    name="dedup-basic",
+                    description="Dedup Skill with sample items",
+                    skill_name="dedup",
+                    inputs={
+                        "items": [
+                            {
+                                "id": "1",
+                                "title": "Test article",
+                                "summary": "This is a test article about AI",
+                            },
+                            {
+                                "id": "2",
+                                "title": "Test article",
+                                "summary": "This is a test article about AI",
+                            },
+                        ]
+                    },
+                    expected_fields=["unique", "duplicate_ids", "unique_count"],
+                    min_score=0.5,
+                    max_duration_ms=5000,
+                    tags=["dedup", "smoke"],
+                ),
+            ],
+        )
 
-        self.register_suite("performance", [
-            BenchmarkCase(
-                name="scout-perf-rss",
-                description="Scout Skill RSS performance test",
-                skill_name="scout",
-                inputs={"keywords": ["https://hnrss.org/frontpage"], "platforms": ["rss"]},
-                expected_fields=["items", "count"],
-                min_score=0.3,
-                max_duration_ms=8000,
-                tags=["rss", "performance"],
-            ),
-            BenchmarkCase(
-                name="dedup-perf-100",
-                description="Dedup Skill with 100 items",
-                skill_name="dedup",
-                inputs={"items": [
-                    {"id": str(i), "title": f"Article {i % 20}", "summary": f"Test content variant {i % 10}"}
-                    for i in range(100)
-                ]},
-                expected_fields=["unique", "duplicate_ids"],
-                min_score=0.5,
-                max_duration_ms=3000,
-                tags=["dedup", "performance"],
-            ),
-        ])
+        self.register_suite(
+            "performance",
+            [
+                BenchmarkCase(
+                    name="scout-perf-rss",
+                    description="Scout Skill RSS performance test",
+                    skill_name="scout",
+                    inputs={
+                        "keywords": ["https://hnrss.org/frontpage"],
+                        "platforms": ["rss"],
+                    },
+                    expected_fields=["items", "count"],
+                    min_score=0.3,
+                    max_duration_ms=8000,
+                    tags=["rss", "performance"],
+                ),
+                BenchmarkCase(
+                    name="dedup-perf-100",
+                    description="Dedup Skill with 100 items",
+                    skill_name="dedup",
+                    inputs={
+                        "items": [
+                            {
+                                "id": str(i),
+                                "title": f"Article {i % 20}",
+                                "summary": f"Test content variant {i % 10}",
+                            }
+                            for i in range(100)
+                        ]
+                    },
+                    expected_fields=["unique", "duplicate_ids"],
+                    min_score=0.5,
+                    max_duration_ms=3000,
+                    tags=["dedup", "performance"],
+                ),
+            ],
+        )
 
-        self.register_suite("accuracy", [
-            BenchmarkCase(
-                name="dedup-exact-duplicate",
-                description="Dedup should detect exact duplicates",
-                skill_name="dedup",
-                inputs={"items": [
-                    {"id": "a", "title": "Same Title", "summary": "Same content"},
-                    {"id": "b", "title": "Same Title", "summary": "Same content"},
-                ]},
-                expected_fields=["unique", "duplicate_ids"],
-                min_score=0.7,
-                max_duration_ms=5000,
-                tags=["dedup", "accuracy"],
-            ),
-            BenchmarkCase(
-                name="translate-non-chinese",
-                description="Translate should handle non-Chinese text",
-                skill_name="translate",
-                inputs={"text": "Artificial intelligence is transforming industries worldwide."},
-                expected_fields=["translated"],
-                min_score=0.4,
-                max_duration_ms=10000,
-                tags=["translate", "accuracy"],
-            ),
-        ])
+        self.register_suite(
+            "accuracy",
+            [
+                BenchmarkCase(
+                    name="dedup-exact-duplicate",
+                    description="Dedup should detect exact duplicates",
+                    skill_name="dedup",
+                    inputs={
+                        "items": [
+                            {
+                                "id": "a",
+                                "title": "Same Title",
+                                "summary": "Same content",
+                            },
+                            {
+                                "id": "b",
+                                "title": "Same Title",
+                                "summary": "Same content",
+                            },
+                        ]
+                    },
+                    expected_fields=["unique", "duplicate_ids"],
+                    min_score=0.7,
+                    max_duration_ms=5000,
+                    tags=["dedup", "accuracy"],
+                ),
+                BenchmarkCase(
+                    name="translate-non-chinese",
+                    description="Translate should handle non-Chinese text",
+                    skill_name="translate",
+                    inputs={
+                        "text": "Artificial intelligence is transforming industries worldwide."
+                    },
+                    expected_fields=["translated"],
+                    min_score=0.4,
+                    max_duration_ms=10000,
+                    tags=["translate", "accuracy"],
+                ),
+            ],
+        )

@@ -1,67 +1,75 @@
-"""
-初始化 NexusAI MySQL 数据库
-用法: python scripts/init_db.py
-"""
+"""Non-destructive initialization and additive migration. Run from any directory."""
+
+import re
 import sys
-import os
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "nexus-python"))
+import pymysql
+from sqlalchemy import create_engine, inspect, text
+from sqlalchemy.engine import URL
+from app.core.config import settings
+from app.models import Base
+from app.models.delivery import PushChannel, PushDelivery
+from app.models.audit import AuditLog
+from app.models.source import SourceHealth
 
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'nexus-python'))
-
-try:
-    import pymysql
-except ImportError:
-    print("正在安装 pymysql...")
-    os.system(f"{sys.executable} -m pip install pymysql -q")
-    import pymysql
-
-DB_HOST = "localhost"
-DB_PORT = 3306
-DB_USER = "root"
-DB_PASS = "712693"
-DB_NAME = "nexusai"
-
-SQL_FILE = os.path.join(os.path.dirname(__file__), '..', 'infra', 'sql', 'init.sql')
-
-def init_database():
-    conn = pymysql.connect(
-        host=DB_HOST, port=DB_PORT,
-        user=DB_USER, password=DB_PASS,
-        charset='utf8mb4'
-    )
-    try:
+def main():
+    config = settings.db
+    if not re.fullmatch(r"[A-Za-z0-9_]+", config.database):
+        raise ValueError("Invalid database name")
+    with pymysql.connect(
+        host=config.host,
+        port=config.port,
+        user=config.username,
+        password=config.password,
+        autocommit=True,
+        charset="utf8mb4",
+    ) as conn:
         with conn.cursor() as cur:
-            cur.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
-            print(f"数据库 '{DB_NAME}' 创建成功（或已存在）")
-        conn.commit()
-    finally:
-        conn.close()
-
-    conn = pymysql.connect(
-        host=DB_HOST, port=DB_PORT,
-        user=DB_USER, password=DB_PASS,
-        database=DB_NAME,
-        charset='utf8mb4'
+            cur.execute(
+                f"CREATE DATABASE IF NOT EXISTS `{config.database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+            )
+    engine = create_engine(
+        URL.create(
+            "mysql+pymysql",
+            username=config.username,
+            password=config.password,
+            host=config.host,
+            port=config.port,
+            database=config.database,
+        ),
+        pool_pre_ping=True,
     )
-    try:
-        with conn.cursor() as cur:
-            with open(SQL_FILE, 'r', encoding='utf-8') as f:
-                sql = f.read()
-            # 按分号分割语句（简单处理）
-            for statement in sql.split(';'):
-                stmt = statement.strip()
-                if stmt and not stmt.startswith('--') and not stmt.startswith('/*'):
-                    # 移除注释行
-                    clean_lines = [l for l in stmt.split('\n') if not l.strip().startswith('--')]
-                    clean_stmt = '\n'.join(clean_lines).strip()
-                    if clean_stmt:
-                        cur.execute(clean_stmt)
-                        print(f"执行: {clean_stmt[:60]}...")
-        conn.commit()
-        print("init.sql 执行完毕")
-    finally:
-        conn.close()
+    Base.metadata.create_all(engine)
+    migrations = {
+        "subscription": {"rss_feeds": "JSON"},
+        "content": {"translated_summary": "TEXT", "task_id": "VARCHAR(64)"},
+    }
+    with engine.begin() as conn:
+        for table, fields in migrations.items():
+            existing = {c["name"] for c in inspect(conn).get_columns(table)}
+            for name, ddl in fields.items():
+                if name not in existing:
+                    conn.execute(
+                        text(f"ALTER TABLE `{table}` ADD COLUMN `{name}` {ddl}")
+                    )
+        body_type = next(
+            c["type"]
+            for c in inspect(conn).get_columns("content")
+            if c["name"] == "content_body"
+        )
+        if str(body_type).upper() != "LONGTEXT":
+            conn.execute(
+                text("ALTER TABLE content MODIFY COLUMN content_body LONGTEXT NULL")
+            )
+    print(
+        "Database initialized; existing rows preserved. Tables:",
+        ", ".join(inspect(engine).get_table_names()),
+    )
+    engine.dispose()
+
 
 if __name__ == "__main__":
-    init_database()
-    print("数据库初始化完成！")
+    main()

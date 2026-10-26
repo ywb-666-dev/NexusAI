@@ -1,5 +1,6 @@
 from sqlalchemy import BigInteger, String, DateTime, CHAR, JSON, Text, func, Index
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.dialects.mysql import LONGTEXT
 
 from .base import Base
 
@@ -9,11 +10,15 @@ class Content(Base):
 
     id: Mapped[str] = mapped_column(CHAR(36), primary_key=True)
     subscription_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    task_id: Mapped[str | None] = mapped_column(String(64))
     source_platform: Mapped[str] = mapped_column(String(32), nullable=False)
     source_url: Mapped[str] = mapped_column(String(1000), nullable=False)
     title: Mapped[str | None] = mapped_column(String(500))
     summary: Mapped[str | None] = mapped_column(String(2000))
-    content_body: Mapped[str | None] = mapped_column(Text)
+    translated_summary: Mapped[str | None] = mapped_column(Text)
+    content_body: Mapped[str | None] = mapped_column(
+        Text().with_variant(LONGTEXT, "mysql")
+    )
     author: Mapped[str | None] = mapped_column(String(100))
     published_at: Mapped[DateTime | None] = mapped_column(DateTime)
     fetched_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now())

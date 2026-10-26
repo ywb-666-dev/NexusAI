@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.concurrent.TimeUnit;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -47,30 +51,25 @@ public class SystemController {
 
     @GetMapping("/metrics")
     public Result<SystemMetricsVO> metrics() {
-        String cacheKey = "cache:metrics";
-        String cached = stringRedisTemplate.opsForValue().get(cacheKey);
-        if (cached != null) {
-            try { return objectMapper.readValue(cached, new TypeReference<Result<SystemMetricsVO>>() {}); }
-            catch (Exception ignored) {}
-        }
-
         SystemMetricsVO vo = new SystemMetricsVO();
-        vo.setTotalUsers(userMapper.selectCount(null));
-        vo.setTotalSubscriptions(subscriptionMapper.selectCount(null));
-        vo.setTotalContents(contentMapper.selectCount(null));
+        vo.setTotalUsers("admin".equals(org.ibo.nexusjava.interceptor.UserContext.getRole()) ? userMapper.selectCount(null) : 1L);
+        var ids = subscriptionMapper.selectList(new LambdaQueryWrapper<Subscription>().eq(Subscription::getUserId, org.ibo.nexusjava.interceptor.UserContext.getUserId())).stream().map(Subscription::getId).toList();
+        vo.setTotalSubscriptions(subscriptionMapper.selectCount(new LambdaQueryWrapper<Subscription>().eq(Subscription::getUserId, org.ibo.nexusjava.interceptor.UserContext.getUserId()).ne(Subscription::getStatus, -1)));
+        vo.setTotalContents(ids.isEmpty() ? 0L : contentMapper.selectCount(new LambdaQueryWrapper<Content>().in(Content::getSubscriptionId, ids).eq(Content::getStatus, 1)));
 
         LambdaQueryWrapper<ApprovalTicket> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(ApprovalTicket::getStatus, 0);
+        if (!"admin".equals(org.ibo.nexusjava.interceptor.UserContext.getRole())) wrapper.eq(ApprovalTicket::getUserId, org.ibo.nexusjava.interceptor.UserContext.getUserId());
         vo.setPendingApprovals(approvalTicketMapper.selectCount(wrapper));
 
         Result<SystemMetricsVO> result = Result.success(vo);
-        try { stringRedisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(result), 30, TimeUnit.SECONDS); } catch (Exception ignored) {}
         return result;
     }
 
     @GetMapping("/charts")
     public Result<ChartsVO> charts() {
-        List<Content> allContent = contentMapper.selectList(null);
+        var ids = subscriptionMapper.selectList(new LambdaQueryWrapper<Subscription>().eq(Subscription::getUserId, org.ibo.nexusjava.interceptor.UserContext.getUserId())).stream().map(Subscription::getId).toList();
+        List<Content> allContent = ids.isEmpty() ? List.of() : contentMapper.selectList(new LambdaQueryWrapper<Content>().in(Content::getSubscriptionId, ids).eq(Content::getStatus, 1));
 
         // 平台分布
         Map<String, Long> platformCount = allContent.stream()
@@ -112,8 +111,6 @@ public class SystemController {
         ChartsVO vo = new ChartsVO();
         vo.setPlatformDistribution(platformDist);
         vo.setHourlyTrend(hourlyTrend);
-        Result<SystemMetricsVO> result = Result.success(vo);
-        try { stringRedisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(result), 30, TimeUnit.SECONDS); } catch (Exception ignored) {}
-        return result;
+        return Result.success(vo);
     }
 }

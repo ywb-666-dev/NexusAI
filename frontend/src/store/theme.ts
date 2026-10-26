@@ -1,17 +1,17 @@
-﻿import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+﻿import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface ThemeState {
-  dark: boolean
-  toggle: () => void
+  dark: boolean;
+  toggle: () => void;
 }
 
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set) => ({
-      dark: false,
+      dark: true,
       toggle: () => set((s) => ({ dark: !s.dark })),
     }),
-    { name: 'nexus-theme' }
-  )
-)
+    { name: "nexus-theme" },
+  ),
+);

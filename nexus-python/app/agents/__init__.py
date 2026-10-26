@@ -12,7 +12,12 @@ from .state import (
     CuratorResult,
 )
 from .supervisor import NexusSupervisor
-from .scout_agent import run_scout_node, _update_task_status, get_task_status, AGENT_NODES
+from .scout_agent import (
+    run_scout_node,
+    _update_task_status,
+    get_task_status,
+    AGENT_NODES,
+)
 from .parser_agent import run_parser
 from .connector_agent import run_connector
 from .actor_agent import run_actor

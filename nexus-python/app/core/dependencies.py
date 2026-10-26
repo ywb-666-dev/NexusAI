@@ -29,6 +29,7 @@ def _get_async_engine():
             max_overflow=settings.db.max_overflow,
             pool_timeout=settings.db.pool_timeout,
             echo=settings.db.echo,
+            connect_args={"init_command": "SET time_zone = '+00:00'"},
             future=True,
         )
     return _async_engine

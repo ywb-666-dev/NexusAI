@@ -1,7 +1,7 @@
 """Actor Agent — 决策行动节点：风险评估、审批触发、动作决策"""
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from app.models import ApprovalTicket, Content
 from app.agents.state import NexusState, ActorResult
@@ -9,8 +9,15 @@ from app.agents.state import NexusState, ActorResult
 
 # 敏感关键词（高风险标记）
 _SENSITIVE_KEYWORDS = [
-    "exploit", "漏洞", "CVE-", "zero-day", "0day",
-    "数据泄露", "data breach", "credential", "ransomware",
+    "exploit",
+    "漏洞",
+    "CVE-",
+    "zero-day",
+    "0day",
+    "数据泄露",
+    "data breach",
+    "credential",
+    "ransomware",
 ]
 
 _LOW_RISK_THRESHOLD = 5  # 少于5条新内容 → 低风险
@@ -78,6 +85,11 @@ async def run_actor(state: NexusState, db: AsyncSession) -> NexusState:
         try:
             ticket = ApprovalTicket(
                 task_id=state.get("task_id", ""),
+                user_id=state["user_id"],
+                context={
+                    "content_ids": state.get("connector", {}).get("stored_ids", []),
+                    "reason": reason,
+                },
                 action_type="content_publish",
                 risk_level=risk_level,
                 status=0,  # pending
@@ -95,15 +107,9 @@ async def run_actor(state: NexusState, db: AsyncSession) -> NexusState:
             )
             state["next_node"] = "__interrupt__"
             state["status"] = "interrupted: awaiting approval"
-        except Exception as e:
-            print(f"[Actor] Failed to create approval ticket: {e}")
-            state["actor"] = ActorResult(
-                action="proceed",
-                risk_level=risk_level,
-                reason=f"审批创建失败，自动通过: {e}",
-                approval_id=None,
-            )
-            state["next_node"] = "curator"
+        except Exception:
+            await db.rollback()
+            raise
     else:
         state["actor"] = ActorResult(
             action="proceed",
@@ -113,4 +119,11 @@ async def run_actor(state: NexusState, db: AsyncSession) -> NexusState:
         )
         state["next_node"] = "curator"
 
+    if state.get("actor", {}).get("action") == "proceed":
+        ids = state.get("connector", {}).get("stored_ids", [])
+        if ids:
+            await db.execute(
+                update(Content).where(Content.id.in_(ids)).values(status=1)
+            )
+            await db.commit()
     return state

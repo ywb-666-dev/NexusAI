@@ -13,7 +13,7 @@ class ServerConfig(BaseModel):
     transport: Literal["stdio"] = "stdio"
 
     # 运行时策略
-    idle_ttl: int = 300              # 空闲超时（秒），超后自动关闭
+    idle_ttl: int = 300  # 空闲超时（秒），超后自动关闭
     health_check_interval: int = 30  # 健康检查间隔（秒）
-    max_retry: int = 3               # call_tool 失败重试次数
-    max_instances: int = 1           # 同类型 Server 最大并发实例数（预留）
+    max_retry: int = 3  # call_tool 失败重试次数
+    max_instances: int = 1  # 同类型 Server 最大并发实例数（预留）

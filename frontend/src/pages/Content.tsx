@@ -1,119 +1,246 @@
-import { useEffect, useState, useRef } from 'react'
-import { Card, Tag, Typography, Space, Button, Drawer, Row, Col, Input, Skeleton, Segmented, App } from 'antd'
-import { FileTextOutlined, EyeOutlined, SearchOutlined, GlobalOutlined } from '@ant-design/icons'
-import request from '../api/request'
-import { useThemeStore } from '../store/theme'
-import { useGSAP } from '@gsap/react'
-import { useSearchParams } from 'react-router-dom'
-import { timeAgo } from '../utils/time'
-import gsap from 'gsap'
-
-gsap.registerPlugin(useGSAP)
-const { Title, Text, Paragraph } = Typography
-
-const platColor: Record<string, string> = { rss: '#f59e0b', web: '#6366f1', api: '#10b981' }
-
+import { useEffect, useState } from "react";
+import {
+  Alert,
+  App,
+  Button,
+  Drawer,
+  Empty,
+  Input,
+  Pagination,
+  Segmented,
+  Skeleton,
+  Space,
+  Tag,
+  Typography,
+} from "antd";
+import { useSearchParams } from "react-router-dom";
+import { SearchOutlined, ExportOutlined } from "@ant-design/icons";
+import request from "../api/request";
+import PageHeading from "../components/PageHeading";
+const { Text } = Typography;
 export default function ContentPage() {
-  const [data, setData] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
-  const [detail, setDetail] = useState<any>(null)
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [searchParams] = useSearchParams()
-  const [search, setSearch] = useState(searchParams.get('search') || '')
-  const dark = useThemeStore((s) => s.dark)
-  const { message } = App.useApp()
-  const [aiLoading, setAiLoading] = useState(false)
-  const [aiResult, setAiResult] = useState('')
-  const [filter, setFilter] = useState('all')
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => { fetchContent() }, [])
-
-  const handleSummarize = async (text: string) => {
-    if (!text) return; setAiLoading(true); setAiResult('')
-    try { const r: any = await request.post('/python/skills/summarize/invoke', { text: text.slice(0, 3000), style: 'article_summary' }); setAiResult(r.data?.data?.summary || r.data?.summary || 'Summary not available') }
-    catch { setAiResult('Failed to generate summary') }
-    finally { setAiLoading(false) }
-  }
-
-  const handleTranslate = async (text: string) => {
-    if (!text) return; setAiLoading(true); setAiResult('')
-    try { const r: any = await request.post('/python/skills/translate/invoke', { text: text.slice(0, 3000) }); setAiResult(r.data?.data?.translated || r.data?.translated || 'Translation not available') }
-    catch { setAiResult('Failed to translate') }
-    finally { setAiLoading(false) }
-  }
-  const fetchContent = async () => { setLoading(true); try { const r: any = await request.get('/java/contents?size=50'); setData(r.data?.items ?? r.data?.records ?? []) } finally { setLoading(false) } }
-
-  useGSAP(() => { gsap.from('.content-card', { y: 24, opacity: 0, duration: 0.4, stagger: 0.06, ease: 'power2.out' }) }, { scope: ref, dependencies: [loading] })
-
-  const filtered = data.filter(d => { if (search && !(d.title || '').toLowerCase().includes(search.toLowerCase())) return false; if (filter !== 'all' && d.sourcePlatform !== filter) return false; return true })
-
-  function CardComp({ item }: any) {
-    const cardRef = useRef<HTMLDivElement>(null)
-    return (
-      <Col xs={24} sm={12} lg={8} xl={6}>
-        <Card hoverable className='content-card' ref={cardRef as any} onClick={() => { setDetail(item); setDrawerOpen(true) }}
-          style={{ borderRadius: 12, border: 'none', boxShadow: dark ? 'none' : '0 1px 3px rgba(0,0,0,0.06)', height: '100%', transition: 'all 0.2s ease', cursor: 'pointer' }}
-          onMouseEnter={() => gsap.to(cardRef.current, { y: -4, duration: 0.3, ease: 'power2.out' })}
-          onMouseLeave={() => gsap.to(cardRef.current, { y: 0, duration: 0.3, ease: 'power2.out' })}
-          bodyStyle={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
-            <Tag color={platColor[item.sourcePlatform] || 'default'} style={{ borderRadius: 6, fontSize: 10, margin: 0 }}><GlobalOutlined style={{ marginRight: 4 }} />{item.sourcePlatform}</Tag>
-            {item.author && <Tag style={{ borderRadius: 6, fontSize: 10, margin: 0, background: '#f1f5f9', border: 'none', color: '#64748b' }}>{item.author}</Tag>}
-          </div>
-          <Text strong style={{ fontSize: 14, lineHeight: 1.5, flex: 1, display: 'block', marginBottom: 8, color: dark ? '#e2e8f0' : '#1e293b' }}>{item.title}</Text>
-          <Text style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.5, flexShrink: 0 }}>{(item.summary || '').slice(0, 120)}{item.summary && item.summary.length > 120 ? '...' : ''}</Text>
-          <div style={{ marginTop: 'auto', paddingTop: 10, fontSize: 11, color: '#cbd5e1' }}>
-            {item.fetchedAt ? timeAgo(item.fetchedAt) + ' . ' + Math.max(1, Math.ceil((item.contentBody || item.summary || '').length / 500)) + ' min read' : ''}
-          </div>
-        </Card>
-      </Col>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div ref={ref}>
-        <Skeleton.Input active style={{ width: 200, height: 28, marginBottom: 20 }} />
-        <Segmented options={[{label:'All',value:'all'},{label:'RSS',value:'rss'},{label:'Web',value:'web'},{label:'API',value:'api'}]} value={filter} onChange={v => setFilter(v as string)} style={{ marginBottom: 16 }} />
-      <Row gutter={[16, 16]}>
-          {Array.from({length: 8}, (_, i) => (
-            <Col xs={24} sm={12} lg={8} xl={6} key={i}>
-              <Card style={{ borderRadius: 12 }}>
-                <Skeleton active paragraph={{ rows: 3 }} />
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </div>
-    )
-  }
-
+  const [params, setParams] = useSearchParams(),
+    [search, setSearch] = useState(params.get("search") || ""),
+    [query, setQuery] = useState(search),
+    [platform, setPlatform] = useState(""),
+    [page, setPage] = useState(1),
+    [data, setData] = useState<any[]>([]),
+    [total, setTotal] = useState(0),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState(""),
+    [detail, setDetail] = useState<any>(null),
+    [ai, setAi] = useState(""),
+    [busy, setBusy] = useState(false);
+  const { message } = App.useApp();
+  useEffect(() => {
+    const next = params.get("search") || "";
+    setSearch(next);
+    setQuery(next);
+    setPage(1);
+  }, [params]);
+  useEffect(() => {
+    let live = true;
+    setLoading(true);
+    setError("");
+    request
+      .get("/python/contents", {
+        params: { page, size: 12, search: query, platform },
+      })
+      .then((r: any) => {
+        if (live) {
+          setData(r.data.items);
+          setTotal(r.data.total);
+        }
+      })
+      .catch((e) => {
+        if (live) setError(e.message);
+      })
+      .finally(() => {
+        if (live) setLoading(false);
+      });
+    return () => {
+      live = false;
+    };
+  }, [page, query, platform]);
+  const invoke = async (name: string) => {
+    setBusy(true);
+    setAi("");
+    try {
+      const r: any = await request.post("/python/skills/" + name + "/invoke", {
+        text: detail.contentBody || detail.summary,
+        style: "article_summary",
+      });
+      setAi(
+        (r.data.data?.source !== "llm"
+          ? "当前未使用大模型，以下保留原文或提供原文摘录。\n\n"
+          : "") +
+          (r.data.data?.summary || r.data.data?.translated || "未返回内容"),
+      );
+    } catch (e: any) {
+      message.error(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
   return (
-    <div ref={ref}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <Title level={4} style={{ margin: 0, fontWeight: 700, color: dark ? '#e2e8f0' : '#1e293b' }}>Content Feed</Title>
-        <Input prefix={<SearchOutlined />} placeholder='Search titles...' value={search} onChange={e => setSearch(e.target.value)} style={{ width: 260, borderRadius: 10 }} allowClear />
+    <>
+      <PageHeading
+        label="CONTENT / 内容情报"
+        title="你的内容中心"
+        subtitle="所有订阅内容集中阅读，保留来源与原文，按需翻译和提炼。"
+      />
+      <div className="toolbar">
+        <Input.Search
+          prefix={<SearchOutlined />}
+          placeholder="搜索标题或摘要，回车检索"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onSearch={(v) => {
+            setQuery(v);
+            setPage(1);
+            setParams(v ? { search: v } : {});
+          }}
+          allowClear
+          style={{ width: 360, maxWidth: "100%" }}
+        />
+        <Segmented
+          options={[
+            { label: "全部来源", value: "" },
+            { label: "RSS", value: "rss" },
+            { label: "网页", value: "web" },
+            { label: "API", value: "api" },
+          ]}
+          value={platform}
+          onChange={(v) => {
+            setPlatform(String(v));
+            setPage(1);
+          }}
+        />
+        <Text type="secondary">共 {total} 条内容</Text>
       </div>
-      <Segmented options={[{label:'All',value:'all'},{label:'RSS',value:'rss'},{label:'Web',value:'web'},{label:'API',value:'api'}]} value={filter} onChange={v => setFilter(v as string)} style={{ marginBottom: 16 }} />
-      <Row gutter={[16, 16]}>
-        {filtered.map((item: any) => <CardComp key={item.id} item={item} />)}
-      </Row>
-      {filtered.length === 0 && !loading && <div style={{ textAlign: 'center', padding: 60, color: '#94a3b8' }}><FileTextOutlined style={{ fontSize: 48, marginBottom: 12 }} /><br />No content yet. Create a subscription to start collecting.</div>}
-      <Drawer title={<span style={{ fontWeight: 600 }}>{detail?.title}</span>} extra={<Button type='primary' size='small' onClick={() => { if (detail?.sourceUrl) { navigator.clipboard.writeText(detail.sourceUrl); message.success('Link copied') } }} style={{ borderRadius: 6 }}>Copy Link</Button>} open={drawerOpen} onClose={() => setDrawerOpen(false)} width={640}>
-        {detail && <>
-          <Space size={4} style={{ marginBottom: 16 }}>
-            <Button size='small' loading={aiLoading} onClick={() => handleSummarize(detail.contentBody || detail.summary || '')} style={{ borderRadius: 6 }}>AI Summarize</Button>
-            <Button size='small' loading={aiLoading} onClick={() => handleTranslate(detail.contentBody || detail.summary || '')} style={{ borderRadius: 6 }}>Translate</Button>
-          </Space>
-          {aiResult && <Card size='small' style={{ marginBottom: 16, borderRadius: 8, background: '#f8faff', border: '1px solid #e0e7ff' }} bodyStyle={{ padding: '10px 14px' }}><Text style={{ fontSize: 13, color: '#4338ca', fontWeight: 600, display: 'block', marginBottom: 6 }}>AI Result</Text><div style={{ lineHeight: 1.8, fontSize: 13, color: '#334155' }}>{aiResult}</div></Card>}
-          <Space size={4} style={{ marginBottom: 16 }}>
-            <Tag color={platColor[detail.sourcePlatform]} style={{ borderRadius: 6 }}>{detail.sourcePlatform}</Tag>
-            <Text style={{ fontSize: 12, color: '#94a3b8' }}>{detail.author || 'Unknown'} - {detail.fetchedAt ? timeAgo(detail.fetchedAt) : ''}</Text>
-          </Space>
-          <div style={{ lineHeight: 1.9, color: '#334155', whiteSpace: 'pre-wrap', fontSize: 14 }}>{detail.contentBody || detail.summary || 'No content available'}</div>
-        </>}
+      {error && (
+        <Alert
+          type="error"
+          message={error}
+          showIcon
+          style={{ marginTop: 20 }}
+        />
+      )}
+      <div className="content-grid">
+        {loading
+          ? Array.from({ length: 6 }, (_, i) => (
+              <div className="panel" key={i}>
+                <Skeleton active />
+              </div>
+            ))
+          : data.map((item) => (
+              <button
+                className="panel article-card"
+                key={item.id}
+                onClick={() => {
+                  setDetail(item);
+                  setAi("");
+                }}
+              >
+                <Tag color={item.sourcePlatform === "rss" ? "cyan" : "purple"}>
+                  {item.sourcePlatform.toUpperCase()}
+                </Tag>
+                <h3>{item.title || "无标题"}</h3>
+                <p>
+                  {item.translatedSummary || item.summary || "打开阅读完整正文"}
+                </p>
+                <div className="article-meta">
+                  <span>{item.author || "来源未署名"}</span>
+                  <span>
+                    {item.fetchedAt
+                      ? new Date(item.fetchedAt).toLocaleString("zh-CN")
+                      : ""}
+                  </span>
+                </div>
+              </button>
+            ))}
+      </div>
+      {!loading && !error && data.length === 0 && (
+        <Empty
+          description={
+            query
+              ? "没有找到匹配的内容"
+              : "还没有可读内容，创建订阅并触发首次采集吧"
+          }
+          style={{ padding: 60 }}
+        />
+      )}
+      <Pagination
+        current={page}
+        total={total}
+        pageSize={12}
+        onChange={setPage}
+        showSizeChanger={false}
+        hideOnSinglePage
+      />
+      <Drawer
+        open={!!detail}
+        onClose={() => setDetail(null)}
+        width={Math.min(760, window.innerWidth)}
+        title="内容阅读"
+        extra={
+          detail && (
+            <Button
+              href={detail.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              icon={<ExportOutlined />}
+            >
+              查看来源
+            </Button>
+          )
+        }
+      >
+        {detail && (
+          <>
+            <Tag color="cyan">{detail.sourcePlatform}</Tag>
+            <Typography.Title level={3}>{detail.title}</Typography.Title>
+            <Text type="secondary">
+              {detail.author || "来源未署名"} ·{" "}
+              {detail.publishedAt
+                ? new Date(detail.publishedAt).toLocaleString("zh-CN")
+                : "发布时间未知"}
+            </Text>
+            <Space style={{ margin: "22px 0" }}>
+              <Button loading={busy} onClick={() => invoke("summarize")}>
+                AI 提炼摘要
+              </Button>
+              <Button loading={busy} onClick={() => invoke("translate")}>
+                翻译为中文
+              </Button>
+            </Space>
+            {ai && (
+              <Alert
+                type="info"
+                message="AI 辅助阅读"
+                description={
+                  <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.9 }}>
+                    {ai}
+                  </div>
+                }
+                style={{ marginBottom: 24 }}
+              />
+            )}
+            {detail.translatedSummary && (
+              <Alert
+                message="中文摘要"
+                description={detail.translatedSummary}
+                style={{ marginBottom: 24 }}
+              />
+            )}
+            <div className="reading-body">
+              {detail.contentBody ||
+                detail.summary ||
+                "来源未提供正文，请打开原文阅读。"}
+            </div>
+          </>
+        )}
       </Drawer>
-    </div>
-  )
+    </>
+  );
 }

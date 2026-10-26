@@ -15,5 +15,5 @@ public interface SubscriptionService {
     void delete(Long id);
     SubscriptionVO getById(Long id);
     IPage<SubscriptionVO> list(SubscriptionQueryDTO query);
-    void trigger(Long id);
+    String trigger(Long id);
 }

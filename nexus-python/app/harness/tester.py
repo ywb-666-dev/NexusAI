@@ -12,6 +12,7 @@ from .metrics import MetricsStore
 @dataclass
 class TestCase:
     """单个测试用例"""
+
     name: str
     description: str
     skill_name: str
@@ -24,6 +25,7 @@ class TestCase:
 @dataclass
 class TestResult:
     """单个测试用例的执行结果"""
+
     test_name: str
     skill_name: str
     status: str  # passed | failed | error | timeout
@@ -36,6 +38,7 @@ class TestResult:
 @dataclass
 class TestRun:
     """一次完整的测试运行"""
+
     run_id: str
     suite_name: str
     started_at: datetime
@@ -120,11 +123,15 @@ class AgentTester:
             for i, assertion in enumerate(test.assertions):
                 try:
                     passed, detail = assertion(result.data)
-                    assertion_results.append({"index": i, "passed": passed, "detail": detail})
+                    assertion_results.append(
+                        {"index": i, "passed": passed, "detail": detail}
+                    )
                     if not passed:
                         all_passed = False
                 except Exception as e:
-                    assertion_results.append({"index": i, "passed": False, "detail": str(e)})
+                    assertion_results.append(
+                        {"index": i, "passed": False, "detail": str(e)}
+                    )
                     all_passed = False
 
             return TestResult(
@@ -239,13 +246,15 @@ class AgentTester:
             # Copy base inputs and override the pivot field
             base_inputs = self._get_base_inputs(suite_name, skill_name)
             base_inputs[pivot_field] = val
-            tests.append(TestCase(
-                name=f"{skill_name}-{pivot_field}-{i}",
-                description=f"Evaluation: {skill_name} with {pivot_field}={val}",
-                skill_name=skill_name,
-                inputs=base_inputs,
-                tags=["evaluation", skill_name],
-            ))
+            tests.append(
+                TestCase(
+                    name=f"{skill_name}-{pivot_field}-{i}",
+                    description=f"Evaluation: {skill_name} with {pivot_field}={val}",
+                    skill_name=skill_name,
+                    inputs=base_inputs,
+                    tags=["evaluation", skill_name],
+                )
+            )
         return tests
 
     def _get_base_inputs(self, suite_name: str, skill_name: str) -> dict[str, Any]:
@@ -261,111 +270,153 @@ class AgentTester:
     @staticmethod
     def assert_field_exists(field: str) -> Callable[[Any], tuple[bool, str]]:
         """断言返回数据中包含指定字段"""
+
         def check(data: Any) -> tuple[bool, str]:
             if isinstance(data, dict) and field in data:
                 return True, f"Field '{field}' exists"
-            return False, f"Field '{field}' missing (got keys: {list(data.keys()) if isinstance(data, dict) else type(data)})"
+            return (
+                False,
+                f"Field '{field}' missing (got keys: {list(data.keys()) if isinstance(data, dict) else type(data)})",
+            )
+
         return check
 
     @staticmethod
     def assert_field_not_empty(field: str) -> Callable[[Any], tuple[bool, str]]:
         """断言字段值非空"""
+
         def check(data: Any) -> tuple[bool, str]:
             val = data.get(field) if isinstance(data, dict) else None
             if val is not None and val != "" and val != []:
                 return True, f"Field '{field}' is not empty"
             return False, f"Field '{field}' is empty or missing"
+
         return check
 
     @staticmethod
-    def assert_value_match(field: str, expected: Any) -> Callable[[Any], tuple[bool, str]]:
+    def assert_value_match(
+        field: str, expected: Any
+    ) -> Callable[[Any], tuple[bool, str]]:
         """断言字段值与期望值匹配"""
+
         def check(data: Any) -> tuple[bool, str]:
             val = data.get(field) if isinstance(data, dict) else data
             if val == expected:
                 return True, f"Field '{field}' == {expected}"
             return False, f"Field '{field}' == {val}, expected {expected}"
+
         return check
 
     @staticmethod
-    def assert_count(field: str, op: str, value: int) -> Callable[[Any], tuple[bool, str]]:
+    def assert_count(
+        field: str, op: str, value: int
+    ) -> Callable[[Any], tuple[bool, str]]:
         """断言集合字段数量符合条件 (op: >, >=, <, <=, ==)"""
+
         def check(data: Any) -> tuple[bool, str]:
             val = data.get(field) if isinstance(data, dict) else data
-            length = len(val) if isinstance(val, (list, dict, str)) else (val if isinstance(val, (int, float)) else -1)
-            if op == ">" and length > value: return True, f"count({field})={length} > {value}"
-            if op == ">=" and length >= value: return True, f"count({field})={length} >= {value}"
-            if op == "<" and length < value: return True, f"count({field})={length} < {value}"
-            if op == "<=" and length <= value: return True, f"count({field})={length} <= {value}"
-            if op == "==" and length == value: return True, f"count({field})={length} == {value}"
+            length = (
+                len(val)
+                if isinstance(val, (list, dict, str))
+                else (val if isinstance(val, (int, float)) else -1)
+            )
+            if op == ">" and length > value:
+                return True, f"count({field})={length} > {value}"
+            if op == ">=" and length >= value:
+                return True, f"count({field})={length} >= {value}"
+            if op == "<" and length < value:
+                return True, f"count({field})={length} < {value}"
+            if op == "<=" and length <= value:
+                return True, f"count({field})={length} <= {value}"
+            if op == "==" and length == value:
+                return True, f"count({field})={length} == {value}"
             return False, f"count({field})={length}, expected {op} {value}"
+
         return check
 
     def build_presets(self) -> None:
         """构建内置预设测试套件"""
         # Smoke test suite
-        self.register_suite("smoke", [
-            TestCase(
-                name="scout-has-items",
-                description="Scout Skill should return items list",
-                skill_name="scout",
-                inputs={"keywords": ["https://hnrss.org/frontpage"], "platforms": ["rss"]},
-                assertions=[
-                    self.assert_field_exists("items"),
-                    self.assert_field_exists("count"),
-                ],
-                timeout_ms=20000,
-                tags=["scout", "smoke"],
-            ),
-            TestCase(
-                name="translate-returns-translated",
-                description="Translate should return translated field",
-                skill_name="translate",
-                inputs={"text": "Hello world"},
-                assertions=[self.assert_field_exists("translated")],
-                timeout_ms=15000,
-                tags=["translate", "smoke"],
-            ),
-            TestCase(
-                name="summarize-returns-summary",
-                description="Summarize should return summary field",
-                skill_name="summarize",
-                inputs={"items_text": "Sample content for testing", "style": "article_summary"},
-                assertions=[self.assert_field_exists("summary")],
-                timeout_ms=15000,
-                tags=["summary", "smoke"],
-            ),
-            TestCase(
-                name="dedup-returns-counts",
-                description="Dedup should return unique and duplicate_ids",
-                skill_name="dedup",
-                inputs={"items": [{"id": "1", "title": "Test", "summary": "Test"}]},
-                assertions=[
-                    self.assert_field_exists("unique"),
-                    self.assert_field_exists("duplicate_ids"),
-                ],
-                timeout_ms=10000,
-                tags=["dedup", "smoke"],
-            ),
-        ])
+        self.register_suite(
+            "smoke",
+            [
+                TestCase(
+                    name="scout-has-items",
+                    description="Scout Skill should return items list",
+                    skill_name="scout",
+                    inputs={
+                        "keywords": ["https://hnrss.org/frontpage"],
+                        "platforms": ["rss"],
+                    },
+                    assertions=[
+                        self.assert_field_exists("items"),
+                        self.assert_field_exists("count"),
+                    ],
+                    timeout_ms=20000,
+                    tags=["scout", "smoke"],
+                ),
+                TestCase(
+                    name="translate-returns-translated",
+                    description="Translate should return translated field",
+                    skill_name="translate",
+                    inputs={"text": "Hello world"},
+                    assertions=[self.assert_field_exists("translated")],
+                    timeout_ms=15000,
+                    tags=["translate", "smoke"],
+                ),
+                TestCase(
+                    name="summarize-returns-summary",
+                    description="Summarize should return summary field",
+                    skill_name="summarize",
+                    inputs={
+                        "items_text": "Sample content for testing",
+                        "style": "article_summary",
+                    },
+                    assertions=[self.assert_field_exists("summary")],
+                    timeout_ms=15000,
+                    tags=["summary", "smoke"],
+                ),
+                TestCase(
+                    name="dedup-returns-counts",
+                    description="Dedup should return unique and duplicate_ids",
+                    skill_name="dedup",
+                    inputs={"items": [{"id": "1", "title": "Test", "summary": "Test"}]},
+                    assertions=[
+                        self.assert_field_exists("unique"),
+                        self.assert_field_exists("duplicate_ids"),
+                    ],
+                    timeout_ms=10000,
+                    tags=["dedup", "smoke"],
+                ),
+            ],
+        )
 
         # Integration test suite
-        self.register_suite("integration", [
-            TestCase(
-                name="scout-then-dedup",
-                description="Scout collection results can be piped through Dedup",
-                skill_name="dedup",
-                inputs={"items": [
-                    {"id": "a", "title": "Unique A", "summary": "Content A"},
-                    {"id": "b", "title": "Unique B", "summary": "Content B"},
-                    {"id": "c", "title": "Unique A", "summary": "Content A"},  # duplicate
-                ]},
-                assertions=[
-                    self.assert_field_exists("unique"),
-                    self.assert_field_exists("duplicate_ids"),
-                    self.assert_count("unique_count", "==", 2),
-                ],
-                timeout_ms=10000,
-                tags=["integration"],
-            ),
-        ])
+        self.register_suite(
+            "integration",
+            [
+                TestCase(
+                    name="scout-then-dedup",
+                    description="Scout collection results can be piped through Dedup",
+                    skill_name="dedup",
+                    inputs={
+                        "items": [
+                            {"id": "a", "title": "Unique A", "summary": "Content A"},
+                            {"id": "b", "title": "Unique B", "summary": "Content B"},
+                            {
+                                "id": "c",
+                                "title": "Unique A",
+                                "summary": "Content A",
+                            },  # duplicate
+                        ]
+                    },
+                    assertions=[
+                        self.assert_field_exists("unique"),
+                        self.assert_field_exists("duplicate_ids"),
+                        self.assert_count("unique_count", "==", 2),
+                    ],
+                    timeout_ms=10000,
+                    tags=["integration"],
+                ),
+            ],
+        )

@@ -60,7 +60,7 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
     @Override
     public void markAsRead(Long id) {
         Notification notification = getById(id);
-        if (notification == null) {
+        if (notification == null || !notification.getUserId().equals(org.ibo.nexusjava.interceptor.UserContext.getUserId())) {
             throw new BusinessException(ErrorCode.NOTIFICATION_NOT_FOUND);
         }
         notification.setIsRead(1);

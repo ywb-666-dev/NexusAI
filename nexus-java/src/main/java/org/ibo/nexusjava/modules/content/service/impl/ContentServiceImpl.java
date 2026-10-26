@@ -73,6 +73,9 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> impl
     @Override
     public IPage<ContentVO> listBySubscription(Long subscriptionId, Long current, Long size) {
         LambdaQueryWrapper<Content> wrapper = new LambdaQueryWrapper<>();
+        var owned = subscriptionMapper.selectList(new LambdaQueryWrapper<Subscription>().eq(Subscription::getUserId, org.ibo.nexusjava.interceptor.UserContext.getUserId())).stream().map(Subscription::getId).toList();
+        wrapper.in(!owned.isEmpty(), Content::getSubscriptionId, owned);
+        if (owned.isEmpty()) wrapper.apply("1 = 0");
         wrapper.eq(Content::getStatus, 1); // 只查有效内容
 
         if (subscriptionId != null) {
@@ -90,7 +93,6 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> impl
 
         Page<ContentVO> resultPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
         resultPage.setRecords(records);
-        try { stringRedisTemplate.opsForValue().set(cacheKey, objectMapper.writeValueAsString(resultPage), 30, TimeUnit.SECONDS); } catch (Exception ignored) {}
         return resultPage;
     }
 
@@ -100,6 +102,9 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content> impl
         if (content == null || content.getStatus() == null || content.getStatus() != 1) {
             throw new BusinessException(ErrorCode.PARAM_ERROR, "内容不存在");
         }
+        Subscription owner = subscriptionMapper.selectById(content.getSubscriptionId());
+        if (owner == null || !owner.getUserId().equals(org.ibo.nexusjava.interceptor.UserContext.getUserId()))
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "内容不存在");
         return convertToVO(content);
     }
 }

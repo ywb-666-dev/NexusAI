@@ -9,6 +9,7 @@ from typing import Any
 @dataclass
 class SkillResult:
     """Skill 执行结果"""
+
     success: bool
     data: Any = None
     error: str | None = None

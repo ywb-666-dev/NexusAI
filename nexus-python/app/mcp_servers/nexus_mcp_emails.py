@@ -9,7 +9,7 @@ from mcp.server.fastmcp import FastMCP
 logging.basicConfig(
     filename="mcp_email.log",
     level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s"
+    format="%(asctime)s %(levelname)s %(message)s",
 )
 
 server = FastMCP("email")
@@ -36,7 +36,7 @@ def parse_email(raw_email: str) -> dict:
             "date": msg.get("Date", ""),
             "text": "",
             "html": "",
-            "attachments": []
+            "attachments": [],
         }
 
         # 遍历所有部分，提取正文和附件
@@ -47,11 +47,13 @@ def parse_email(raw_email: str) -> dict:
             # 附件判断：有 filename 就是附件
             filename = part.get_filename()
             if filename:
-                result["attachments"].append({
-                    "filename": filename,
-                    "content_type": content_type,
-                    "size": len(part.get_payload(decode=True) or b"")
-                })
+                result["attachments"].append(
+                    {
+                        "filename": filename,
+                        "content_type": content_type,
+                        "size": len(part.get_payload(decode=True) or b""),
+                    }
+                )
                 continue
 
             # 提取纯文本正文
@@ -104,3 +106,7 @@ def send_email(from_addr: str, to: str, subject: str, text: str) -> dict:
     except Exception as e:
         logging.error(f"send_email failed: {e}")
         return {"success": False, "error": str(e)}
+
+
+if __name__ == "__main__":
+    server.run(transport="stdio")

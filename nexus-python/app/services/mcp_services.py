@@ -10,21 +10,18 @@ class MCPService:
 
     async def send_email(self, from_addr: str, to: str, subject: str, text: str):
         return await self.pool.call_tool(
-            "email", "send_email",
-            {"from_addr": from_addr, "to": to, "subject": subject, "text": text}
+            "email",
+            "send_email",
+            {"from_addr": from_addr, "to": to, "subject": subject, "text": text},
         )
 
     async def scrape_page(self, url: str, wait_for: str | None = None):
         return await self.pool.call_tool(
-            "web", "scrape_page",
-            {"url": url, "wait_for_selector": wait_for}
+            "web", "scrape_page", {"url": url, "wait_for_selector": wait_for}
         )
 
     async def fetch_rss(self, url: str):
-        return await self.pool.call_tool(
-            "rss", "fetch_rss",
-            {"url": url}
-        )
+        return await self.pool.call_tool("rss", "fetch_rss", {"url": url})
 
     async def call_api(self):
         """调用 API 聚合新闻源，统一返回 Article 列表。无需参数，内部硬编码多源并发。"""

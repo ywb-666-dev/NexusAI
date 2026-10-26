@@ -1,4 +1,5 @@
 server:
+  address: ${APP_BIND_ADDRESS:127.0.0.1}
   port: 8080
 
 spring:
@@ -15,6 +16,10 @@ spring:
             allowCredentials: true
             maxAge: 3600
       routes:
+        - id: nexus-python-ws
+          uri: ws://localhost:8000
+          predicates:
+            - Path=/api/python/ws/**
         - id: nexus-java
           uri: http://localhost:8081
           predicates:
@@ -30,5 +35,5 @@ spring:
             - StripPrefix=0
 
 jwt:
-  secret: nexus-ai-local-secret-key-2026-32chars!!
+  secret: ${JWT_SECRET:nexus-ai-local-secret-key-2026-32chars!!}
   expiration: 86400000

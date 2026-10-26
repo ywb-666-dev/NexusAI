@@ -1,0 +1,3271 @@
+{
+  "version": 1,
+  "categories": {
+    "ai": "人工智能",
+    "tech": "科技数码",
+    "dev": "编程与开源",
+    "security": "网络安全",
+    "science": "科学与学术",
+    "news": "新闻资讯",
+    "business": "商业财经",
+    "design": "设计与产品",
+    "life": "生活与文化"
+  },
+  "sources": [
+    {
+      "name": "少数派",
+      "url": "https://sspai.com/feed",
+      "language": "zh",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "127ccd1f6fe9283c",
+      "platform": "rss",
+      "homepage": "https://sspai.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "IT之家",
+      "url": "https://www.ithome.com/rss/",
+      "language": "zh",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "1f3b9209110c9a51",
+      "platform": "rss",
+      "homepage": "https://www.ithome.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Solidot",
+      "url": "https://www.solidot.org/index.rss",
+      "language": "zh",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "cf502ba146e755de",
+      "platform": "rss",
+      "homepage": "https://www.solidot.org",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "月光博客",
+      "url": "https://www.williamlong.info/rss.xml",
+      "language": "zh",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "790d01957a9e753b",
+      "platform": "rss",
+      "homepage": "https://www.williamlong.info",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "小众软件",
+      "url": "https://www.appinn.com/feed/",
+      "language": "zh",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "34293e425a86ebd0",
+      "platform": "rss",
+      "homepage": "https://www.appinn.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "异次元软件世界",
+      "url": "https://www.iplaysoft.com/feed",
+      "language": "zh",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "5c83e2c9d106601d",
+      "platform": "rss",
+      "homepage": "https://www.iplaysoft.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "爱范儿",
+      "url": "https://www.ifanr.com/feed",
+      "language": "zh",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "63e96afb5f7a39ac",
+      "platform": "rss",
+      "homepage": "https://www.ifanr.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "雷峰网",
+      "url": "https://www.leiphone.com/feed",
+      "language": "zh",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "5050a76be03794be",
+      "platform": "rss",
+      "homepage": "https://www.leiphone.com",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "机器之心",
+      "url": "https://www.jiqizhixin.com/rss",
+      "language": "zh",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "d2551708563fad08",
+      "platform": "rss",
+      "homepage": "https://www.jiqizhixin.com",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "量子位",
+      "url": "https://www.qbitai.com/feed",
+      "language": "zh",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "8cb0c38845e1e86d",
+      "platform": "rss",
+      "homepage": "https://www.qbitai.com",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "InfoQ 中文",
+      "url": "https://www.infoq.cn/feed",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "5b4bd164ec15c801",
+      "platform": "rss",
+      "homepage": "https://www.infoq.cn",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "阮一峰的网络日志",
+      "url": "https://www.ruanyifeng.com/blog/atom.xml",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "836ccfdca6419fad",
+      "platform": "rss",
+      "homepage": "https://www.ruanyifeng.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "酷壳",
+      "url": "https://coolshell.cn/feed",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "346cd5435dcc68ea",
+      "platform": "rss",
+      "homepage": "https://coolshell.cn",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "廖雪峰",
+      "url": "https://www.liaoxuefeng.com/feed",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "b4165286cd4399bb",
+      "platform": "rss",
+      "homepage": "https://www.liaoxuefeng.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "美团技术团队",
+      "url": "https://tech.meituan.com/feed/",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "c43bf0e0dd930bc7",
+      "platform": "rss",
+      "homepage": "https://tech.meituan.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "阿里云开发者",
+      "url": "https://developer.aliyun.com/feed",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "85232237d0dbdc35",
+      "platform": "rss",
+      "homepage": "https://developer.aliyun.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "腾讯技术工程",
+      "url": "https://cloud.tencent.com/developer/column/100002/rss",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "185e2cac195b0741",
+      "platform": "rss",
+      "homepage": "https://cloud.tencent.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "V2EX 最新主题",
+      "url": "https://www.v2ex.com/index.xml",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "8ea6c73b29941440",
+      "platform": "rss",
+      "homepage": "https://www.v2ex.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "博客园首页",
+      "url": "https://www.cnblogs.com/rss",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a215af85bf89b72c",
+      "platform": "rss",
+      "homepage": "https://www.cnblogs.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "开源中国资讯",
+      "url": "https://www.oschina.net/news/rss",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "3d1dc59628e4df2b",
+      "platform": "rss",
+      "homepage": "https://www.oschina.net",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Linux 中国",
+      "url": "https://linux.cn/rss.xml",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "0d6131464870e5cd",
+      "platform": "rss",
+      "homepage": "https://linux.cn",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "鸟窝",
+      "url": "https://colobu.com/atom.xml",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "f939d23b59d4a328",
+      "platform": "rss",
+      "homepage": "https://colobu.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "面向信仰编程",
+      "url": "https://draveness.me/feed.xml",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "4d49716051922902",
+      "platform": "rss",
+      "homepage": "https://draveness.me",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "煎鱼的清汤锅",
+      "url": "https://eddycjy.com/index.xml",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "b3419dcd34446609",
+      "platform": "rss",
+      "homepage": "https://eddycjy.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "冰霜之地",
+      "url": "https://halfrost.com/rss/",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "2ba204440558ad71",
+      "platform": "rss",
+      "homepage": "https://halfrost.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "云风的 BLOG",
+      "url": "https://blog.codingnow.com/atom.xml",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "64ba70840e06d623",
+      "platform": "rss",
+      "homepage": "https://blog.codingnow.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "王垠",
+      "url": "https://www.yinwang.org/atom.xml",
+      "language": "zh",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "1b4b0e8b4c5c10c7",
+      "platform": "rss",
+      "homepage": "https://www.yinwang.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "科学空间",
+      "url": "https://spaces.ac.cn/feed",
+      "language": "zh",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "920adbae69b48fa6",
+      "platform": "rss",
+      "homepage": "https://spaces.ac.cn",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "FreeBuf",
+      "url": "https://www.freebuf.com/feed",
+      "language": "zh",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "375ba5267f5b40bb",
+      "platform": "rss",
+      "homepage": "https://www.freebuf.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "安全客",
+      "url": "https://api.anquanke.com/data/v1/rss",
+      "language": "zh",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "aad4fb70421a4af7",
+      "platform": "rss",
+      "homepage": "https://api.anquanke.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Seebug Paper",
+      "url": "https://paper.seebug.org/rss/",
+      "language": "zh",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "8f350ec814c62d8c",
+      "platform": "rss",
+      "homepage": "https://paper.seebug.org",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "知道创宇 404",
+      "url": "https://blog.knownsec.com/feed/",
+      "language": "zh",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "2d8f2f0e1cfe0745",
+      "platform": "rss",
+      "homepage": "https://blog.knownsec.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "嘶吼",
+      "url": "https://www.4hou.com/feed",
+      "language": "zh",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "edffb48a0410a31c",
+      "platform": "rss",
+      "homepage": "https://www.4hou.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "奇客安全",
+      "url": "https://www.solidot.org/index.rss?tid=15",
+      "language": "zh",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "b3825c96d4530bb0",
+      "platform": "rss",
+      "homepage": "https://www.solidot.org",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "36氪",
+      "url": "https://36kr.com/feed",
+      "language": "zh",
+      "category": "business",
+      "kind": "publisher",
+      "description": "商业财经领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "d99de66c0b1a6827",
+      "platform": "rss",
+      "homepage": "https://36kr.com",
+      "tags": [
+        "商业财经"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "虎嗅",
+      "url": "https://www.huxiu.com/rss/0.xml",
+      "language": "zh",
+      "category": "business",
+      "kind": "publisher",
+      "description": "商业财经领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "6aed78871acc28c1",
+      "platform": "rss",
+      "homepage": "https://www.huxiu.com",
+      "tags": [
+        "商业财经"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "钛媒体",
+      "url": "https://www.tmtpost.com/rss.xml",
+      "language": "zh",
+      "category": "business",
+      "kind": "publisher",
+      "description": "商业财经领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "45cdcadadfddb612",
+      "platform": "rss",
+      "homepage": "https://www.tmtpost.com",
+      "tags": [
+        "商业财经"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "FT中文网",
+      "url": "https://www.ftchinese.com/rss/feed",
+      "language": "zh",
+      "category": "business",
+      "kind": "publisher",
+      "description": "商业财经领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "096abc2cbbabdc8c",
+      "platform": "rss",
+      "homepage": "https://www.ftchinese.com",
+      "tags": [
+        "商业财经"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "端传媒",
+      "url": "https://theinitium.com/feed/",
+      "language": "zh",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "485edbb0b9b59147",
+      "platform": "rss",
+      "homepage": "https://theinitium.com",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "联合早报",
+      "url": "https://www.zaobao.com.sg/rss/realtime/china",
+      "language": "zh",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "84d791af5cc664c9",
+      "platform": "rss",
+      "homepage": "https://www.zaobao.com.sg",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "BBC 中文",
+      "url": "https://feeds.bbci.co.uk/zhongwen/simp/rss.xml",
+      "language": "zh",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "4f219b4607981fb4",
+      "platform": "rss",
+      "homepage": "https://feeds.bbci.co.uk",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "纽约时报中文网",
+      "url": "https://cn.nytimes.com/rss/",
+      "language": "zh",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "fe9b10642ca89c50",
+      "platform": "rss",
+      "homepage": "https://cn.nytimes.com",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "德国之声中文",
+      "url": "https://rss.dw.com/rdf/rss-chi-all",
+      "language": "zh",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "f20da2d1ae01c588",
+      "platform": "rss",
+      "homepage": "https://rss.dw.com",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "联合国新闻中文",
+      "url": "https://news.un.org/feed/subscribe/zh/news/all/rss.xml",
+      "language": "zh",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "2bb87874a9454ddc",
+      "platform": "rss",
+      "homepage": "https://news.un.org",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "维基新闻中文",
+      "url": "https://zh.wikinews.org/w/index.php?title=Special:NewsFeed&feed=atom&categories=Published&notcategories=No_publish",
+      "language": "zh",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a5941980dd445be3",
+      "platform": "rss",
+      "homepage": "https://zh.wikinews.org",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "机核",
+      "url": "https://www.gcores.com/rss",
+      "language": "zh",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "8d6d839d095721fc",
+      "platform": "rss",
+      "homepage": "https://www.gcores.com",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "触乐",
+      "url": "https://www.chuapp.com/feed",
+      "language": "zh",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "ca6338470e33f34f",
+      "platform": "rss",
+      "homepage": "https://www.chuapp.com",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "游研社",
+      "url": "https://www.yystv.cn/rss/feed",
+      "language": "zh",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "243802528f27926a",
+      "platform": "rss",
+      "homepage": "https://www.yystv.cn",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "indienova",
+      "url": "https://indienova.com/feed",
+      "language": "zh",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "e69ba1e4f3899724",
+      "platform": "rss",
+      "homepage": "https://indienova.com",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "博海拾贝",
+      "url": "https://www.bohaishibei.com/feed/",
+      "language": "zh",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "7d4e1d08dea5a40a",
+      "platform": "rss",
+      "homepage": "https://www.bohaishibei.com",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "ONE 一个",
+      "url": "https://wufazhuce.com/feed",
+      "language": "zh",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "7f35487e89e20b8c",
+      "platform": "rss",
+      "homepage": "https://wufazhuce.com",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "人文与社会",
+      "url": "https://wen.org.cn/rss.xml",
+      "language": "zh",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a8e984f8cb707a27",
+      "platform": "rss",
+      "homepage": "https://wen.org.cn",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "优设",
+      "url": "https://www.uisdc.com/feed",
+      "language": "zh",
+      "category": "design",
+      "kind": "publisher",
+      "description": "设计与产品领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "0f5ed3f107af7234",
+      "platform": "rss",
+      "homepage": "https://www.uisdc.com",
+      "tags": [
+        "设计与产品"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "人人都是产品经理",
+      "url": "https://www.woshipm.com/feed",
+      "language": "zh",
+      "category": "design",
+      "kind": "publisher",
+      "description": "设计与产品领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "0d48c786a390ab8f",
+      "platform": "rss",
+      "homepage": "https://www.woshipm.com",
+      "tags": [
+        "设计与产品"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Hacker News 热门",
+      "url": "https://hnrss.org/frontpage",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "6a418c5313a09d59",
+      "platform": "rss",
+      "homepage": "https://hnrss.org",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Hacker News 最新",
+      "url": "https://hnrss.org/newest",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "75697dc30e29f704",
+      "platform": "rss",
+      "homepage": "https://hnrss.org",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "TechCrunch",
+      "url": "https://techcrunch.com/feed/",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "f84187f7c52ef9b3",
+      "platform": "rss",
+      "homepage": "https://techcrunch.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "The Verge",
+      "url": "https://www.theverge.com/rss/index.xml",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "8c3d9d5d77bb3a83",
+      "platform": "rss",
+      "homepage": "https://www.theverge.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Ars Technica",
+      "url": "https://feeds.arstechnica.com/arstechnica/index",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "7170fc473d11956d",
+      "platform": "rss",
+      "homepage": "https://feeds.arstechnica.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Wired",
+      "url": "https://www.wired.com/feed/rss",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "c01c14fc345f6361",
+      "platform": "rss",
+      "homepage": "https://www.wired.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Engadget",
+      "url": "https://www.engadget.com/rss.xml",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "2ccba97d94b11077",
+      "platform": "rss",
+      "homepage": "https://www.engadget.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "MIT Technology Review",
+      "url": "https://www.technologyreview.com/feed/",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "abb25a1c4ec6f9d7",
+      "platform": "rss",
+      "homepage": "https://www.technologyreview.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "IEEE Spectrum",
+      "url": "https://spectrum.ieee.org/feeds/feed.rss",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "9ab67a29e7222806",
+      "platform": "rss",
+      "homepage": "https://spectrum.ieee.org",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "404 Media",
+      "url": "https://www.404media.co/rss/",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a44f75939f245a7e",
+      "platform": "rss",
+      "homepage": "https://www.404media.co",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "OpenAI News",
+      "url": "https://openai.com/news/rss.xml",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "bea4293d5eddcb34",
+      "platform": "rss",
+      "homepage": "https://openai.com",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Google AI Blog",
+      "url": "https://blog.google/technology/ai/rss/",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "141dd720a5f171e3",
+      "platform": "rss",
+      "homepage": "https://blog.google",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Google Research",
+      "url": "https://research.google/blog/rss/",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "4e5aee58ba579e52",
+      "platform": "rss",
+      "homepage": "https://research.google",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Google DeepMind",
+      "url": "https://deepmind.google/blog/rss.xml",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "9c92f29eb29326b9",
+      "platform": "rss",
+      "homepage": "https://deepmind.google",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Hugging Face Blog",
+      "url": "https://huggingface.co/blog/feed.xml",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "61d3148bc0572cab",
+      "platform": "rss",
+      "homepage": "https://huggingface.co",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "BAIR Berkeley AI",
+      "url": "https://bair.berkeley.edu/blog/feed.xml",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "51f8274975973f60",
+      "platform": "rss",
+      "homepage": "https://bair.berkeley.edu",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "The Gradient",
+      "url": "https://thegradient.pub/rss/",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "4f833f985ed12add",
+      "platform": "rss",
+      "homepage": "https://thegradient.pub",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Simon Willison",
+      "url": "https://simonwillison.net/atom/everything/",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "052434531db837d6",
+      "platform": "rss",
+      "homepage": "https://simonwillison.net",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Lilian Weng",
+      "url": "https://lilianweng.github.io/index.xml",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "c4683e6fa7178e42",
+      "platform": "rss",
+      "homepage": "https://lilianweng.github.io",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Sebastian Raschka",
+      "url": "https://magazine.sebastianraschka.com/feed",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "8249346b6d16594c",
+      "platform": "rss",
+      "homepage": "https://magazine.sebastianraschka.com",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Chip Huyen",
+      "url": "https://huyenchip.com/feed.xml",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "14c54713fb90236e",
+      "platform": "rss",
+      "homepage": "https://huyenchip.com",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Interconnects",
+      "url": "https://www.interconnects.ai/feed",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "633e5ebcb8362611",
+      "platform": "rss",
+      "homepage": "https://www.interconnects.ai",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Latent Space",
+      "url": "https://www.latent.space/feed",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a5689419c24836e7",
+      "platform": "rss",
+      "homepage": "https://www.latent.space",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "NVIDIA Technical Blog",
+      "url": "https://developer.nvidia.com/blog/feed/",
+      "language": "en",
+      "category": "ai",
+      "kind": "publisher",
+      "description": "人工智能领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "e60f411a58119b26",
+      "platform": "rss",
+      "homepage": "https://developer.nvidia.com",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "GitHub Blog",
+      "url": "https://github.blog/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "e06750e8538cef46",
+      "platform": "rss",
+      "homepage": "https://github.blog",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "GitLab Blog",
+      "url": "https://about.gitlab.com/atom.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "49eb4e5aa146f3bd",
+      "platform": "rss",
+      "homepage": "https://about.gitlab.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Stack Overflow Blog",
+      "url": "https://stackoverflow.blog/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "05e364d2bd7652ad",
+      "platform": "rss",
+      "homepage": "https://stackoverflow.blog",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Martin Fowler",
+      "url": "https://martinfowler.com/feed.atom",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "fd8649157d549877",
+      "platform": "rss",
+      "homepage": "https://martinfowler.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Julia Evans",
+      "url": "https://jvns.ca/atom.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "249136e2212936c5",
+      "platform": "rss",
+      "homepage": "https://jvns.ca",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Brendan Gregg",
+      "url": "https://www.brendangregg.com/blog/rss.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "df7d2386746e71d7",
+      "platform": "rss",
+      "homepage": "https://www.brendangregg.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Cloudflare Blog",
+      "url": "https://blog.cloudflare.com/rss/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "dcf32cb0b23353df",
+      "platform": "rss",
+      "homepage": "https://blog.cloudflare.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Netflix Tech Blog",
+      "url": "https://netflixtechblog.com/feed",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "cde22301ccca2028",
+      "platform": "rss",
+      "homepage": "https://netflixtechblog.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Uber Engineering",
+      "url": "https://www.uber.com/blog/engineering/rss/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "37bb17d63b87d61a",
+      "platform": "rss",
+      "homepage": "https://www.uber.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "AWS Architecture",
+      "url": "https://aws.amazon.com/blogs/architecture/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "c903ff390c279102",
+      "platform": "rss",
+      "homepage": "https://aws.amazon.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "AWS News",
+      "url": "https://aws.amazon.com/blogs/aws/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "cabe785f854866d2",
+      "platform": "rss",
+      "homepage": "https://aws.amazon.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Google Cloud Blog",
+      "url": "https://cloudblog.withgoogle.com/rss/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "5549a69b019543d3",
+      "platform": "rss",
+      "homepage": "https://cloudblog.withgoogle.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Microsoft Developer Blogs",
+      "url": "https://devblogs.microsoft.com/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "8d877c52a9e35e41",
+      "platform": "rss",
+      "homepage": "https://devblogs.microsoft.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Meta Engineering",
+      "url": "https://engineering.fb.com/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "6a89e91ee8f889bc",
+      "platform": "rss",
+      "homepage": "https://engineering.fb.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Stripe Engineering",
+      "url": "https://stripe.com/blog/engineering/feed.rss",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "be58685cd69ec9d7",
+      "platform": "rss",
+      "homepage": "https://stripe.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Discord Engineering",
+      "url": "https://discord.com/blog/rss.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "8c92b99dd64e4562",
+      "platform": "rss",
+      "homepage": "https://discord.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Kubernetes Blog",
+      "url": "https://kubernetes.io/feed.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "74a7d8675f99f917",
+      "platform": "rss",
+      "homepage": "https://kubernetes.io",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Docker Blog",
+      "url": "https://www.docker.com/blog/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "fbb77a745620878c",
+      "platform": "rss",
+      "homepage": "https://www.docker.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Rust Blog",
+      "url": "https://blog.rust-lang.org/feed.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "9e793ab07bccdce3",
+      "platform": "rss",
+      "homepage": "https://blog.rust-lang.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Go Blog",
+      "url": "https://go.dev/blog/feed.atom",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "cfa61ab3ee17909e",
+      "platform": "rss",
+      "homepage": "https://go.dev",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Python Insider",
+      "url": "https://blog.python.org/feeds/posts/default",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "f4efd4ff9ff00ccf",
+      "platform": "rss",
+      "homepage": "https://blog.python.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Real Python",
+      "url": "https://realpython.com/atom.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "aec49d72aa23e987",
+      "platform": "rss",
+      "homepage": "https://realpython.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "PyPI Updates",
+      "url": "https://pypi.org/rss/updates.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "05e8f4288e2c8775",
+      "platform": "rss",
+      "homepage": "https://pypi.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Django Weblog",
+      "url": "https://www.djangoproject.com/rss/weblog/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "90ae3168ffa2a717",
+      "platform": "rss",
+      "homepage": "https://www.djangoproject.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Node.js Blog",
+      "url": "https://nodejs.org/en/feed/blog.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "81c31b07e539eeb9",
+      "platform": "rss",
+      "homepage": "https://nodejs.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "React Blog",
+      "url": "https://react.dev/rss.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "4d0d6458fb83cc72",
+      "platform": "rss",
+      "homepage": "https://react.dev",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Vue Blog",
+      "url": "https://blog.vuejs.org/feed.rss",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "3991efde3e67fb22",
+      "platform": "rss",
+      "homepage": "https://blog.vuejs.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Vite Blog",
+      "url": "https://vite.dev/blog.rss",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a375f6a9844c2e70",
+      "platform": "rss",
+      "homepage": "https://vite.dev",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "TypeScript Blog",
+      "url": "https://devblogs.microsoft.com/typescript/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "f9e0df392d4ed324",
+      "platform": "rss",
+      "homepage": "https://devblogs.microsoft.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": ".NET Blog",
+      "url": "https://devblogs.microsoft.com/dotnet/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a720552adb96ebe2",
+      "platform": "rss",
+      "homepage": "https://devblogs.microsoft.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Spring Blog",
+      "url": "https://spring.io/blog.atom",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "00a0c3ac8e22dee9",
+      "platform": "rss",
+      "homepage": "https://spring.io",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "JetBrains Blog",
+      "url": "https://blog.jetbrains.com/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a3e266e8afb3b4ee",
+      "platform": "rss",
+      "homepage": "https://blog.jetbrains.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "PostgreSQL News",
+      "url": "https://www.postgresql.org/news.rss",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "304561e7a446c48f",
+      "platform": "rss",
+      "homepage": "https://www.postgresql.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Redis Blog",
+      "url": "https://redis.io/blog/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "68fec75f4024dbf1",
+      "platform": "rss",
+      "homepage": "https://redis.io",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Elastic Blog",
+      "url": "https://www.elastic.co/blog/feed",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "de59e16afb9838ce",
+      "platform": "rss",
+      "homepage": "https://www.elastic.co",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "MongoDB Blog",
+      "url": "https://www.mongodb.com/blog/rss",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "606a53bc3620ae57",
+      "platform": "rss",
+      "homepage": "https://www.mongodb.com",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Mozilla Hacks",
+      "url": "https://hacks.mozilla.org/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "394ba688e40a39f5",
+      "platform": "rss",
+      "homepage": "https://hacks.mozilla.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "WebKit Blog",
+      "url": "https://webkit.org/feed/",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "f5d9aafcc7a9fcbc",
+      "platform": "rss",
+      "homepage": "https://webkit.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Chromium Blog",
+      "url": "https://blog.chromium.org/feeds/posts/default",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "766c033452aa3202",
+      "platform": "rss",
+      "homepage": "https://blog.chromium.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "web.dev",
+      "url": "https://web.dev/feed.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "93ddf8035721c6f2",
+      "platform": "rss",
+      "homepage": "https://web.dev",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "MDN Blog",
+      "url": "https://developer.mozilla.org/en-US/blog/rss.xml",
+      "language": "en",
+      "category": "dev",
+      "kind": "publisher",
+      "description": "编程与开源领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "c1306a3684871eff",
+      "platform": "rss",
+      "homepage": "https://developer.mozilla.org",
+      "tags": [
+        "编程与开源"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Krebs on Security",
+      "url": "https://krebsonsecurity.com/feed/",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "4359bb4a3387d403",
+      "platform": "rss",
+      "homepage": "https://krebsonsecurity.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Schneier on Security",
+      "url": "https://www.schneier.com/feed/atom/",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "0a56c871971915d3",
+      "platform": "rss",
+      "homepage": "https://www.schneier.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "The Hacker News",
+      "url": "https://feeds.feedburner.com/TheHackersNews",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "636032c91a0b4c9a",
+      "platform": "rss",
+      "homepage": "https://feeds.feedburner.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "BleepingComputer",
+      "url": "https://www.bleepingcomputer.com/feed/",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "9676afaed1a7332b",
+      "platform": "rss",
+      "homepage": "https://www.bleepingcomputer.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "SANS Internet Storm Center",
+      "url": "https://isc.sans.edu/rssfeed.xml",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "7152508e7789b9fb",
+      "platform": "rss",
+      "homepage": "https://isc.sans.edu",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Google Project Zero",
+      "url": "https://googleprojectzero.blogspot.com/feeds/posts/default",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "55457fa66d9b4618",
+      "platform": "rss",
+      "homepage": "https://googleprojectzero.blogspot.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Google Security Blog",
+      "url": "https://security.googleblog.com/feeds/posts/default",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "f5caeafa60f68ccd",
+      "platform": "rss",
+      "homepage": "https://security.googleblog.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Microsoft Security Blog",
+      "url": "https://www.microsoft.com/en-us/security/blog/feed/",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "e5eab48c773add9f",
+      "platform": "rss",
+      "homepage": "https://www.microsoft.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Cisco Talos",
+      "url": "https://blog.talosintelligence.com/rss/",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "ae58849d0b5cc7a7",
+      "platform": "rss",
+      "homepage": "https://blog.talosintelligence.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Trail of Bits",
+      "url": "https://blog.trailofbits.com/feed/",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "fa37f7789fee8be1",
+      "platform": "rss",
+      "homepage": "https://blog.trailofbits.com",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "PortSwigger Research",
+      "url": "https://portswigger.net/research/rss",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "7bb5dc91e27122eb",
+      "platform": "rss",
+      "homepage": "https://portswigger.net",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "CISA Alerts",
+      "url": "https://www.cisa.gov/cybersecurity-advisories/all.xml",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "beab471c53b4ce40",
+      "platform": "rss",
+      "homepage": "https://www.cisa.gov",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "US-CERT / CISA News",
+      "url": "https://www.cisa.gov/news.xml",
+      "language": "en",
+      "category": "security",
+      "kind": "publisher",
+      "description": "网络安全领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "e8b4a99d42038c3c",
+      "platform": "rss",
+      "homepage": "https://www.cisa.gov",
+      "tags": [
+        "网络安全"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Nature",
+      "url": "https://www.nature.com/nature.rss",
+      "language": "en",
+      "category": "science",
+      "kind": "publisher",
+      "description": "科学与学术领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "d592eddffea98806",
+      "platform": "rss",
+      "homepage": "https://www.nature.com",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Science",
+      "url": "https://www.science.org/rss/news_current.xml",
+      "language": "en",
+      "category": "science",
+      "kind": "publisher",
+      "description": "科学与学术领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "e1793a9532f608f6",
+      "platform": "rss",
+      "homepage": "https://www.science.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "ScienceDaily",
+      "url": "https://www.sciencedaily.com/rss/all.xml",
+      "language": "en",
+      "category": "science",
+      "kind": "publisher",
+      "description": "科学与学术领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "7cba684b2f9c3265",
+      "platform": "rss",
+      "homepage": "https://www.sciencedaily.com",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Phys.org",
+      "url": "https://phys.org/rss-feed/",
+      "language": "en",
+      "category": "science",
+      "kind": "publisher",
+      "description": "科学与学术领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "b157f7a1fae24ec4",
+      "platform": "rss",
+      "homepage": "https://phys.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Quanta Magazine",
+      "url": "https://www.quantamagazine.org/feed/",
+      "language": "en",
+      "category": "science",
+      "kind": "publisher",
+      "description": "科学与学术领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "1ba0bcbd71599e12",
+      "platform": "rss",
+      "homepage": "https://www.quantamagazine.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "NASA News",
+      "url": "https://www.nasa.gov/news-release/feed/",
+      "language": "en",
+      "category": "science",
+      "kind": "publisher",
+      "description": "科学与学术领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a634bc18087c694d",
+      "platform": "rss",
+      "homepage": "https://www.nasa.gov",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "ESA News",
+      "url": "https://www.esa.int/rssfeed/Our_Activities/Space_Science",
+      "language": "en",
+      "category": "science",
+      "kind": "publisher",
+      "description": "科学与学术领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "c6d5e79eeebd7584",
+      "platform": "rss",
+      "homepage": "https://www.esa.int",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "PLOS ONE",
+      "url": "https://journals.plos.org/plosone/feed/atom",
+      "language": "en",
+      "category": "science",
+      "kind": "publisher",
+      "description": "科学与学术领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "9723d5e70499932c",
+      "platform": "rss",
+      "homepage": "https://journals.plos.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "eLife",
+      "url": "https://elifesciences.org/rss/recent.xml",
+      "language": "en",
+      "category": "science",
+      "kind": "publisher",
+      "description": "科学与学术领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "eda13bcfa201231f",
+      "platform": "rss",
+      "homepage": "https://elifesciences.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "MIT News",
+      "url": "https://news.mit.edu/rss/feed",
+      "language": "en",
+      "category": "science",
+      "kind": "publisher",
+      "description": "科学与学术领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "8f3606b572bedf4e",
+      "platform": "rss",
+      "homepage": "https://news.mit.edu",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "BBC World",
+      "url": "https://feeds.bbci.co.uk/news/world/rss.xml",
+      "language": "en",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "1796df62c4a287cc",
+      "platform": "rss",
+      "homepage": "https://feeds.bbci.co.uk",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "BBC Technology",
+      "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "8fb86334c28d493c",
+      "platform": "rss",
+      "homepage": "https://feeds.bbci.co.uk",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "The Guardian World",
+      "url": "https://www.theguardian.com/world/rss",
+      "language": "en",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "d64709a605cbacc0",
+      "platform": "rss",
+      "homepage": "https://www.theguardian.com",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "The Guardian Technology",
+      "url": "https://www.theguardian.com/technology/rss",
+      "language": "en",
+      "category": "tech",
+      "kind": "publisher",
+      "description": "科技数码领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "3d3e83c46ebe71ab",
+      "platform": "rss",
+      "homepage": "https://www.theguardian.com",
+      "tags": [
+        "科技数码"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "NPR News",
+      "url": "https://feeds.npr.org/1001/rss.xml",
+      "language": "en",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "04a135552494b3db",
+      "platform": "rss",
+      "homepage": "https://feeds.npr.org",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Al Jazeera",
+      "url": "https://www.aljazeera.com/xml/rss/all.xml",
+      "language": "en",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "fa080031bb9f0725",
+      "platform": "rss",
+      "homepage": "https://www.aljazeera.com",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "UN News",
+      "url": "https://news.un.org/feed/subscribe/en/news/all/rss.xml",
+      "language": "en",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "36a18d80ea10f819",
+      "platform": "rss",
+      "homepage": "https://news.un.org",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Deutsche Welle",
+      "url": "https://rss.dw.com/rdf/rss-en-all",
+      "language": "en",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "14dda539770f94e3",
+      "platform": "rss",
+      "homepage": "https://rss.dw.com",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "AP Top News",
+      "url": "https://apnews.com/index.rss",
+      "language": "en",
+      "category": "news",
+      "kind": "publisher",
+      "description": "新闻资讯领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "e065ea267d1ced60",
+      "platform": "rss",
+      "homepage": "https://apnews.com",
+      "tags": [
+        "新闻资讯"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "CNBC Top News",
+      "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html",
+      "language": "en",
+      "category": "business",
+      "kind": "publisher",
+      "description": "商业财经领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a25f73735963d64a",
+      "platform": "rss",
+      "homepage": "https://www.cnbc.com",
+      "tags": [
+        "商业财经"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "CNBC Finance",
+      "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html",
+      "language": "en",
+      "category": "business",
+      "kind": "publisher",
+      "description": "商业财经领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "4d6533c6f7f1cd94",
+      "platform": "rss",
+      "homepage": "https://www.cnbc.com",
+      "tags": [
+        "商业财经"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Financial Times",
+      "url": "https://www.ft.com/rss/home",
+      "language": "en",
+      "category": "business",
+      "kind": "publisher",
+      "description": "商业财经领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "4356d747c820e8f7",
+      "platform": "rss",
+      "homepage": "https://www.ft.com",
+      "tags": [
+        "商业财经"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "The Economist Finance",
+      "url": "https://www.economist.com/finance-and-economics/rss.xml",
+      "language": "en",
+      "category": "business",
+      "kind": "publisher",
+      "description": "商业财经领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "5f032371dadcaf04",
+      "platform": "rss",
+      "homepage": "https://www.economist.com",
+      "tags": [
+        "商业财经"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Y Combinator Blog",
+      "url": "https://www.ycombinator.com/blog/rss/",
+      "language": "en",
+      "category": "business",
+      "kind": "publisher",
+      "description": "商业财经领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "2b6b6f43cacbbe37",
+      "platform": "rss",
+      "homepage": "https://www.ycombinator.com",
+      "tags": [
+        "商业财经"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Paul Graham Essays",
+      "url": "https://www.aaronsw.com/2002/feeds/pgessays.rss",
+      "language": "en",
+      "category": "business",
+      "kind": "publisher",
+      "description": "商业财经领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "711805a3e767f2d1",
+      "platform": "rss",
+      "homepage": "https://www.aaronsw.com",
+      "tags": [
+        "商业财经"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Product Hunt",
+      "url": "https://www.producthunt.com/feed",
+      "language": "en",
+      "category": "design",
+      "kind": "publisher",
+      "description": "设计与产品领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "7210e36e4fc8aa40",
+      "platform": "rss",
+      "homepage": "https://www.producthunt.com",
+      "tags": [
+        "设计与产品"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Smashing Magazine",
+      "url": "https://www.smashingmagazine.com/feed/",
+      "language": "en",
+      "category": "design",
+      "kind": "publisher",
+      "description": "设计与产品领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "ef260932727db1bd",
+      "platform": "rss",
+      "homepage": "https://www.smashingmagazine.com",
+      "tags": [
+        "设计与产品"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "A List Apart",
+      "url": "https://alistapart.com/main/feed/",
+      "language": "en",
+      "category": "design",
+      "kind": "publisher",
+      "description": "设计与产品领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a7e7d07858421de5",
+      "platform": "rss",
+      "homepage": "https://alistapart.com",
+      "tags": [
+        "设计与产品"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Nielsen Norman Group",
+      "url": "https://www.nngroup.com/feed/rss/",
+      "language": "en",
+      "category": "design",
+      "kind": "publisher",
+      "description": "设计与产品领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "f74a54fcb5d66235",
+      "platform": "rss",
+      "homepage": "https://www.nngroup.com",
+      "tags": [
+        "设计与产品"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "UX Collective",
+      "url": "https://uxdesign.cc/feed",
+      "language": "en",
+      "category": "design",
+      "kind": "publisher",
+      "description": "设计与产品领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "efe18eb280374393",
+      "platform": "rss",
+      "homepage": "https://uxdesign.cc",
+      "tags": [
+        "设计与产品"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Figma Blog",
+      "url": "https://www.figma.com/blog/feed/atom.xml",
+      "language": "en",
+      "category": "design",
+      "kind": "publisher",
+      "description": "设计与产品领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "2b15e5eac2568c6c",
+      "platform": "rss",
+      "homepage": "https://www.figma.com",
+      "tags": [
+        "设计与产品"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "CSS-Tricks",
+      "url": "https://css-tricks.com/feed/",
+      "language": "en",
+      "category": "design",
+      "kind": "publisher",
+      "description": "设计与产品领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "3292e08c98ab0fd7",
+      "platform": "rss",
+      "homepage": "https://css-tricks.com",
+      "tags": [
+        "设计与产品"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Aeon",
+      "url": "https://aeon.co/feed.rss",
+      "language": "en",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "f0c0bac8785e309c",
+      "platform": "rss",
+      "homepage": "https://aeon.co",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "The Marginalian",
+      "url": "https://www.themarginalian.org/feed/",
+      "language": "en",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "860dda2c78d69341",
+      "platform": "rss",
+      "homepage": "https://www.themarginalian.org",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Longreads",
+      "url": "https://longreads.com/feed/",
+      "language": "en",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "a6ddd5bb55293ff5",
+      "platform": "rss",
+      "homepage": "https://longreads.com",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Atlas Obscura",
+      "url": "https://www.atlasobscura.com/feeds/latest",
+      "language": "en",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "1e0b2d406f985530",
+      "platform": "rss",
+      "homepage": "https://www.atlasobscura.com",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Rock Paper Shotgun",
+      "url": "https://www.rockpapershotgun.com/feed",
+      "language": "en",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "4afce5eedc36ff52",
+      "platform": "rss",
+      "homepage": "https://www.rockpapershotgun.com",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "PC Gamer",
+      "url": "https://www.pcgamer.com/rss/",
+      "language": "en",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "ac9cad9f3e46e766",
+      "platform": "rss",
+      "homepage": "https://www.pcgamer.com",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Eurogamer",
+      "url": "https://www.eurogamer.net/feed",
+      "language": "en",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "b8d733699e48788b",
+      "platform": "rss",
+      "homepage": "https://www.eurogamer.net",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "Polygon",
+      "url": "https://www.polygon.com/rss/index.xml",
+      "language": "en",
+      "category": "life",
+      "kind": "publisher",
+      "description": "生活与文化领域的 RSS / Atom 候选来源；请查看检测状态。",
+      "id": "5af5d7a656af04cd",
+      "platform": "rss",
+      "homepage": "https://www.polygon.com",
+      "tags": [
+        "生活与文化"
+      ],
+      "attribution": "publisher feed candidate"
+    },
+    {
+      "name": "arXiv · 人工智能",
+      "url": "https://rss.arxiv.org/rss/cs.AI",
+      "language": "en",
+      "category": "ai",
+      "kind": "academic",
+      "description": "arXiv cs.AI 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "4317c649bc1b9ce7",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 计算语言与自然语言处理",
+      "url": "https://rss.arxiv.org/rss/cs.CL",
+      "language": "en",
+      "category": "ai",
+      "kind": "academic",
+      "description": "arXiv cs.CL 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "1191d2e9306f276c",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 机器学习",
+      "url": "https://rss.arxiv.org/rss/cs.LG",
+      "language": "en",
+      "category": "ai",
+      "kind": "academic",
+      "description": "arXiv cs.LG 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "ff10e47e85d5bebc",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 计算机视觉",
+      "url": "https://rss.arxiv.org/rss/cs.CV",
+      "language": "en",
+      "category": "ai",
+      "kind": "academic",
+      "description": "arXiv cs.CV 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "e3785f5b10b5b76b",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 机器人",
+      "url": "https://rss.arxiv.org/rss/cs.RO",
+      "language": "en",
+      "category": "ai",
+      "kind": "academic",
+      "description": "arXiv cs.RO 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "053d3ec38cbb3901",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 信息检索",
+      "url": "https://rss.arxiv.org/rss/cs.IR",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.IR 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "20473e46c6f089f6",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 密码与安全",
+      "url": "https://rss.arxiv.org/rss/cs.CR",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.CR 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "792b1b7d96774c5b",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 软件工程",
+      "url": "https://rss.arxiv.org/rss/cs.SE",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.SE 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "a97bbaf008b8caf6",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 编程语言",
+      "url": "https://rss.arxiv.org/rss/cs.PL",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.PL 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "403be25548a82b68",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 分布式计算",
+      "url": "https://rss.arxiv.org/rss/cs.DC",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.DC 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "18aa64715d067a75",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 数据库",
+      "url": "https://rss.arxiv.org/rss/cs.DB",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.DB 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "6d6142bf13b25dcf",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 数据结构与算法",
+      "url": "https://rss.arxiv.org/rss/cs.DS",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.DS 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "08c43db429bf14bb",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 人机交互",
+      "url": "https://rss.arxiv.org/rss/cs.HC",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.HC 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "5117339d590a3935",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 神经与进化计算",
+      "url": "https://rss.arxiv.org/rss/cs.NE",
+      "language": "en",
+      "category": "ai",
+      "kind": "academic",
+      "description": "arXiv cs.NE 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "3d38263930567ce3",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 社会与信息网络",
+      "url": "https://rss.arxiv.org/rss/cs.SI",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.SI 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "48e60ab2775d676e",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 系统与控制",
+      "url": "https://rss.arxiv.org/rss/cs.SY",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.SY 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "9c79bc8cf28a5c73",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 计算机与社会",
+      "url": "https://rss.arxiv.org/rss/cs.CY",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.CY 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "7a8b497821b749ba",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 计算工程",
+      "url": "https://rss.arxiv.org/rss/cs.CE",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.CE 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "fda2a15f411f01e9",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 计算机体系结构",
+      "url": "https://rss.arxiv.org/rss/cs.AR",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.AR 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "e912f90505db3549",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 网络与互联网架构",
+      "url": "https://rss.arxiv.org/rss/cs.NI",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cs.NI 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "5532498d1fa905f4",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 统计机器学习",
+      "url": "https://rss.arxiv.org/rss/stat.ML",
+      "language": "en",
+      "category": "ai",
+      "kind": "academic",
+      "description": "arXiv stat.ML 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "402f9d7a807dd65c",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "人工智能"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 应用统计",
+      "url": "https://rss.arxiv.org/rss/stat.AP",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv stat.AP 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "f54bbeb8873e9ee7",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 统计计算",
+      "url": "https://rss.arxiv.org/rss/stat.CO",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv stat.CO 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "21d95b03cd811870",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 统计方法",
+      "url": "https://rss.arxiv.org/rss/stat.ME",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv stat.ME 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "160ba0ff15e0f2ea",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 统计理论",
+      "url": "https://rss.arxiv.org/rss/stat.TH",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv stat.TH 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "52a907d35ef3fd85",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 优化与控制",
+      "url": "https://rss.arxiv.org/rss/math.OC",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv math.OC 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "ecf80de3fa7eb456",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 概率论",
+      "url": "https://rss.arxiv.org/rss/math.PR",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv math.PR 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "063af419544e59dc",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 数理统计",
+      "url": "https://rss.arxiv.org/rss/math.ST",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv math.ST 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "9b92009f749ab651",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 数值分析",
+      "url": "https://rss.arxiv.org/rss/math.NA",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv math.NA 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "734457ef3b19d43e",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 组合数学",
+      "url": "https://rss.arxiv.org/rss/math.CO",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv math.CO 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "eff54cc2cc3671c8",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 信息论",
+      "url": "https://rss.arxiv.org/rss/math.IT",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv math.IT 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "5b61703cc5fbedf3",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 量子物理",
+      "url": "https://rss.arxiv.org/rss/quant-ph",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv quant-ph 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "44b939591fe99076",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 地球与行星天体物理",
+      "url": "https://rss.arxiv.org/rss/astro-ph.EP",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv astro-ph.EP 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "ca0b748b17f30d1c",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 星系天体物理",
+      "url": "https://rss.arxiv.org/rss/astro-ph.GA",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv astro-ph.GA 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "d9a15b41b4c3d8a0",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 社会物理",
+      "url": "https://rss.arxiv.org/rss/physics.soc-ph",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv physics.soc-ph 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "35abfe1d03923a08",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 生物物理",
+      "url": "https://rss.arxiv.org/rss/physics.bio-ph",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv physics.bio-ph 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "df0eebc892c12469",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 材料科学",
+      "url": "https://rss.arxiv.org/rss/cond-mat.mtrl-sci",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv cond-mat.mtrl-sci 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "76450ae2483cc613",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 神经与认知",
+      "url": "https://rss.arxiv.org/rss/q-bio.NC",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv q-bio.NC 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "253577eb8a53e4f7",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 基因组学",
+      "url": "https://rss.arxiv.org/rss/q-bio.GN",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv q-bio.GN 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "6f4139f61d8fde74",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 计算金融",
+      "url": "https://rss.arxiv.org/rss/q-fin.CP",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv q-fin.CP 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "138e2743fb21e33a",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 经济学",
+      "url": "https://rss.arxiv.org/rss/q-fin.EC",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv q-fin.EC 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "a6ebbdf3c6c0530f",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 投资组合管理",
+      "url": "https://rss.arxiv.org/rss/q-fin.PM",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv q-fin.PM 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "c26704882dfad2cb",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 风险管理",
+      "url": "https://rss.arxiv.org/rss/q-fin.RM",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv q-fin.RM 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "0d24c7dc8278f584",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 计量经济",
+      "url": "https://rss.arxiv.org/rss/econ.EM",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv econ.EM 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "6979727849c323b7",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "arXiv · 一般经济",
+      "url": "https://rss.arxiv.org/rss/econ.GN",
+      "language": "en",
+      "category": "science",
+      "kind": "academic",
+      "description": "arXiv econ.GN 学科论文摘要；正文通常为 PDF，不作为网页全文解析。",
+      "id": "7b7d88471e22eff9",
+      "platform": "rss",
+      "homepage": "https://rss.arxiv.org",
+      "tags": [
+        "科学与学术"
+      ],
+      "attribution": "https://info.arxiv.org/help/rss.html"
+    }
+  ]
+}

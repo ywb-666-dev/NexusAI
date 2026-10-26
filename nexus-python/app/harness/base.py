@@ -107,7 +107,7 @@ class AgentHarness:
                 elif hasattr(result, "success") and not result.success:
                     last_error = result.error or "Unknown error"
                     if attempt < self.max_retries:
-                        await asyncio.sleep(self.backoff_base ** attempt)
+                        await asyncio.sleep(self.backoff_base**attempt)
                     continue
                 else:
                     rec.status = "success"
@@ -119,7 +119,7 @@ class AgentHarness:
                 last_error = str(e)
                 rec.duration_ms = (time.perf_counter() - start) * 1000
                 if attempt < self.max_retries:
-                    await asyncio.sleep(self.backoff_base ** attempt)
+                    await asyncio.sleep(self.backoff_base**attempt)
 
         if rec.status == "running":
             rec.status = "failed"
@@ -130,7 +130,12 @@ class AgentHarness:
         # 后置钩子
         for hook in self._after_hooks:
             try:
-                hook(task_id=task_id, skill_name=skill_name, status=rec.status, result=result)
+                hook(
+                    task_id=task_id,
+                    skill_name=skill_name,
+                    status=rec.status,
+                    result=result,
+                )
             except Exception:
                 pass
 
@@ -138,6 +143,7 @@ class AgentHarness:
 
     def wrap(self, skill_name: str):
         """装饰器：将任意异步函数包装为 Harness 管理的 Skill"""
+
         def decorator(func):
             @wraps(func)
             async def wrapper(**kwargs):
@@ -163,19 +169,23 @@ class AgentHarness:
                         last_error = str(e)
                         rec.duration_ms = (time.perf_counter() - start) * 1000
                         if attempt < self.max_retries:
-                            time.sleep(self.backoff_base ** attempt)
+                            time.sleep(self.backoff_base**attempt)
 
                 rec.status = "failed"
                 rec.error = last_error
                 rec.end_time = datetime.utcnow()
                 self.metrics.record(rec)
-                raise RuntimeError(f"Skill '{skill_name}' failed after {self.max_retries + 1} attempts: {last_error}")
+                raise RuntimeError(
+                    f"Skill '{skill_name}' failed after {self.max_retries + 1} attempts: {last_error}"
+                )
 
             return wrapper
+
         return decorator
 
 
 # ========== Middleware: 日志追踪 ==========
+
 
 class LoggingMiddleware:
     """Harness 日志中间件：记录每次技能调用的入参/出参/耗时"""
@@ -190,4 +200,6 @@ class LoggingMiddleware:
         result_preview = ""
         if hasattr(result, "duration_ms"):
             result_preview = f" | {result.duration_ms:.1f}ms"
-        print(f"[Harness] ◀ {skill_name} | task={task_id[:8]} | {status}{result_preview}")
+        print(
+            f"[Harness] ◀ {skill_name} | task={task_id[:8]} | {status}{result_preview}"
+        )

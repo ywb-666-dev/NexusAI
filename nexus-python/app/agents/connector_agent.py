@@ -1,172 +1,92 @@
-"""Connector Agent — 关联去重节点：语义去重、内容存储、关联图"""
+"""Store canonical content as pending until the risk decision is made."""
 
 import hashlib
-import json
 import uuid
-from typing import Any
-
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-
-from app.memory.milvus_client import milvus_client
-from app.models import Content, Notification, Subscription
-from app.core.config import settings
-from app.agents.state import NexusState, ConnectorResult
+import re
+from sqlalchemy import select, or_
+from sqlalchemy.exc import IntegrityError
+from app.models import Content
+from app.models.task import AgentTask
+from app.agents.state import NexusState
+from app.services.fetching import published
 
 
-def _get_embedding(text: str) -> list[float]:
-    """获取文本的 embedding 向量"""
-    try:
-        import openai
-        emb_key = settings.llm.embedding_api_key or settings.llm.api_key
-        client = openai.OpenAI(
-            api_key=emb_key,
-            base_url=settings.llm.base_url,
-        )
-        resp = client.embeddings.create(
-            model=settings.llm.embedding_model,
-            input=text[:8000],
-        )
-        return resp.data[0].embedding
-    except Exception as e:
-        print(f"[Embedding] Failed: {e}")
-        return []
-
-
-async def run_connector(state: NexusState, db: AsyncSession) -> NexusState:
-    """
-    Connector Agent 节点：去重、关联、存储。
-
-    1. SHA-256 硬去重
-    2. Milvus 语义去重（相似度 > 阈值）
-    3. 内容关联发现
-    4. 写入 DB、创建通知
-    """
-    items: list[dict] = state.get("parser", {}).get("items", [])
-    if not items:
-        state["connector"] = ConnectorResult(
-            items=[], stored_count=0, duplicate_count=0, related_groups=[],
-        )
-        state["next_node"] = "actor"
-        return state
-
-    stored_count = 0
-    duplicate_count = 0
-
+async def run_connector(state: NexusState, db) -> NexusState:
+    items = state.get("parser", {}).get("items", [])
+    ids, duplicate_count = [], 0
+    seen = set()
     for item in items:
-        try:
-            content_text = f"{item.get('title', '')}\n{item.get('summary', '')}"[:2000]
-            c_hash = hashlib.sha256(content_text.encode("utf-8")).hexdigest()
-
-            # 硬去重
-            result = await db.execute(
-                select(Content).where(Content.content_hash == c_hash)
+        normalized = re.sub(
+            r"\s+",
+            " ",
+            item.get("title", "")
+            + "\n"
+            + item.get("raw_html", item.get("summary", "")),
+        ).strip()
+        key = hashlib.sha256(
+            f"{state['subscription_id']}:{normalized}".encode()
+        ).hexdigest()
+        if key in seen:
+            duplicate_count += 1
+            continue
+        seen.add(key)
+        exists = (
+            await db.execute(
+                select(Content)
+                .where(
+                    Content.subscription_id == state["subscription_id"],
+                    or_(
+                        Content.content_hash == key,
+                        Content.source_url == item["source_url"],
+                    ),
+                )
+                .limit(1)
             )
-            if result.scalar_one_or_none():
-                duplicate_count += 1
+        ).scalar_one_or_none()
+        if exists:
+            previous_task = (
+                await db.get(AgentTask, exists.task_id)
+                if exists.task_id and exists.status == 2
+                else None
+            )
+            if previous_task and previous_task.status == "failed":
+                exists.task_id = state["task_id"]
+                ids.append(exists.id)
                 continue
-
-            cid = str(uuid.uuid4())
-            embedding = _get_embedding(content_text)
-            vector_id: str | None = None
-            is_duplicate = 0
-            duplicate_of: str | None = None
-            related_contents: str | None = None
-
-            # Milvus 语义去重与关联
-            if embedding:
-                try:
-                    vector_ids = milvus_client.insert_vectors([{
-                        "content_id": cid,
-                        "embedding": embedding,
-                    }])
-                    if vector_ids:
-                        vector_id = vector_ids[0]
-
-                    # 高相似度去重 (>0.92)
-                    similar = milvus_client.search_similar(
-                        embedding=embedding,
-                        top_k=3,
-                        threshold=settings.milvus.dedup_threshold,
-                    )
-                    for hit in similar:
-                        if hit["content_id"] != cid:
-                            is_duplicate = 1
-                            duplicate_of = hit["content_id"]
-                            break
-
-                    # 关联内容 (0.75~0.92)
-                    related = milvus_client.search_similar(
-                        embedding=embedding,
-                        top_k=6,
-                        threshold=settings.milvus.relate_threshold,
-                    )
-                    related_ids = [
-                        r["content_id"] for r in related
-                        if r["content_id"] != cid and r["content_id"] != duplicate_of
-                    ][:5]
-                    if related_ids:
-                        related_contents = json.dumps(related_ids)
-                except Exception as e:
-                    print(f"[Connector] Milvus ops skipped: {e}")
-
-            if is_duplicate:
-                duplicate_count += 1
-                try:
-                    milvus_client.delete_by_content_id(cid)
-                except Exception:
-                    pass
-
-            db_content = Content(
-                id=cid,
-                subscription_id=state.get("subscription_id"),
-                source_platform=item.get("platform", ""),
-                source_url=item.get("source_url", ""),
-                title=(item.get("title", "") or "")[:500],
-                summary=(item.get("summary", "") or "")[:2000],
-                content_body=item.get("raw_html", ""),
-                author=item.get("author", ""),
-                content_hash=c_hash,
-                vector_id=vector_id,
-                status=1,
-                is_duplicate=is_duplicate,
-                duplicate_of=duplicate_of,
-                related_contents=related_contents,
-            )
-            db.add(db_content)
-            stored_count += 1
-        except Exception as e:
-            print(f"[Connector] Store failed for item: {e}")
-
-    if stored_count > 0:
-        await db.commit()
-
-        # 创建通知
-        sub_result = await db.execute(
-            select(Subscription.user_id).where(
-                Subscription.id == state.get("subscription_id")
-            )
+            duplicate_count += 1
+            continue
+        cid = str(uuid.uuid4())
+        content = Content(
+            id=cid,
+            subscription_id=state["subscription_id"],
+            task_id=state["task_id"],
+            source_platform=item["platform"],
+            source_url=item["source_url"][:1000],
+            title=item.get("title", "")[:500],
+            summary=item.get("summary", "")[:2000],
+            translated_summary=item.get("translated_summary"),
+            content_body=item.get("raw_html", ""),
+            author=item.get("author", "")[:100],
+            published_at=published(item.get("published_at")),
+            content_hash=key,
+            status=2,
+            is_duplicate=0,
+            related_contents=[],
         )
-        user_id = sub_result.scalar()
-        if user_id:
-            notification = Notification(
-                user_id=user_id,
-                type="task",
-                title=f"采集完成: {state.get('task_id', '')[:8]}",
-                content=f"新增 {stored_count} 条内容，去重 {duplicate_count} 条",
-                is_read=0,
-                related_id=state.get("task_id", ""),
-            )
-            db.add(notification)
-            await db.commit()
-
-    print(f"[Connector] Stored {stored_count} items, {duplicate_count} duplicates")
-
-    state["connector"] = ConnectorResult(
-        items=items,
-        stored_count=stored_count,
-        duplicate_count=duplicate_count,
-        related_groups=[],
-    )
+        try:
+            async with db.begin_nested():
+                db.add(content)
+                await db.flush()
+            ids.append(cid)
+        except IntegrityError:
+            duplicate_count += 1
+    await db.commit()
+    state["connector"] = {
+        "stored_ids": ids,
+        "stored_count": len(ids),
+        "duplicate_count": duplicate_count,
+        "items": items,
+        "related_groups": [],
+    }
     state["next_node"] = "actor"
     return state

@@ -43,6 +43,7 @@ class SkillRegistry:
         if not skill:
             return SkillResult(success=False, error=f"Skill not found: {name}")
         import time
+
         start = time.perf_counter()
         try:
             result = await skill.execute(**kwargs)

@@ -1,39 +1,40 @@
-import axios from 'axios'
-import { useAuthStore } from '../store/auth'
+import axios from "axios";
+import { useAuthStore } from "../store/auth";
 
 const request = axios.create({
-  baseURL: '/api',
+  baseURL: "/api",
   timeout: 30000,
-})
+});
 
 request.interceptors.request.use((config) => {
-  const token = useAuthStore.getState().token
+  const token = useAuthStore.getState().token;
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return config
-})
+  return config;
+});
 
 request.interceptors.response.use(
   (res) => {
-    const data = res.data
+    const data = res.data;
     if (data.code && data.code !== 200) {
-      return Promise.reject(new Error(data.message || '请求失败'))
+      return Promise.reject(new Error(data.message || "请求失败"));
     }
-    return data
+    return data;
   },
   (err) => {
     // 提取后端返回的错误消息
-    const backendMsg = err.response?.data?.message
+    const backendMsg =
+      err.response?.data?.message || err.response?.data?.detail;
     if (backendMsg) {
-      err.message = backendMsg
+      err.message = backendMsg;
     }
     if (err.response?.status === 401) {
-      useAuthStore.getState().logout()
-      window.location.href = '/login'
+      useAuthStore.getState().logout();
+      window.location.href = "/login";
     }
-    return Promise.reject(err)
-  }
-)
+    return Promise.reject(err);
+  },
+);
 
-export default request
+export default request;
