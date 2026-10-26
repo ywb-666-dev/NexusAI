@@ -49,6 +49,7 @@ def main():
             "translated_summary": "TEXT",
             "task_id": "VARCHAR(64)",
             "quality": "JSON",
+            "relevance": "JSON",
         },
         "source_health": {
             "total_checks": "INTEGER NOT NULL DEFAULT 0",

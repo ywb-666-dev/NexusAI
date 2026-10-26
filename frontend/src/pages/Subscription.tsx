@@ -26,16 +26,20 @@ import request from "../api/request";
 import PageHeading from "../components/PageHeading";
 import TrialDrawer from "../components/TrialDrawer";
 import AutomaticSources from "../components/AutomaticSources";
+import SemanticFields, { semanticValues } from "../components/SemanticFields";
 export default function SubscriptionPage() {
   const { message } = App.useApp(),
     navigate = useNavigate(),
     [form] = Form.useForm();
+  const semanticMode = Form.useWatch("matchingMode", form) === "semantic";
   const autoMode = Form.useWatch("sourceMode", form) === "auto";
   const sourcePolicy = () =>
     form.getFieldValue("sourceMode") === "auto"
       ? {
           mode: "auto",
-          topic: (form.getFieldValue("focusTopic") || "").trim(),
+          topic: semanticValues(form).enabled
+            ? semanticValues(form).intent.slice(0, 200)
+            : (form.getFieldValue("focusTopic") || "").trim(),
           language: form.getFieldValue("sourceLanguage") || "zh_first",
           excluded_ids: form.getFieldValue("excludedSourceIds") || [],
         }
@@ -65,9 +69,14 @@ export default function SubscriptionPage() {
     })),
     keywords: form.getFieldValue("keywords") || [],
     source_policy: sourcePolicy(),
+    semantic_policy: semanticValues(form),
   });
   const trial = async () => {
     const values = trialValues();
+    if (values.semantic_policy.enabled && !values.semantic_policy.intent) {
+      message.warning("请描述订阅需求");
+      return;
+    }
     if (autoMode && !values.source_policy.topic) {
       message.warning("请先填写关注主题");
       return;
@@ -87,7 +96,7 @@ export default function SubscriptionPage() {
       const r: any = await request.post(
         "/python/subscriptions/trial",
         { ...values, rss_feeds: values.rss_feeds.slice(0, 5) },
-        { timeout: 90000 },
+        { timeout: semanticMode ? 330000 : 90000 },
       );
       if (JSON.stringify(values) !== JSON.stringify(trialValues())) {
         setTrialError("订阅配置已变化，请重新试采查看最新结果");
@@ -134,6 +143,13 @@ export default function SubscriptionPage() {
       row
         ? {
             ...row,
+            matchingMode: conditions.semantic_filter?.enabled
+              ? "semantic"
+              : "keyword",
+            semanticIntent: conditions.semantic_filter?.intent || "",
+            semanticExclusions: conditions.semantic_filter?.exclusions || "",
+            semanticThreshold: conditions.semantic_filter?.threshold || 75,
+            semanticBudget: conditions.semantic_filter?.max_candidates || 20,
             rssFeeds:
               conditions.source_policy?.mode === "auto"
                 ? (row.rssFeeds || []).filter((f: any) => f.origin !== "system")
@@ -150,6 +166,11 @@ export default function SubscriptionPage() {
             rssFeeds: [],
             sourceMode: "auto",
             focusTopic: "",
+            matchingMode: "semantic",
+            semanticIntent: "",
+            semanticExclusions: "",
+            semanticThreshold: 75,
+            semanticBudget: 20,
             sourceLanguage: "zh_first",
             excludedSourceIds: [],
             priority: 2,
@@ -159,10 +180,13 @@ export default function SubscriptionPage() {
     setOpen(true);
   };
   const save = async () => {
-    if (autoMode && !form.getFieldValue("name"))
+    if ((autoMode || semanticMode) && !form.getFieldValue("name"))
       form.setFieldValue(
         "name",
-        (form.getFieldValue("focusTopic") || "").trim().slice(0, 100),
+        (semanticMode
+          ? semanticValues(form).intent
+          : (form.getFieldValue("focusTopic") || "").trim()
+        ).slice(0, 100),
       );
     const v = await form.validateFields();
     setSaving(true);
@@ -179,14 +203,15 @@ export default function SubscriptionPage() {
           interval_minutes: v.interval,
           enable_ai: !!v.enableAi,
           source_policy: sourcePolicy(),
+          semantic_filter: semanticValues(form),
         }),
       };
       if (editing)
         await request.put("/java/subscriptions/" + editing.id, payload, {
-          timeout: 60000,
+          timeout: 150000,
         });
       else
-        await request.post("/java/subscriptions", payload, { timeout: 60000 });
+        await request.post("/java/subscriptions", payload, { timeout: 150000 });
       setOpen(false);
       message.success("订阅已保存");
       load();
@@ -230,7 +255,9 @@ export default function SubscriptionPage() {
   const trigger = async (id: number) => {
     setTriggering(id);
     try {
-      await request.post("/java/subscriptions/" + id + "/trigger");
+      await request.post("/java/subscriptions/" + id + "/trigger", null, {
+        timeout: 120000,
+      });
       message.success("任务已创建");
       navigate("/tasks");
     } catch (e: any) {
@@ -255,7 +282,7 @@ export default function SubscriptionPage() {
       <PageHeading
         label="SUBSCRIPTIONS / 订阅管理"
         title="建立你的信息雷达"
-        subtitle="将采集源与关注关键词分别配置，按设定频率持续获取内容。"
+        subtitle="描述你关心的事情，理解文章语义后推荐相关内容。"
         extra={
           <Button type="primary" icon={<PlusOutlined />} onClick={() => show()}>
             新建订阅
@@ -371,7 +398,7 @@ export default function SubscriptionPage() {
       >
         <Alert
           type="info"
-          message="填写关注主题，系统会自动添加采集源；也可以额外添加自己的地址，或切换为手动配置。"
+          message="描述订阅需求，系统理解后选择来源并逐篇语义审核；也可添加自己的来源。"
           style={{ margin: "16px 0" }}
         />
         <Space wrap style={{ marginBottom: 16 }}>
@@ -379,7 +406,7 @@ export default function SubscriptionPage() {
             试采预览
           </Button>
           <Typography.Text type="secondary">
-            保存前看看会收到什么（最多前 5 个来源）
+            保存前预览推荐与拒绝理由（最多前 5 个来源）
           </Typography.Text>
         </Space>
         {!autoMode && (
@@ -487,6 +514,7 @@ export default function SubscriptionPage() {
             interval: 60,
           }}
         >
+          <SemanticFields form={form} />
           <AutomaticSources form={form} />
           <Form.Item
             name="name"
@@ -540,7 +568,7 @@ export default function SubscriptionPage() {
                     >
                       <Input
                         placeholder="https://example.com/feed.xml"
-                        style={{ width: window.innerWidth < 600 ? 190 : 460 }}
+                        style={{ width: "min(460px, calc(100vw - 230px))" }}
                       />
                     </Form.Item>
                     <Button
@@ -562,15 +590,17 @@ export default function SubscriptionPage() {
             )}
           </Form.List>
           <Form.Item name="enableAi" valuePropName="checked">
-            <Checkbox>自动生成 AI 翻译与简报（需配置模型）</Checkbox>
+            <Checkbox>额外生成 AI 翻译与简报（可选，与语义筛选独立）</Checkbox>
           </Form.Item>
-          <Form.Item name="keywords" label="关注关键词（可选）">
-            <Select
-              mode="tags"
-              tokenSeparators={[",", "，"]}
-              placeholder="输入关键词，回车添加"
-            />
-          </Form.Item>
+          {!semanticMode && (
+            <Form.Item name="keywords" label="关注关键词（兼容模式，可选）">
+              <Select
+                mode="tags"
+                tokenSeparators={[",", "，"]}
+                placeholder="输入关键词，回车添加"
+              />
+            </Form.Item>
+          )}
           <Space size={24}>
             <Form.Item
               name="interval"

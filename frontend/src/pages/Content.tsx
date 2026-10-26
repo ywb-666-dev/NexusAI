@@ -18,12 +18,14 @@ import { SearchOutlined, ExportOutlined } from "@ant-design/icons";
 import request from "../api/request";
 import PageHeading from "../components/PageHeading";
 import QualityBadge from "../components/QualityBadge";
+import RelevanceView from "../components/RelevanceView";
 const { Text } = Typography;
 export default function ContentPage() {
   const [params, setParams] = useSearchParams(),
     [search, setSearch] = useState(params.get("search") || ""),
     [query, setQuery] = useState(search),
     [platform, setPlatform] = useState(""),
+    [sort, setSort] = useState("relevance"),
     [page, setPage] = useState(1),
     [data, setData] = useState<any[]>([]),
     [total, setTotal] = useState(0),
@@ -45,7 +47,7 @@ export default function ContentPage() {
     setError("");
     request
       .get("/python/contents", {
-        params: { page, size: 12, search: query, platform },
+        params: { page, size: 12, search: query, platform, sort },
       })
       .then((r: any) => {
         if (live) {
@@ -62,7 +64,7 @@ export default function ContentPage() {
     return () => {
       live = false;
     };
-  }, [page, query, platform]);
+  }, [page, query, platform, sort]);
   const invoke = async (name: string) => {
     setBusy(true);
     setAi("");
@@ -117,6 +119,17 @@ export default function ContentPage() {
             setPage(1);
           }}
         />
+        <Segmented
+          value={sort}
+          onChange={(v) => {
+            setSort(String(v));
+            setPage(1);
+          }}
+          options={[
+            { value: "relevance", label: "推荐优先" },
+            { value: "latest", label: "最新内容" },
+          ]}
+        />
         <Text type="secondary">共 {total} 条内容</Text>
       </div>
       {error && (
@@ -148,6 +161,7 @@ export default function ContentPage() {
                 </Tag>
                 <h3>{item.title || "无标题"}</h3>
                 <QualityBadge quality={item.quality} />
+                <RelevanceView value={item.relevance} compact />
                 <p>
                   {item.translatedSummary || item.summary || "打开阅读完整正文"}
                 </p>
@@ -202,6 +216,7 @@ export default function ContentPage() {
           <>
             <Tag color="cyan">{detail.sourcePlatform}</Tag>
             <Typography.Title level={3}>{detail.title}</Typography.Title>
+            <RelevanceView value={detail.relevance} />
             <QualityBadge quality={detail.quality} />
             {!!detail.quality?.reasons?.length && (
               <Typography.Paragraph type="secondary" style={{ marginTop: 10 }}>

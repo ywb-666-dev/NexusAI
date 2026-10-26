@@ -26,7 +26,7 @@ public class SubscriptionDTO {
     private Integer priority = 2;
     @Min(0) @Max(1)
     private Integer status;
-    @Size(max=2000)
+    @Size(max=8000)
     private String triggerConditions;
 
     public static class RssFeedItem {

@@ -51,6 +51,7 @@ def main():
             row.get_by_role("checkbox").check()
         page.get_by_role("button", name="加入订阅").click()
         modal = page.get_by_role("dialog")
+        modal.get_by_role("radio", name="关键词筛选（兼容）", exact=True).check()
         sub_name = "数据源验收_" + name
         modal.get_by_placeholder("例如：AI 与科技动态").fill(sub_name)
         modal.get_by_role("button", name="保存订阅").click()
@@ -62,7 +63,7 @@ def main():
         row = page.get_by_role("row").filter(has_text="IT之家")
         row.get_by_role("checkbox").check()
         page.get_by_role("button", name="加入订阅").click()
-        modal.locator(".ant-select-selector").click()
+        modal.locator(".ant-select:has(#target) .ant-select-selector").click()
         page.get_by_title(sub_name, exact=True).click()
         modal.get_by_role("button", name="保存订阅").click()
         modal.wait_for(state="hidden")

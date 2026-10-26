@@ -50,11 +50,18 @@ async def create_task(subscription_id: int, user_id: int, supervisor) -> str:
             sub.trigger_conditions if isinstance(sub.trigger_conditions, dict) else {}
         )
         from app.services.auto_sources import resolve_subscription_sources
+        from app.services.semantic import SemanticPolicy, compile_intent, SemanticError
 
         try:
-            feeds, resolution = await resolve_subscription_sources(
-                parse_list(sub.rss_feeds), conditions
+            semantic = SemanticPolicy.model_validate(
+                conditions.get("semantic_filter") or {}
             )
+            plan = await compile_intent(semantic) if semantic.enabled else None
+            feeds, resolution = await resolve_subscription_sources(
+                parse_list(sub.rss_feeds), conditions, semantic_plan=plan
+            )
+        except SemanticError as exc:
+            raise HTTPException(503, str(exc))
         except ValueError as exc:
             raise HTTPException(409, str(exc))
         if resolution is not None:
@@ -69,6 +76,8 @@ async def create_task(subscription_id: int, user_id: int, supervisor) -> str:
             "source_platforms": parse_list(sub.source_platforms),
             "rss_feeds": feeds,
             "source_resolution": resolution,
+            "semantic_policy": semantic.model_dump() if semantic.enabled else None,
+            "semantic_plan": plan,
             "enable_ai": bool(
                 (
                     sub.trigger_conditions
@@ -146,7 +155,10 @@ def compact_state(state):
 async def execute(supervisor, state):
     async with LIMIT:
         try:
-            final = await asyncio.wait_for(supervisor.run(state), timeout=300)
+            final = await asyncio.wait_for(
+                supervisor.run(state),
+                timeout=600 if state.get("semantic_policy") else 300,
+            )
             await save_state(final)
             if not final.get("error"):
                 async with get_session_factory()() as db:

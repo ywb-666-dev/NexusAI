@@ -24,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 import request from "../api/request";
 import PageHeading from "../components/PageHeading";
 import QualityBadge, { type ContentQuality } from "../components/QualityBadge";
+import SemanticFields, { semanticValues } from "../components/SemanticFields";
 
 type Source = {
   id: string;
@@ -165,6 +166,12 @@ export default function Sources() {
         target: "new",
         name: "我的信息订阅",
         interval: 60,
+        matchingMode: "semantic",
+        semanticIntent: "",
+        semanticExclusions: "",
+        semanticThreshold: 75,
+        semanticBudget: 20,
+        sourceMode: "manual",
       });
       setOpen(true);
     } catch (e: any) {
@@ -203,11 +210,17 @@ export default function Sources() {
         status: existing?.status ?? 1,
         triggerConditions:
           existing?.triggerConditions ||
-          JSON.stringify({ interval_minutes: 60, enable_ai: false }),
+          JSON.stringify({
+            interval_minutes: 60,
+            enable_ai: false,
+            source_policy: { mode: "manual" },
+            semantic_filter: semanticValues(form),
+          }),
       };
       if (existing)
         await request.put("/java/subscriptions/" + existing.id, payload);
-      else await request.post("/java/subscriptions", payload);
+      else
+        await request.post("/java/subscriptions", payload, { timeout: 150000 });
       message.success("已加入订阅，可在我的订阅中手动采集或等待调度");
       setOpen(false);
       setSelected([]);
@@ -594,19 +607,25 @@ export default function Sources() {
           <Form.Item noStyle shouldUpdate={(a, b) => a.target !== b.target}>
             {({ getFieldValue }) =>
               getFieldValue("target") === "new" ? (
-                <Form.Item
-                  name="name"
-                  label="订阅名称"
-                  rules={[{ required: true, whitespace: true, max: 100 }]}
-                >
-                  <Input placeholder="例如：AI 与科技动态" />
-                </Form.Item>
+                <>
+                  <Form.Item
+                    name="name"
+                    label="订阅名称"
+                    rules={[{ required: true, whitespace: true, max: 100 }]}
+                  >
+                    <Input placeholder="例如：AI 与科技动态" />
+                  </Form.Item>
+                  <Form.Item name="sourceMode" hidden>
+                    <Input />
+                  </Form.Item>
+                  <SemanticFields form={form} />
+                </>
               ) : null
             }
           </Form.Item>
           <Alert
             type="info"
-            message="新订阅每 60 分钟采集，AI 默认关闭；已有订阅保留原有设置。可在我的订阅中修改。"
+            message="新订阅每 60 分钟采集，语义模式会调用模型筛选文章；额外翻译与简报默认关闭。已有订阅保留设置。"
           />
         </Form>
       </Modal>

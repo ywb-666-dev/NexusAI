@@ -168,8 +168,26 @@ async def run_parser(state: NexusState, mcp_pool: Any = None) -> NexusState:
         state["next_node"] = "connector"
         return state
 
-    prepared = await prepare_items(raw_items)
-    raw_items = prepared["items"]
+    semantic_summary = None
+    policy_data = state.get("semantic_policy")
+    if policy_data and policy_data.get("enabled"):
+        from app.services.semantic import SemanticPolicy, filter_articles
+
+        policy = SemanticPolicy.model_validate(policy_data)
+        selected = raw_items[: policy.max_candidates]
+        prepared = await prepare_items(selected)
+        filtered = await filter_articles(
+            prepared["items"], policy, state.get("semantic_plan")
+        )
+        raw_items = filtered["items"]
+        semantic_summary = filtered["summary"]
+        semantic_summary["unevaluated_count"] = max(
+            0,
+            state.get("scout", {}).get("total_fetched", len(selected)) - len(selected),
+        )
+    else:
+        prepared = await prepare_items(raw_items)
+        raw_items = prepared["items"]
     scraped_count = prepared["scraped_count"]
     translated_count = 0
     # Step 2: 非中文内容翻译
@@ -195,6 +213,7 @@ async def run_parser(state: NexusState, mcp_pool: Any = None) -> NexusState:
         rejected_count=prepared["rejected_count"],
         quality_counts=prepared["quality_counts"],
         rejected=prepared["rejected"],
+        semantic=semantic_summary,
     )
     state["next_node"] = "connector"
     return state

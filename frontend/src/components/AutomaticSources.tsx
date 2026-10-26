@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   Button,
@@ -12,6 +12,7 @@ import {
 } from "antd";
 import type { FormInstance } from "antd";
 import request from "../api/request";
+import { semanticValues, IntentView } from "./SemanticFields";
 
 export default function AutomaticSources({ form }: { form: FormInstance }) {
   const mode = Form.useWatch("sourceMode", form),
@@ -19,6 +20,10 @@ export default function AutomaticSources({ form }: { form: FormInstance }) {
     language = Form.useWatch("sourceLanguage", form) || "zh_first";
   const excluded = Form.useWatch("excludedSourceIds", form) || [],
     manual = Form.useWatch("rssFeeds", form) || [];
+  const matchingMode = Form.useWatch("matchingMode", form),
+    intent = Form.useWatch("semanticIntent", form) || "",
+    semanticExclusions = Form.useWatch("semanticExclusions", form) || "";
+  const semantic = matchingMode === "semantic";
   const [data, setData] = useState<any>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
@@ -27,10 +32,47 @@ export default function AutomaticSources({ form }: { form: FormInstance }) {
     language,
     excluded,
     manual: manual.filter((f: any) => f.url).length,
+    semantic,
+    intent,
+    semanticExclusions,
   });
+  const current = useRef(signature);
+  current.current = signature;
+  const understand = async () => {
+    if (!intent.trim()) {
+      setError("请先填写订阅需求");
+      return;
+    }
+    const snapshot = signature;
+    setBusy(true);
+    setError("");
+    setData(null);
+    try {
+      const r: any = await request.post(
+        "/python/subscriptions/resolve-sources",
+        {
+          topic: intent.trim().slice(0, 200),
+          language,
+          excluded_ids: excluded,
+          limit: Math.max(
+            0,
+            Math.min(5, 20 - manual.filter((f: any) => f.url).length),
+          ),
+          semantic_policy: semanticValues(form),
+        },
+        { timeout: 100000 },
+      );
+      if (current.current === snapshot) setData(r.data);
+    } catch (e: any) {
+      if (current.current === snapshot) setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
   useEffect(() => {
     setData(null);
     setError("");
+    if (semantic) return;
     if (mode !== "auto" || !topic.trim() || topic.length > 200) {
       setBusy(false);
       return;
@@ -92,27 +134,29 @@ export default function AutomaticSources({ form }: { form: FormInstance }) {
       </Form.Item>
       {mode === "auto" && (
         <>
-          <Form.Item
-            name="focusTopic"
-            label="关注主题"
-            rules={[
-              {
-                required: true,
-                whitespace: true,
-                message: "告诉系统你想关注什么",
-              },
-              { max: 200 },
-            ]}
-          >
-            <Input
-              placeholder="例如：人工智能、Python、网络安全"
-              maxLength={200}
-              onBlur={() => {
-                if (!form.getFieldValue("name") && topic.trim())
-                  form.setFieldValue("name", topic.trim().slice(0, 100));
-              }}
-            />
-          </Form.Item>
+          {!semantic && (
+            <Form.Item
+              name="focusTopic"
+              label="关注主题"
+              rules={[
+                {
+                  required: true,
+                  whitespace: true,
+                  message: "告诉系统你想关注什么",
+                },
+                { max: 200 },
+              ]}
+            >
+              <Input
+                placeholder="例如：人工智能、Python、网络安全"
+                maxLength={200}
+                onBlur={() => {
+                  if (!form.getFieldValue("name") && topic.trim())
+                    form.setFieldValue("name", topic.trim().slice(0, 100));
+                }}
+              />
+            </Form.Item>
+          )}
           <Form.Item name="sourceLanguage" label="来源语言偏好">
             <Select
               options={[
@@ -122,6 +166,17 @@ export default function AutomaticSources({ form }: { form: FormInstance }) {
             />
           </Form.Item>
           <div style={{ marginBottom: 20 }}>
+            {semantic && (
+              <div style={{ marginBottom: 14 }}>
+                <Button loading={busy} onClick={understand}>
+                  理解需求并匹配来源
+                </Button>
+                <Typography.Paragraph type="secondary" style={{ marginTop: 8 }}>
+                  点击后调用模型理解需求；保存时也会按当前需求重新确认。
+                </Typography.Paragraph>
+              </div>
+            )}
+            <IntentView plan={data?.semantic_plan} />
             <Space wrap style={{ marginBottom: 10 }}>
               <Typography.Text strong>系统自动添加的来源</Typography.Text>
               {busy && <Tag color="processing">正在匹配与校验</Tag>}
@@ -135,7 +190,7 @@ export default function AutomaticSources({ form }: { form: FormInstance }) {
               )}
             </Space>
             {error && <Alert type="warning" message={error} />}
-            {!busy && !topic.trim() && (
+            {!semantic && !busy && !topic.trim() && (
               <Typography.Paragraph type="secondary">
                 填写主题即可自动选择来源，无需了解 RSS 地址。
               </Typography.Paragraph>
@@ -180,7 +235,10 @@ export default function AutomaticSources({ form }: { form: FormInstance }) {
               />
             )}
             <Typography.Paragraph type="secondary" style={{ marginTop: 10 }}>
-              主题用于选择来源；下方关键词可进一步筛选文章。保存及后续采集会重新匹配系统来源，额外来源始终保留。系统最多自动选择
+              {semantic
+                ? "来源只是候选范围，文章须通过语义审核后才会推荐。"
+                : "主题用于选择来源；关键词可进一步筛选文章。"}
+              保存及后续采集会重新匹配系统来源，额外来源始终保留。系统最多自动选择
               5 个不同域名的来源。
             </Typography.Paragraph>
           </div>

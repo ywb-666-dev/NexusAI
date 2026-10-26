@@ -47,6 +47,7 @@ def main():
             page.get_by_role("heading", name=title).wait_for()
         page.get_by_role("button", name="新建订阅").click()
         modal = page.get_by_role("dialog")
+        modal.get_by_role("radio", name="关键词筛选（兼容）", exact=True).check()
         modal.get_by_role("radio", name="手动配置", exact=True).check()
         modal.get_by_placeholder("https://example.com/feed.xml").wait_for()
         assert modal.get_by_role("spinbutton").input_value() == "60"

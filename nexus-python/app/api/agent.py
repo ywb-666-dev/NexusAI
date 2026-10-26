@@ -72,6 +72,8 @@ def serialize(task):
         },
         "source_errors": state.get("scout", {}).get("source_errors", []),
         "source_resolution": state.get("source_resolution"),
+        "semantic": state.get("parser", {}).get("semantic"),
+        "semantic_plan": state.get("semantic_plan"),
         "quality": {
             key: state.get("parser", {}).get(
                 key, [] if key == "rejected" else {} if key == "quality_counts" else 0

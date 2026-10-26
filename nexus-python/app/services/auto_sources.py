@@ -139,7 +139,67 @@ async def resolve_sources(policy: SourcePolicy, limit=5, *, allow_checks=True):
     }
 
 
-async def resolve_subscription_sources(feeds, conditions, *, allow_checks=False):
+async def resolve_semantic_sources(
+    policy, semantic_policy, limit=5, *, allow_checks=True, plan=None
+):
+    from app.services.semantic import compile_intent
+
+    plan = plan or await compile_intent(semantic_policy)
+    queries = list(
+        dict.fromkeys(
+            [
+                *plan["source_queries"],
+                *(CATEGORY_TERMS[category][0] for category in plan["categories"]),
+            ]
+        )
+    )[:6]
+    groups = await asyncio.gather(
+        *(
+            resolve_sources(
+                policy.model_copy(update={"topic": query}), limit, allow_checks=False
+            )
+            for query in queries
+        )
+    )
+    if not any(group["feeds"] for group in groups) and allow_checks and queries:
+        groups[0] = await resolve_sources(
+            policy.model_copy(update={"topic": queries[0]}), limit, allow_checks=True
+        )
+    feeds, sources, hosts, seen = [], [], set(), set()
+    # Interleave understood topics so a broad first category cannot consume all slots.
+    for index in range(limit):
+        for group in groups:
+            if index >= len(group["feeds"]):
+                continue
+            feed = group["feeds"][index]
+            source = group["sources"][index]
+            if feed["sourceId"] in seen or source["homepage"] in hosts:
+                continue
+            feeds.append(
+                {**feed, "reason": "根据订阅语义选择候选来源；文章还需逐条语义审核"}
+            )
+            sources.append(source)
+            seen.add(feed["sourceId"])
+            hosts.add(source["homepage"])
+            if len(feeds) >= limit:
+                break
+        if len(feeds) >= limit:
+            break
+    return {
+        "feeds": feeds,
+        "sources": sources,
+        "semantic_plan": plan,
+        "notice": (
+            f"已根据需求理解选择 {len(feeds)} 个候选来源；仅推荐语义审核通过的文章。"
+            if feeds
+            else "已理解订阅需求，但当前来源库没有健康的匹配来源，请额外添加来源或稍后重试。"
+        ),
+    }
+
+
+async def resolve_subscription_sources(
+    feeds, conditions, *, allow_checks=False, semantic_plan=None
+):
     raw_policy = conditions.get("source_policy", {})
     if raw_policy.get("mode") != "auto":
         return list(feeds), None
@@ -147,9 +207,16 @@ async def resolve_subscription_sources(feeds, conditions, *, allow_checks=False)
     manual = [{**f, "origin": "manual"} for f in feeds if f.get("origin") != "system"]
     if len(manual) > 20:
         raise ValueError("每个订阅最多 20 个来源")
-    resolution = await resolve_sources(
-        policy, min(5, 20 - len(manual)), allow_checks=allow_checks
-    )
+    limit = min(5, 20 - len(manual))
+    from app.services.semantic import SemanticPolicy
+
+    semantic = SemanticPolicy.model_validate(conditions.get("semantic_filter") or {})
+    if semantic.enabled and limit:
+        resolution = await resolve_semantic_sources(
+            policy, semantic, limit, allow_checks=allow_checks, plan=semantic_plan
+        )
+    else:
+        resolution = await resolve_sources(policy, limit, allow_checks=allow_checks)
     seen = {f["url"] for f in manual}
     combined = list(manual)
     for feed in resolution["feeds"]:

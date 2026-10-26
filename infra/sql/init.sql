@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS content (
 	summary VARCHAR(2000),
 	translated_summary TEXT,
 	quality JSON,
+	relevance JSON,
 	content_body LONGTEXT,
 	author VARCHAR(100),
 	published_at DATETIME,
@@ -75,11 +76,11 @@ CREATE TABLE IF NOT EXISTS content (
 	UNIQUE (content_hash)
 );
 
-CREATE INDEX idx_content_subscription ON content (subscription_id);
+CREATE INDEX idx_content_platform_duplicate ON content (source_platform, is_duplicate);
 
 CREATE INDEX idx_content_hash ON content (content_hash);
 
-CREATE INDEX idx_content_platform_duplicate ON content (source_platform, is_duplicate);
+CREATE INDEX idx_content_subscription ON content (subscription_id);
 
 CREATE TABLE IF NOT EXISTS notification (
 	id BIGINT NOT NULL AUTO_INCREMENT,

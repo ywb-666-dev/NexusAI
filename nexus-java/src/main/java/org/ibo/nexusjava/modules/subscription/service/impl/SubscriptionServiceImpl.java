@@ -118,8 +118,30 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
                     for (var id:ids) if (!id.isTextual() || !id.asText().matches("[0-9a-f]{16}")) throw new IllegalArgumentException();
                 }
             }
+            if (node.has("semantic_filter")) {
+                var semantic=node.get("semantic_filter");
+                if (!semantic.isObject() || !semantic.path("enabled").isBoolean()) throw new IllegalArgumentException();
+                if (semantic.path("enabled").asBoolean()) {
+                    if (!semantic.path("intent").isTextual() || semantic.path("intent").asText().isBlank() || semantic.path("intent").asText().length()>1000) throw new IllegalArgumentException();
+                    if (semantic.has("exclusions") && (!semantic.get("exclusions").isTextual() || semantic.get("exclusions").asText().length()>500)) throw new IllegalArgumentException();
+                    if (semantic.has("threshold") && (!semantic.get("threshold").isIntegralNumber() || semantic.get("threshold").asInt()<1 || semantic.get("threshold").asInt()>100)) throw new IllegalArgumentException();
+                    if (semantic.has("max_candidates") && (!semantic.get("max_candidates").isIntegralNumber() || semantic.get("max_candidates").asInt()<5 || semantic.get("max_candidates").asInt()>40)) throw new IllegalArgumentException();
+                }
+            }
             return objectMapper.writeValueAsString(node);
-        } catch (Exception e) { throw new BusinessException(ErrorCode.PARAM_ERROR, "请检查采集间隔（15至10080分钟）、AI开关及自动来源策略（主题、语言和排除列表）"); }
+        } catch (Exception e) { throw new BusinessException(ErrorCode.PARAM_ERROR, "请检查采集间隔（15至10080分钟）、AI开关、语义订阅需求和自动来源策略"); }
+    }
+
+    private com.fasterxml.jackson.databind.JsonNode callPython(String path, com.fasterxml.jackson.databind.JsonNode body) throws Exception {
+        var request = HttpRequest.newBuilder(URI.create("http://localhost:8000/api/python"+path))
+            .header("Authorization", "Bearer "+jwtUtil.generateToken(UserContext.getUserId(),UserContext.getUsername(),UserContext.getRole()))
+            .header("Content-Type","application/json").timeout(Duration.ofSeconds(100))
+            .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body))).build();
+        var response=httpClient.send(request,HttpResponse.BodyHandlers.ofString());
+        var result=objectMapper.readTree(response.body());
+        if (response.statusCode()!=200 || result.path("code").asInt()!=200)
+            throw new BusinessException(ErrorCode.PARAM_ERROR,result.path("message").asText("订阅需求理解或来源匹配失败，请检查模型配置后重试"));
+        return result;
     }
 
     private List<SubscriptionDTO.RssFeedItem> prepareSources(SubscriptionDTO dto) {
@@ -127,6 +149,10 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
             var conditions = objectMapper.readTree(validateConditions(dto.getTriggerConditions()));
             var policy = conditions.path("source_policy");
             boolean automatic = "auto".equals(policy.path("mode").asText());
+            var semantic=conditions.path("semantic_filter");
+            if (semantic.path("enabled").asBoolean(false) && !automatic && !Integer.valueOf(0).equals(dto.getStatus())) {
+                callPython("/subscriptions/interpret",semantic);
+            }
             var feeds = new java.util.ArrayList<SubscriptionDTO.RssFeedItem>();
             var seen = new java.util.HashSet<String>();
             var preserved = new java.util.ArrayList<SubscriptionDTO.RssFeedItem>();
@@ -143,15 +169,9 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
             }
             if (automatic && feeds.size() < 20) {
                 var body = policy.deepCopy();
+                if (semantic.path("enabled").asBoolean(false)) ((com.fasterxml.jackson.databind.node.ObjectNode)body).set("semantic_policy",semantic);
                 ((com.fasterxml.jackson.databind.node.ObjectNode)body).put("limit", Math.min(5,20-feeds.size()));
-                var request = HttpRequest.newBuilder(URI.create("http://localhost:8000/api/python/subscriptions/resolve-sources"))
-                    .header("Authorization", "Bearer " + jwtUtil.generateToken(UserContext.getUserId(),UserContext.getUsername(),UserContext.getRole()))
-                    .header("Content-Type", "application/json").timeout(Duration.ofSeconds(35))
-                    .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(body))).build();
-                var response = httpClient.send(request,HttpResponse.BodyHandlers.ofString());
-                var result = objectMapper.readTree(response.body());
-                if (response.statusCode()!=200 || result.path("code").asInt()!=200)
-                    throw new BusinessException(ErrorCode.PARAM_ERROR,result.path("message").asText("自动匹配来源失败，请稍后重试"));
+                var result = callPython("/subscriptions/resolve-sources",body);
                 for (var node : result.path("data").path("feeds")) {
                     var feed = objectMapper.treeToValue(node,SubscriptionDTO.RssFeedItem.class);
                     if (seen.add(feed.getUrl())) feeds.add(feed);
@@ -280,7 +300,7 @@ public class SubscriptionServiceImpl extends ServiceImpl<SubscriptionMapper, Sub
         try {
             var request = HttpRequest.newBuilder(URI.create("http://localhost:8000/api/python/agent/tasks?subscription_id=" + id))
                 .header("Authorization", "Bearer " + jwtUtil.generateToken(UserContext.getUserId(), UserContext.getUsername(), UserContext.getRole()))
-                .timeout(Duration.ofSeconds(15)).POST(HttpRequest.BodyPublishers.noBody()).build();
+                .timeout(Duration.ofSeconds(100)).POST(HttpRequest.BodyPublishers.noBody()).build();
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             var result = objectMapper.readTree(response.body());
             if (response.statusCode() != 200 || result.path("code").asInt() != 200)

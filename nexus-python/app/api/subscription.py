@@ -12,15 +12,54 @@ from app.skills.builtins import DiscoverSourcesSkill
 router = APIRouter()
 
 from app.services.auto_sources import SourcePolicy, resolve_sources
+from app.services.semantic import SemanticPolicy, SemanticError, compile_intent
 
 
 class ResolveInput(SourcePolicy):
     limit: int = Field(default=5, ge=0, le=5)
+    semantic_policy: SemanticPolicy | None = None
 
 
 @router.post("/resolve-sources")
 async def resolve(body: ResolveInput):
+    if body.semantic_policy and body.semantic_policy.enabled:
+        from app.services.auto_sources import resolve_semantic_sources
+
+        try:
+            return {
+                "code": 200,
+                "data": await resolve_semantic_sources(
+                    body, body.semantic_policy, body.limit
+                ),
+            }
+        except SemanticError as exc:
+            raise HTTPException(503, str(exc))
     return {"code": 200, "data": await resolve_sources(body, body.limit)}
+
+
+@router.get("/semantic-capabilities")
+async def semantic_capabilities():
+    from app.core.config import settings
+
+    return {
+        "code": 200,
+        "data": {
+            "configured": bool(settings.llm.api_key),
+            "max_candidates": 40,
+            "default_candidates": 20,
+            "default_threshold": 75,
+        },
+    }
+
+
+@router.post("/interpret")
+async def interpret(body: SemanticPolicy):
+    if not body.enabled:
+        raise HTTPException(400, "请开启语义订阅")
+    try:
+        return {"code": 200, "data": {"plan": await compile_intent(body)}}
+    except SemanticError as exc:
+        raise HTTPException(503, str(exc))
 
 
 class TrialFeed(BaseModel):
@@ -32,6 +71,7 @@ class TrialInput(BaseModel):
     rss_feeds: list[TrialFeed] = Field(default_factory=list, max_length=5)
     keywords: list[str] = Field(default_factory=list, max_length=20)
     source_policy: SourcePolicy | None = None
+    semantic_policy: SemanticPolicy | None = None
 
 
 @router.post("/trial")
@@ -41,22 +81,43 @@ async def trial(body: TrialInput, request: Request):
     if any(not k.strip() or len(k) > 200 for k in body.keywords):
         raise HTTPException(422, "关键词长度必须为 1 到 200 字")
     feeds = [f.model_dump() for f in body.rss_feeds]
+    semantic = (
+        body.semantic_policy
+        if body.semantic_policy and body.semantic_policy.enabled
+        else None
+    )
+    try:
+        plan = await compile_intent(semantic) if semantic else None
+    except SemanticError as exc:
+        raise HTTPException(503, str(exc))
     if body.source_policy and body.source_policy.mode == "auto":
         from app.services.auto_sources import resolve_subscription_sources
 
         try:
             feeds, _ = await resolve_subscription_sources(
-                feeds, {"source_policy": body.source_policy.model_dump()}
+                feeds,
+                {
+                    "source_policy": body.source_policy.model_dump(),
+                    "semantic_filter": semantic.model_dump() if semantic else {},
+                },
+                semantic_plan=plan,
             )
+        except SemanticError as exc:
+            raise HTTPException(503, str(exc))
         except ValueError as exc:
             raise HTTPException(409, str(exc))
     if not feeds:
         raise HTTPException(400, "请填写关注主题并匹配来源，或手动添加来源")
-    result = await run_trial(
-        current_user(request)["id"],
-        feeds[:5],
-        body.keywords,
-    )
+    try:
+        result = (
+            await run_trial(
+                current_user(request)["id"], feeds[:5], body.keywords, semantic, plan
+            )
+            if semantic
+            else await run_trial(current_user(request)["id"], feeds[:5], body.keywords)
+        )
+    except SemanticError as exc:
+        raise HTTPException(503, str(exc))
     result["resolved_sources"] = feeds
     return {"code": 200, "data": result}
 

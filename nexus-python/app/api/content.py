@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, HTTPException, Query
-from sqlalchemy import select, func, or_
+from sqlalchemy import select, func, or_, cast, Integer
 from app.core.auth import current_user
 from app.core.dependencies import get_session_factory
 from app.models import Content, Subscription
@@ -28,6 +28,7 @@ def serialize(c):
         "summary": c.summary,
         "translatedSummary": c.translated_summary,
         "quality": c.quality,
+        "relevance": c.relevance,
         "contentBody": c.content_body,
         "author": c.author,
         "status": c.status,
@@ -44,6 +45,7 @@ async def list_contents(
     search: str = Query("", max_length=200),
     platform: str = "",
     subscription_id: int | None = None,
+    sort: str = Query("latest", pattern="^(latest|relevance)$"),
 ):
     user = current_user(request)
     query = (
@@ -66,12 +68,20 @@ async def list_contents(
         total = (
             await db.execute(select(func.count()).select_from(query.subquery()))
         ).scalar()
+        order = [Content.fetched_at.desc(), Content.id]
+        if sort == "relevance":
+            order = [
+                func.date(Content.fetched_at).desc(),
+                func.coalesce(
+                    cast(func.json_extract(Content.relevance, "$.score"), Integer), 0
+                ).desc(),
+                Content.fetched_at.desc(),
+                Content.id,
+            ]
         rows = (
             (
                 await db.execute(
-                    query.order_by(Content.fetched_at.desc(), Content.id)
-                    .offset((page - 1) * size)
-                    .limit(size)
+                    query.order_by(*order).offset((page - 1) * size).limit(size)
                 )
             )
             .scalars()

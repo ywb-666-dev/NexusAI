@@ -21,6 +21,7 @@ class ParserResult(TypedDict, total=False):
     rejected_count: int
     quality_counts: dict
     rejected: list[dict]
+    semantic: dict | None
 
 
 class ConnectorResult(TypedDict, total=False):
@@ -66,6 +67,8 @@ class NexusState(TypedDict, total=False):
     user_id: int | None
     rss_feeds: list[dict]  # [{url, name, platform}]
     source_resolution: dict | None
+    semantic_policy: dict | None
+    semantic_plan: dict | None
 
     # ── 各节点输出 ──
     scout: ScoutResult

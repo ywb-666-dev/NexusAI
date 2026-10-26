@@ -11,16 +11,33 @@ RECENT: dict[int, float] = {}
 LIMIT = asyncio.Semaphore(3)
 
 
-async def trial_collect(feeds, keywords):
+async def trial_collect(feeds, keywords, semantic_policy=None, semantic_plan=None):
     started = time.monotonic()
     state = await run_scout_node(
-        {"rss_feeds": feeds, "keywords": keywords},
+        {
+            "rss_feeds": feeds,
+            "keywords": keywords,
+            "semantic_policy": (
+                semantic_policy.model_dump() if semantic_policy else None
+            ),
+        },
         source_timeout=12,
         allow_all_failed=True,
     )
     scout = state["scout"]
     prepared = await prepare_items(scout["items"][:10], max_scrapes=3, scrape_timeout=8)
+    semantic_result = None
+    items = prepared["items"]
+    if semantic_policy:
+        from app.services.semantic import filter_articles
+
+        filtered = await filter_articles(items, semantic_policy, semantic_plan)
+        items, semantic_result = filtered["items"], filtered["summary"]
+        semantic_result["unevaluated_count"] = max(
+            0, scout["total_fetched"] - min(10, len(scout["items"]))
+        )
     return {
+        "semantic": semantic_result,
         "checked_at": datetime.now(timezone.utc).isoformat(),
         "duration_ms": int((time.monotonic() - started) * 1000),
         "sources": scout["source_results"],
@@ -39,15 +56,20 @@ async def trial_collect(feeds, keywords):
                 "summary": i.get("summary", "")[:1200],
                 "body_preview": i.get("raw_html", "")[:3000],
                 "quality": i["quality"],
+                "relevance": i.get("relevance"),
                 "author": i.get("author", ""),
             }
-            for i in prepared["items"]
+            for i in items
         ],
-        "notice": "本次试采最多检查 5 个来源、评估前 10 条匹配内容并尝试补全其中 3 条正文。关键词匹配标题或源摘要。结果为候选样本；正式采集还会去重、风险审核和按需补全更多正文。不入库、不推送、不调用 AI。",
+        "notice": (
+            "本次试采最多检查 5 个来源、评估前 10 条匹配内容并尝试补全其中 3 条正文。关键词匹配标题或源摘要。结果为候选样本；正式采集还会去重、风险审核和按需补全更多正文。不入库、不推送、不调用 AI。"
+            if not semantic_policy
+            else "语义试采会调用模型理解需求、审核前 10 条可读候选，并提供匹配和拒绝理由。不入库、不推送；正式采集仍会进一步去重与风险审核。"
+        ),
     }
 
 
-async def run_trial(user_id, feeds, keywords):
+async def run_trial(user_id, feeds, keywords, semantic_policy=None, semantic_plan=None):
     from fastapi import HTTPException
 
     if user_id in ACTIVE_USERS:
@@ -64,7 +86,14 @@ async def run_trial(user_id, feeds, keywords):
             RECENT.pop(key, None)
     try:
         async with LIMIT:
-            return await asyncio.wait_for(trial_collect(feeds, keywords), timeout=40)
+            return await asyncio.wait_for(
+                (
+                    trial_collect(feeds, keywords, semantic_policy, semantic_plan)
+                    if semantic_policy
+                    else trial_collect(feeds, keywords)
+                ),
+                timeout=240 if semantic_policy else 40,
+            )
     except TimeoutError:
         raise HTTPException(504, "试采超时，请减少来源数量后重试")
     finally:

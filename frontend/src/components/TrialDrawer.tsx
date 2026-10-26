@@ -9,6 +9,8 @@ import {
   Typography,
 } from "antd";
 import QualityBadge from "./QualityBadge";
+import RelevanceView from "./RelevanceView";
+import { IntentView } from "./SemanticFields";
 
 export default function TrialDrawer({
   open,
@@ -39,14 +41,14 @@ export default function TrialDrawer({
     >
       <Alert
         type="info"
-        message="试采只用于预览，不保存文章、不发布通知、不调用 AI。正文质量为规则判断，结果会随来源更新。"
+        message="试采不保存文章、不发布通知。语义订阅会调用模型理解需求和评估相关性；兼容模式不调用模型。"
         style={{ marginBottom: 20 }}
       />
       {loading ? (
         <>
           <Skeleton active />
           <Typography.Text type="secondary">
-            正在读取来源并检测正文，通常需要几秒到半分钟……
+            正在读取来源、检测正文并按订阅方式筛选；语义模式还需等待模型判断……
           </Typography.Text>
         </>
       ) : error ? (
@@ -56,7 +58,7 @@ export default function TrialDrawer({
           <Space wrap style={{ marginBottom: 16 }}>
             {[
               ["取得", data.collected_count],
-              ["匹配关键词", data.matched_count],
+              [data.semantic ? "采集候选" : "匹配关键词", data.matched_count],
               ["评估样本", data.examined_count],
               ["可读样本", data.readable_count],
               ["拦截样本", data.rejected_count],
@@ -66,6 +68,17 @@ export default function TrialDrawer({
               </Tag>
             ))}
           </Space>
+          {data.semantic && (
+            <>
+              <IntentView plan={data.semantic.plan} />
+              <Typography.Paragraph>
+                语义评估 {data.semantic.evaluated_count} 条，推荐{" "}
+                {data.semantic.accepted_count} 条，拒绝{" "}
+                {data.semantic.rejected_count} 条；
+                {data.semantic.unevaluated_count} 条超出本次评估范围。
+              </Typography.Paragraph>
+            </>
+          )}
           <Typography.Paragraph type="secondary">
             {data.notice}{" "}
             {data.requested_sources > 5
@@ -87,13 +100,15 @@ export default function TrialDrawer({
               )}
             </div>
           ))}
-            <Typography.Title level={5}>匹配的候选内容</Typography.Title>
+          <Typography.Title level={5}>匹配的候选内容</Typography.Title>
           {!data.items.length && (
             <Empty
               description={
-                data.matched_count
-                  ? "本次样本未通过正文检测，请查看拦截原因"
-                  : "本次没有匹配内容，可调整关键词或来源后重试"
+                data.semantic
+                  ? "本次样本没有通过语义筛选的推荐内容，请查看拒绝理由"
+                  : data.matched_count
+                    ? "本次样本未通过正文检测，请查看拦截原因"
+                    : "本次没有匹配内容，可调整关键词或来源后重试"
               }
             />
           )}
@@ -109,6 +124,7 @@ export default function TrialDrawer({
                 </Typography.Link>
               </Typography.Title>
               <QualityBadge quality={item.quality} />
+              <RelevanceView value={item.relevance} />
               <Typography.Paragraph
                 style={{ whiteSpace: "pre-wrap", marginTop: 12 }}
                 ellipsis={{ rows: 6, expandable: true, symbol: "展开正文预览" }}
@@ -122,6 +138,20 @@ export default function TrialDrawer({
               )}
             </div>
           ))}
+          {!!data.semantic?.rejected?.length && (
+            <Alert
+              type="info"
+              message="未推荐的内容及语义判断理由"
+              description={data.semantic.rejected.map((item: any) => (
+                <div key={item.url} style={{ marginBottom: 12 }}>
+                  <Typography.Text strong>{item.title}</Typography.Text> ·{" "}
+                  {item.relevance.score} 分
+                  {item.relevance.excluded ? " · 命中排除条件" : ""}
+                  <div>{item.relevance.reason}</div>
+                </div>
+              ))}
+            />
+          )}
           {!!data.rejected?.length && (
             <Alert
               type="warning"

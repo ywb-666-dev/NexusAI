@@ -128,6 +128,7 @@ def main():
             page.goto("http://127.0.0.1:5173/subscriptions", wait_until="networkidle")
             page.get_by_role("button", name="新建订阅").click()
             modal = page.get_by_role("dialog")
+            modal.get_by_role("radio", name="关键词筛选（兼容）", exact=True).check()
             assert modal.get_by_role(
                 "radio", name="系统自动匹配（推荐）", exact=True
             ).is_checked()

@@ -203,6 +203,28 @@ export default function Tasks() {
                 style={{ marginBottom: 20 }}
               />
             )}
+            {selected.semantic && (
+              <Alert
+                type="info"
+                message={`语义审核：评估 ${selected.semantic.evaluated_count} 条，推荐 ${selected.semantic.accepted_count} 条，拒绝 ${selected.semantic.rejected_count} 条`}
+                description={
+                  <>
+                    <div>{selected.semantic.plan?.summary}</div>
+                    <div>
+                      本次还有 {selected.semantic.unevaluated_count}{" "}
+                      条超出评估预算。
+                    </div>
+                    {selected.semantic.rejected?.map((item: any) => (
+                      <div key={item.url} style={{ marginTop: 8 }}>
+                        {item.title}（{item.relevance.score} 分）：
+                        {item.relevance.reason}
+                      </div>
+                    ))}
+                  </>
+                }
+                style={{ marginBottom: 20 }}
+              />
+            )}
             {!!selected.source_errors?.length && (
               <Alert
                 type="warning"

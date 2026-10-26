@@ -246,14 +246,25 @@ async def run_scout_node(
 
     results = await asyncio.gather(*(bounded_collect(f) for f in feeds[:20]))
     items, errors = [], []
+    semantic = bool((state.get("semantic_policy") or {}).get("enabled"))
     seen = set()
-    for batch, error in results:
+    for _, error in results:
         if error:
             errors.append(error)
-        for item in batch:
-            if item["source_url"] not in seen:
-                seen.add(item["source_url"])
-                items.append(item)
+    if semantic:
+        stream = [
+            item
+            for index in range(max((len(batch) for batch, _ in results), default=0))
+            for batch, _ in results
+            if index < len(batch)
+            for item in [batch[index]]
+        ]
+    else:
+        stream = [item for batch, _ in results for item in batch]
+    for item in stream:
+        if item["source_url"] not in seen:
+            seen.add(item["source_url"])
+            items.append(item)
     if not items and errors and not allow_all_failed:
         raise RuntimeError("所有采集源均失败：" + "; ".join(e["error"] for e in errors))
     collected_count = len(items)
@@ -262,7 +273,7 @@ async def run_scout_node(
         for k in state.get("keywords", [])
         if not k.startswith(("http://", "https://"))
     ]
-    if keywords:
+    if keywords and not semantic:
         items = [
             i
             for i in items
