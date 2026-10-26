@@ -20,12 +20,15 @@ async def sources(
 ):
     items = await list_sources(q, category, language, status)
     all_items = await list_sources()
+    from app.services.source_maintenance import enabled
+
     return {
         "code": 200,
         "data": {
             "items": items[(page - 1) * size : page * size],
             "total": len(items),
             "categories": catalog()["categories"],
+            "maintenance": {"enabled": enabled(), "poll_seconds": 60, "batch_size": 4},
             "stats": {
                 "total": len(all_items),
                 **Counter(s["health"]["status"] for s in all_items),

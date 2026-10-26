@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, HTTPException
 from pydantic import BaseModel, Field
+from typing import Literal
 from sqlalchemy import select
 from app.core.auth import current_user
 from app.core.dependencies import get_session_factory
@@ -9,6 +10,30 @@ from app.services.fetching import rss_items
 from app.skills.builtins import DiscoverSourcesSkill
 
 router = APIRouter()
+
+
+class TrialFeed(BaseModel):
+    url: str = Field(max_length=1000, pattern=r"^https?://[^\s]+$")
+    platform: Literal["rss", "web", "api"] = "rss"
+
+
+class TrialInput(BaseModel):
+    rss_feeds: list[TrialFeed] = Field(min_length=1, max_length=5)
+    keywords: list[str] = Field(default_factory=list, max_length=20)
+
+
+@router.post("/trial")
+async def trial(body: TrialInput, request: Request):
+    from app.services.trial import run_trial
+
+    if any(not k.strip() or len(k) > 200 for k in body.keywords):
+        raise HTTPException(422, "关键词长度必须为 1 到 200 字")
+    result = await run_trial(
+        current_user(request)["id"],
+        [f.model_dump() for f in body.rss_feeds],
+        body.keywords,
+    )
+    return {"code": 200, "data": result}
 
 
 class DiscoverInput(BaseModel):

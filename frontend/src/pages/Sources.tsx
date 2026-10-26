@@ -23,6 +23,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import request from "../api/request";
 import PageHeading from "../components/PageHeading";
+import QualityBadge, { type ContentQuality } from "../components/QualityBadge";
 
 type Source = {
   id: string;
@@ -40,7 +41,27 @@ type Source = {
     latency_ms: number | null;
     entry_count: number;
     error: string | null;
-    samples: { title: string; url: string; summary: string }[];
+    samples: {
+      title: string;
+      url: string;
+      summary: string;
+      quality?: ContentQuality;
+    }[];
+    total_checks: number;
+    success_rate: number | null;
+    consecutive_failures: number;
+    error_kind: string | null;
+    next_check_at: string | null;
+    latest_item_at: string | null;
+    quality_score: number | null;
+    stale: boolean;
+    history: {
+      checked_at: string;
+      status: string;
+      error_kind: string | null;
+      entry_count: number;
+      quality_score: number | null;
+    }[];
   };
 };
 const states: Record<string, { label: string; color: string }> = {
@@ -49,6 +70,18 @@ const states: Record<string, { label: string; color: string }> = {
   unchecked: { label: "待检测", color: "default" },
   failed: { label: "检测失败", color: "error" },
 };
+const errors: Record<string, string> = {
+  timeout: "请求超时",
+  not_found: "地址不存在",
+  rate_limited: "站点限流",
+  access_denied: "访问受限",
+  http_error: "HTTP 异常",
+  tls: "证书异常",
+  dns: "域名解析失败",
+  blocked_address: "地址安全限制",
+  invalid_feed: "订阅格式异常",
+  network: "网络异常",
+};
 
 export default function Sources() {
   const { message } = App.useApp();
@@ -56,6 +89,7 @@ export default function Sources() {
   const [items, setItems] = useState<Source[]>([]),
     [total, setTotal] = useState(0),
     [page, setPage] = useState(1);
+  const [maintenanceEnabled, setMaintenanceEnabled] = useState(true);
   const [q, setQ] = useState(""),
     [category, setCategory] = useState(""),
     [language, setLanguage] = useState(""),
@@ -84,6 +118,7 @@ export default function Sources() {
       setTotal(r.data.total);
       setCategories(r.data.categories);
       setStats(r.data.stats);
+      setMaintenanceEnabled(r.data.maintenance?.enabled ?? true);
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -231,6 +266,12 @@ export default function Sources() {
         style={{ marginBottom: 16 }}
         message="可用性以当前服务器最近检测为准；有效的空订阅不代表失效。部分来源仅提供摘要，付费正文和 PDF 不保证可提取。选择来源不会立即采集。"
       />
+      <Typography.Paragraph type="secondary">
+        {maintenanceEnabled
+          ? "自动巡检已开启：可用来源约每 24 小时检查，空订阅约每 6 小时检查，失败来源从 15 分钟起逐步退避。"
+          : "自动巡检已关闭，可手动检测来源。"}{" "}
+        历史成功率从本次升级后的检测开始累计。
+      </Typography.Paragraph>
       {error && (
         <Alert
           type="error"
@@ -386,6 +427,7 @@ export default function Sources() {
                   <Tag color={states[s.health.status]?.color}>
                     {states[s.health.status]?.label}
                   </Tag>
+                  {s.health.stale && <Tag color="warning">结果已过期</Tag>}
                   <div>
                     <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                       {s.health.checked_at
@@ -393,6 +435,26 @@ export default function Sources() {
                         : "尚未检测"}
                     </Typography.Text>
                   </div>
+                </>
+              ),
+            },
+            {
+              title: "历史表现",
+              width: 180,
+              render: (_, s) => (
+                <>
+                  <div>
+                    成功率{" "}
+                    {s.health.success_rate === null
+                      ? "—"
+                      : `${s.health.success_rate}%`}{" "}
+                    / {s.health.total_checks || 0} 次
+                  </div>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                    {s.health.consecutive_failures
+                      ? `连续失败 ${s.health.consecutive_failures} 次`
+                      : `源内容质量 ${s.health.quality_score ?? "—"}/100`}
+                  </Typography.Text>
                 </>
               ),
             },
@@ -438,10 +500,29 @@ export default function Sources() {
                 : "尚未检测"}
               ；耗时：{preview.health.latency_ms ?? "—"} ms
             </Typography.Paragraph>
+            <Typography.Paragraph type="secondary">
+              下次巡检：
+              {preview.health.next_check_at
+                ? new Date(preview.health.next_check_at).toLocaleString()
+                : "等待自动排期"}
+              ；最近文章：
+              {preview.health.latest_item_at
+                ? new Date(preview.health.latest_item_at).toLocaleString()
+                : "未知"}
+            </Typography.Paragraph>
+            <Typography.Paragraph>
+              历史成功率：
+              {preview.health.success_rate === null
+                ? "尚无统计"
+                : `${preview.health.success_rate}%（${preview.health.total_checks} 次）`}
+              ；连续失败 {preview.health.consecutive_failures || 0}{" "}
+              次。源内容质量 {preview.health.quality_score ?? "—"}
+              /100，仅评估提取文本。
+            </Typography.Paragraph>
             {preview.health.error && (
               <Alert
                 type="warning"
-                message="本次检测失败，不一定代表永久失效"
+                message={`${errors[preview.health.error_kind || ""] || "本次检测失败"}，不一定代表永久失效`}
                 description={preview.health.error}
               />
             )}
@@ -458,10 +539,32 @@ export default function Sources() {
                   <Typography.Paragraph type="secondary">
                     {s.summary}
                   </Typography.Paragraph>
+                  <QualityBadge quality={s.quality} />
                 </div>
               ))
             ) : (
               <Empty description="暂无预览条目，请先检测来源" />
+            )}
+            {!!preview.health.history?.length && (
+              <>
+                <Typography.Title level={5}>
+                  最近巡检记录（最多 20 次）
+                </Typography.Title>
+                {[...preview.health.history].reverse().map((record) => (
+                  <div key={record.checked_at} style={{ marginBottom: 10 }}>
+                    <Tag color={states[record.status]?.color}>
+                      {states[record.status]?.label}
+                    </Tag>
+                    <Typography.Text type="secondary">
+                      {new Date(record.checked_at).toLocaleString()} ·{" "}
+                      {record.entry_count} 条
+                      {record.error_kind
+                        ? ` · ${errors[record.error_kind] || record.error_kind}`
+                        : ""}
+                    </Typography.Text>
+                  </div>
+                ))}
+              </>
             )}
           </>
         )}

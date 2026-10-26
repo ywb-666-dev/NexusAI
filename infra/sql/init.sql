@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS content (
 	title VARCHAR(500),
 	summary VARCHAR(2000),
 	translated_summary TEXT,
+	quality JSON,
 	content_body LONGTEXT,
 	author VARCHAR(100),
 	published_at DATETIME,
@@ -74,11 +75,11 @@ CREATE TABLE IF NOT EXISTS content (
 	UNIQUE (content_hash)
 );
 
-CREATE INDEX idx_content_platform_duplicate ON content (source_platform, is_duplicate);
-
 CREATE INDEX idx_content_subscription ON content (subscription_id);
 
 CREATE INDEX idx_content_hash ON content (content_hash);
+
+CREATE INDEX idx_content_platform_duplicate ON content (source_platform, is_duplicate);
 
 CREATE TABLE IF NOT EXISTS notification (
 	id BIGINT NOT NULL AUTO_INCREMENT,
@@ -127,6 +128,14 @@ CREATE TABLE IF NOT EXISTS source_health (
 	entry_count INTEGER NOT NULL,
 	error VARCHAR(500),
 	samples JSON NOT NULL,
+	total_checks INTEGER NOT NULL,
+	successful_checks INTEGER NOT NULL,
+	consecutive_failures INTEGER NOT NULL,
+	error_kind VARCHAR(40),
+	next_check_at DATETIME,
+	latest_item_at DATETIME,
+	quality_score INTEGER,
+	history JSON,
 	PRIMARY KEY (source_id)
 );
 

@@ -76,33 +76,146 @@ def search_sources(query="", category="", language=""):
     return matches
 
 
+def utcnow():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
 def health_data(row):
-    if not row:
-        return {
-            "status": "unchecked",
-            "checked_at": None,
-            "last_success_at": None,
-            "latency_ms": None,
-            "entry_count": None,
-            "error": None,
-            "samples": [],
-        }
-    return {
-        key: (
-            (getattr(row, key).isoformat() + "Z" if getattr(row, key) else None)
-            if key in {"checked_at", "last_success_at"}
-            else getattr(row, key)
-        )
-        for key in [
-            "status",
-            "checked_at",
-            "last_success_at",
-            "latency_ms",
-            "entry_count",
-            "error",
-            "samples",
-        ]
+    result = {}
+    dates = {"checked_at", "last_success_at", "next_check_at", "latest_item_at"}
+    defaults = {
+        "status": "unchecked",
+        "samples": [],
+        "history": [],
+        "total_checks": 0,
+        "successful_checks": 0,
+        "consecutive_failures": 0,
     }
+    fields = [
+        "status",
+        "checked_at",
+        "last_success_at",
+        "latency_ms",
+        "entry_count",
+        "error",
+        "samples",
+        "total_checks",
+        "successful_checks",
+        "consecutive_failures",
+        "error_kind",
+        "next_check_at",
+        "latest_item_at",
+        "quality_score",
+        "history",
+    ]
+    for key in fields:
+        value = getattr(row, key, defaults.get(key)) if row else defaults.get(key)
+        result[key] = value.isoformat() + "Z" if key in dates and value else value
+    result["success_rate"] = (
+        round(100 * (result["successful_checks"] or 0) / result["total_checks"])
+        if result["total_checks"]
+        else None
+    )
+    checked = getattr(row, "checked_at", None) if row else None
+    result["stale"] = bool(checked and utcnow() - checked > timedelta(hours=48))
+    return result
+
+
+def classify_error(exc):
+    import httpx
+
+    text = str(exc).lower()
+    if isinstance(exc, (TimeoutError, httpx.TimeoutException)):
+        return "timeout"
+    if isinstance(exc, httpx.HTTPStatusError):
+        code = exc.response.status_code
+        if code in (404, 410):
+            return "not_found"
+        if code == 429:
+            return "rate_limited"
+        if code in (401, 403, 406):
+            return "access_denied"
+        return "http_error"
+    if "certificate" in text or "ssl" in text:
+        return "tls"
+    if "getaddrinfo" in text or "name resolution" in text:
+        return "dns"
+    if "私有网络" in text:
+        return "blocked_address"
+    if isinstance(exc, ValueError):
+        return "invalid_feed"
+    return "network"
+
+
+def next_due(row):
+    if row.next_check_at:
+        return row.next_check_at
+    if not row.checked_at:
+        return datetime.min
+    hours = 24 if row.status == "available" else 6 if row.status == "empty" else 0.25
+    return row.checked_at + timedelta(hours=hours)
+
+
+def apply_observation(row, items, status, error=None, error_kind=None, latency_ms=0):
+    from app.services.quality import assess_quality
+    from app.services.fetching import published
+
+    now = utcnow()
+    row.status, row.error, row.error_kind, row.checked_at = (
+        status,
+        error,
+        error_kind,
+        now,
+    )
+    row.latency_ms, row.entry_count = latency_ms, len(items)
+    row.total_checks = (row.total_checks or 0) + 1
+    success = status in {"available", "empty"}
+    row.successful_checks = (row.successful_checks or 0) + int(success)
+    row.consecutive_failures = 0 if success else (row.consecutive_failures or 0) + 1
+    if success:
+        row.last_success_at = now
+    qualities = [
+        assess_quality(i.get("raw_html") or i.get("summary", ""), i.get("title", ""))
+        for i in items
+    ]
+    row.quality_score = (
+        round(sum(q["score"] for q in qualities) / len(qualities))
+        if qualities
+        else None
+    )
+    dates = [date for item in items if (date := published(item.get("published_at")))]
+    if dates:
+        row.latest_item_at = max(dates)
+    row.samples = [
+        {
+            "title": i["title"],
+            "url": i["source_url"],
+            "summary": i["summary"][:240],
+            "quality": q,
+        }
+        for i, q in zip(items[:5], qualities[:5])
+    ]
+    minutes = (
+        1440
+        if status == "available"
+        else (
+            360
+            if status == "empty"
+            else min(1440, 15 * 2 ** min(row.consecutive_failures - 1, 7))
+        )
+    )
+    jitter = int(row.source_id[:4], 16) / 65535 * 0.1
+    row.next_check_at = now + timedelta(minutes=minutes * (1 + jitter))
+    row.history = [
+        *(row.history or []),
+        {
+            "checked_at": now.isoformat() + "Z",
+            "status": status,
+            "error_kind": error_kind,
+            "entry_count": len(items),
+            "quality_score": row.quality_score,
+        },
+    ][-20:]
 
 
 async def list_sources(query="", category="", language="", status=""):
@@ -147,31 +260,27 @@ async def check_source(source_id: str, *, force=False):
             try:
                 items = await asyncio.wait_for(rss_items(source["url"]), timeout=22)
                 status, error = ("available" if items else "empty"), None
+                error_kind = None
             except Exception as exc:
                 items, status = [], "failed"
+                error_kind = classify_error(exc)
                 error = (
                     "检测超时（22秒）"
                     if isinstance(exc, TimeoutError)
                     else str(exc) or type(exc).__name__
                 )[:500]
-            now = datetime.now(timezone.utc).replace(tzinfo=None)
             async with get_session_factory()() as db:
                 row = await db.get(SourceHealth, source_id)
                 if row is None:
                     row = SourceHealth(source_id=source_id)
                     db.add(row)
-                row.status, row.error, row.checked_at = status, error, now
-                row.latency_ms = int((time.monotonic() - started) * 1000)
-                row.entry_count = len(items)
-                row.samples = [
-                    {
-                        "title": i["title"],
-                        "url": i["source_url"],
-                        "summary": i["summary"][:240],
-                    }
-                    for i in items[:5]
-                ]
-                if status in {"available", "empty"}:
-                    row.last_success_at = now
+                apply_observation(
+                    row,
+                    items,
+                    status,
+                    error,
+                    error_kind,
+                    int((time.monotonic() - started) * 1000),
+                )
                 await db.commit()
                 return {"id": source_id, **health_data(row), "cached": False}

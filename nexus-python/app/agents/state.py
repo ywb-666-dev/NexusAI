@@ -18,6 +18,9 @@ class ParserResult(TypedDict, total=False):
     cleaned_count: int
     scraped_count: int
     translated_count: int
+    rejected_count: int
+    quality_counts: dict
+    rejected: list[dict]
 
 
 class ConnectorResult(TypedDict, total=False):

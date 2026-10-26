@@ -45,7 +45,21 @@ def main():
     Base.metadata.create_all(engine)
     migrations = {
         "subscription": {"rss_feeds": "JSON"},
-        "content": {"translated_summary": "TEXT", "task_id": "VARCHAR(64)"},
+        "content": {
+            "translated_summary": "TEXT",
+            "task_id": "VARCHAR(64)",
+            "quality": "JSON",
+        },
+        "source_health": {
+            "total_checks": "INTEGER NOT NULL DEFAULT 0",
+            "successful_checks": "INTEGER NOT NULL DEFAULT 0",
+            "consecutive_failures": "INTEGER NOT NULL DEFAULT 0",
+            "error_kind": "VARCHAR(40)",
+            "next_check_at": "DATETIME",
+            "latest_item_at": "DATETIME",
+            "quality_score": "INTEGER",
+            "history": "JSON",
+        },
     }
     with engine.begin() as conn:
         for table, fields in migrations.items():

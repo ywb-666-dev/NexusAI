@@ -169,7 +169,13 @@ async def _rss_fallback(keyword: str, raw_items: list[dict]) -> None:
 # ============== Scout 节点主函数 ==============
 
 
-async def run_scout_node(state: NexusState, mcp_pool: Any = None) -> NexusState:
+async def run_scout_node(
+    state: NexusState,
+    mcp_pool: Any = None,
+    *,
+    source_timeout=22,
+    allow_all_failed=False,
+) -> NexusState:
     from app.services.fetching import rss_items, web_item, api_items
     from app.services.task_service import parse_list
 
@@ -190,49 +196,55 @@ async def run_scout_node(state: NexusState, mcp_pool: Any = None) -> NexusState:
     semaphore = asyncio.Semaphore(3)
 
     async def collect(source):
-        async with semaphore:
-            url = source.get("url", "")
-            try:
-                if mcp_pool and source.get("platform", "rss") == "rss":
-                    from app.services.fetching import validate_url
+        url = source.get("url", "")
+        try:
+            if mcp_pool and source.get("platform", "rss") == "rss":
+                from app.services.fetching import validate_url
 
-                    await validate_url(url)
-                    try:
-                        response = await asyncio.wait_for(
-                            mcp_pool.call_tool("rss", "fetch_rss", {"url": url}),
-                            timeout=20,
-                        )
-                        articles = _extract_articles(response)
-                        items = [
-                            {
-                                "platform": "rss",
-                                "source_url": a.get("link", ""),
-                                "title": a.get("title", ""),
-                                "summary": a.get("summary", ""),
-                                "raw_html": a.get("summary", ""),
-                                "author": "",
-                                "published_at": a.get("published_at", ""),
-                            }
-                            for a in articles
-                            if a.get("link")
-                        ]
-                    except Exception:
-                        items = await rss_items(url)
+                await validate_url(url)
+                try:
+                    response = await asyncio.wait_for(
+                        mcp_pool.call_tool("rss", "fetch_rss", {"url": url}),
+                        timeout=20,
+                    )
+                    articles = _extract_articles(response)
+                    items = [
+                        {
+                            "platform": "rss",
+                            "source_url": a.get("link", ""),
+                            "title": a.get("title", ""),
+                            "summary": a.get("summary", ""),
+                            "raw_html": a.get("summary", ""),
+                            "author": "",
+                            "published_at": a.get("published_at", ""),
+                        }
+                        for a in articles
+                        if a.get("link")
+                    ]
+                except Exception:
+                    items = await rss_items(url)
+            else:
+                platform = source.get("platform", "rss")
+                if platform == "rss":
+                    items = await rss_items(url)
+                elif platform == "api":
+                    items = await api_items(url)
+                elif platform == "web":
+                    items = [await web_item(url)]
                 else:
-                    platform = source.get("platform", "rss")
-                    if platform == "rss":
-                        items = await rss_items(url)
-                    elif platform == "api":
-                        items = await api_items(url)
-                    elif platform == "web":
-                        items = [await web_item(url)]
-                    else:
-                        raise ValueError("不支持的采集源类型")
-                return items, None
-            except Exception as exc:
-                return [], {"url": url, "error": str(exc)[:500]}
+                    raise ValueError("不支持的采集源类型")
+            return items, None
+        except Exception as exc:
+            return [], {"url": url, "error": str(exc)[:500]}
 
-    results = await asyncio.gather(*(collect(f) for f in feeds[:20]))
+    async def bounded_collect(source):
+        async with semaphore:
+            try:
+                return await asyncio.wait_for(collect(source), timeout=source_timeout)
+            except TimeoutError:
+                return [], {"url": source.get("url", ""), "error": "来源请求超时"}
+
+    results = await asyncio.gather(*(bounded_collect(f) for f in feeds[:20]))
     items, errors = [], []
     seen = set()
     for batch, error in results:
@@ -242,8 +254,9 @@ async def run_scout_node(state: NexusState, mcp_pool: Any = None) -> NexusState:
             if item["source_url"] not in seen:
                 seen.add(item["source_url"])
                 items.append(item)
-    if not items and errors:
+    if not items and errors and not allow_all_failed:
         raise RuntimeError("所有采集源均失败：" + "; ".join(e["error"] for e in errors))
+    collected_count = len(items)
     keywords = [
         k.lower()
         for k in state.get("keywords", [])
@@ -259,6 +272,15 @@ async def run_scout_node(state: NexusState, mcp_pool: Any = None) -> NexusState:
         "items": items[:100],
         "total_fetched": len(items),
         "source_errors": errors,
+        "collected_count": collected_count,
+        "source_results": [
+            {
+                "url": source.get("url", ""),
+                "count": len(batch),
+                "error": error["error"] if error else None,
+            }
+            for source, (batch, error) in zip(feeds[:20], results)
+        ],
     }
     state["next_node"] = "parser"
     return state

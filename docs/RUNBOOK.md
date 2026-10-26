@@ -13,7 +13,7 @@
 
 应用默认绑定本机地址。Java、网关和 Python 使用同一个 `JWT_SECRET`；统一启动脚本读取 `nexus-python/.env` 并传递给子进程。数据库密码、模型密钥与机器人地址不要提交到版本库。
 
-业务表为 `user`、`subscription`、`content`、`approval_ticket`、`notification`、`audit_log`、`agent_task`、`push_channel`、`push_delivery`。`scripts/init_db.py` 创建缺失的表并执行新增字段迁移，不清空已有数据。原有内容正文列会扩展为 LONGTEXT。`infra/sql/init.sql` 为全新数据库的基线参考，重复初始化请使用 Python 脚本。
+业务表为 `user`、`subscription`、`content`、`approval_ticket`、`notification`、`audit_log`、`agent_task`、`push_channel`、`push_delivery`、`source_health`。`scripts/init_db.py` 创建缺失的表并执行新增字段迁移，不清空已有数据。原有内容正文列会扩展为 LONGTEXT。质量与巡检字段也是增量迁移。`infra/sql/init.sql` 为全新数据库的基线参考，重复初始化请使用 Python 脚本。
 
 数据库会话与应用持久化时间使用 UTC，前端转换为浏览器本地时间。旧版本已写入的历史时间不进行猜测性批量转换。
 
@@ -81,6 +81,8 @@ python scripts/dev.py start
 测试账号、任务和模拟内容使用 `e2e_` 前缀，与真实用户数据区分。测试结果保存在 `.runtime/e2e-result.json`。浏览器验收脚本为 `scripts/browser_check.py`，截图保存在 `.runtime`。
 
 浏览器验收前执行 `python -m playwright install chromium`，然后运行 `python scripts/browser_check.py`。本轮已完成的检查和能力边界见 [验证记录](VERIFICATION.md)。
+
+来源健康维护与试采说明见 [数据源文档](SOURCES.md)。`scripts/quality_trial_check.py` 用普通临时账号验证只读试采、正文质量、实际入库和浏览器；需要先按上文设置 `NEXUS_ALLOW_LOCAL_SOURCES=true`，同时设置 `SOURCE_HEALTH_ENABLED=false`，再重启应用。结束后恢复前者为 false、后者为 true 并重启。脚本不需要管理员，也不会向真实群发送消息。
 
 ## 已知边界
 

@@ -24,6 +24,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import request from "../api/request";
 import PageHeading from "../components/PageHeading";
+import TrialDrawer from "../components/TrialDrawer";
 export default function SubscriptionPage() {
   const { message } = App.useApp(),
     navigate = useNavigate(),
@@ -42,6 +43,47 @@ export default function SubscriptionPage() {
     [selected, setSelected] = useState<string[]>([]),
     [preview, setPreview] = useState<any>(null),
     [triggering, setTriggering] = useState<number | null>(null);
+  const [trialOpen, setTrialOpen] = useState(false),
+    [trialing, setTrialing] = useState(false),
+    [trialResult, setTrialResult] = useState<any>(null),
+    [trialError, setTrialError] = useState("");
+  const trialValues = () => ({
+    rss_feeds: (form.getFieldValue("rssFeeds") || []).map((f: any) => ({
+      url: (f.url || "").trim(),
+      platform: f.platform || "rss",
+    })),
+    keywords: form.getFieldValue("keywords") || [],
+  });
+  const trial = async () => {
+    const values = trialValues();
+    if (
+      !values.rss_feeds.length ||
+      values.rss_feeds.some((f: any) => !/^https?:\/\/\S+$/.test(f.url))
+    ) {
+      message.warning("请先填写有效的采集源地址");
+      return;
+    }
+    setTrialOpen(true);
+    setTrialing(true);
+    setTrialError("");
+    setTrialResult(null);
+    try {
+      const r: any = await request.post(
+        "/python/subscriptions/trial",
+        { ...values, rss_feeds: values.rss_feeds.slice(0, 5) },
+        { timeout: 60000 },
+      );
+      if (JSON.stringify(values) !== JSON.stringify(trialValues())) {
+        setTrialError("订阅配置已变化，请重新试采查看最新结果");
+        return;
+      }
+      setTrialResult({ ...r.data, requested_sources: values.rss_feeds.length });
+    } catch (e: any) {
+      setTrialError(e.message);
+    } finally {
+      setTrialing(false);
+    }
+  };
   const load = async () => {
     setLoading(true);
     setError("");
@@ -61,6 +103,8 @@ export default function SubscriptionPage() {
     load();
   }, [page]);
   const show = (row: any = null) => {
+    setTrialResult(null);
+    setTrialError("");
     setEditing(row);
     setSources([]);
     setSelected([]);
@@ -293,6 +337,14 @@ export default function SubscriptionPage() {
           message="先添加 RSS 或网页地址。关注关键词留空时采集全部内容，填写后只保留匹配条目。"
           style={{ margin: "16px 0" }}
         />
+        <Space wrap style={{ marginBottom: 16 }}>
+          <Button onClick={trial} loading={trialing}>
+            试采预览
+          </Button>
+          <Typography.Text type="secondary">
+            保存前看看会收到什么（最多前 5 个来源）
+          </Typography.Text>
+        </Space>
         <Space.Compact style={{ width: "100%", marginBottom: 12 }}>
           <Input
             placeholder="例如：人工智能、Python、安全、科技"
@@ -417,9 +469,7 @@ export default function SubscriptionPage() {
                     style={{ display: "flex", marginTop: 10 }}
                     align="start"
                   >
-                    <Form.Item
-                      name={[field.name, "platform"]}
-                    >
+                    <Form.Item name={[field.name, "platform"]}>
                       <Select
                         style={{ width: 95 }}
                         options={[
@@ -494,6 +544,14 @@ export default function SubscriptionPage() {
           </Space>
         </Form>
       </Modal>
+      <TrialDrawer
+        open={trialOpen}
+        onClose={() => setTrialOpen(false)}
+        loading={trialing}
+        data={trialResult}
+        error={trialError}
+        onRetry={trial}
+      />
       <Modal
         open={!!preview}
         title="订阅源预览"

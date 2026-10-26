@@ -65,6 +65,7 @@ async def run_connector(state: NexusState, db) -> NexusState:
             title=item.get("title", "")[:500],
             summary=item.get("summary", "")[:2000],
             translated_summary=item.get("translated_summary"),
+            quality=item.get("quality"),
             content_body=item.get("raw_html", ""),
             author=item.get("author", "")[:100],
             published_at=published(item.get("published_at")),

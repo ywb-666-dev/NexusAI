@@ -71,6 +71,12 @@ def serialize(task):
             for k in ["stored_count", "duplicate_count"]
         },
         "source_errors": state.get("scout", {}).get("source_errors", []),
+        "quality": {
+            key: state.get("parser", {}).get(
+                key, [] if key == "rejected" else {} if key == "quality_counts" else 0
+            )
+            for key in ("rejected_count", "quality_counts", "rejected")
+        },
         "report": state.get("curator", {}).get("report", ""),
     }
 
@@ -136,8 +142,16 @@ async def resume(
         state["status"] = "curating" if approved else "rejected"
         task.status = state["status"]
         if not approved:
-            db.add(Notification(user_id=task.user_id, type='approval', title='内容审核未通过',
-                                content=ticket.comment or '管理员已拒绝发布该批内容', related_id=task_id, is_read=0))
+            db.add(
+                Notification(
+                    user_id=task.user_id,
+                    type="approval",
+                    title="内容审核未通过",
+                    content=ticket.comment or "管理员已拒绝发布该批内容",
+                    related_id=task_id,
+                    is_read=0,
+                )
+            )
         await db.commit()
     await save_state(state)
     if approved:

@@ -16,6 +16,7 @@ class Content(Base):
     title: Mapped[str | None] = mapped_column(String(500))
     summary: Mapped[str | None] = mapped_column(String(2000))
     translated_summary: Mapped[str | None] = mapped_column(Text)
+    quality: Mapped[dict | None] = mapped_column(JSON)
     content_body: Mapped[str | None] = mapped_column(
         Text().with_variant(LONGTEXT, "mysql")
     )

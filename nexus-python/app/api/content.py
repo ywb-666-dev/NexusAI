@@ -27,6 +27,7 @@ def serialize(c):
         "title": c.title,
         "summary": c.summary,
         "translatedSummary": c.translated_summary,
+        "quality": c.quality,
         "contentBody": c.content_body,
         "author": c.author,
         "status": c.status,

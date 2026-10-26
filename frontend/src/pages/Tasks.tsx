@@ -207,6 +207,19 @@ export default function Tasks() {
                 style={{ marginBottom: 20 }}
               />
             )}
+            {!!selected.quality?.rejected_count && (
+              <Alert
+                type="warning"
+                showIcon
+                message={`正文质量检查拦截了 ${selected.quality.rejected_count} 条异常内容`}
+                description={selected.quality.rejected?.map((item: any) => (
+                  <div key={item.url}>
+                    {item.title || item.url}：{item.quality.reasons.join("；")}
+                  </div>
+                ))}
+                style={{ marginBottom: 20 }}
+              />
+            )}
             {selected.status.startsWith("interrupted") && (
               <Alert
                 type="warning"

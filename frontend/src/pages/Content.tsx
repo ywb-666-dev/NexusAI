@@ -17,6 +17,7 @@ import { useSearchParams } from "react-router-dom";
 import { SearchOutlined, ExportOutlined } from "@ant-design/icons";
 import request from "../api/request";
 import PageHeading from "../components/PageHeading";
+import QualityBadge from "../components/QualityBadge";
 const { Text } = Typography;
 export default function ContentPage() {
   const [params, setParams] = useSearchParams(),
@@ -146,6 +147,7 @@ export default function ContentPage() {
                   {item.sourcePlatform.toUpperCase()}
                 </Tag>
                 <h3>{item.title || "无标题"}</h3>
+                <QualityBadge quality={item.quality} />
                 <p>
                   {item.translatedSummary || item.summary || "打开阅读完整正文"}
                 </p>
@@ -200,6 +202,12 @@ export default function ContentPage() {
           <>
             <Tag color="cyan">{detail.sourcePlatform}</Tag>
             <Typography.Title level={3}>{detail.title}</Typography.Title>
+            <QualityBadge quality={detail.quality} />
+            {!!detail.quality?.reasons?.length && (
+              <Typography.Paragraph type="secondary" style={{ marginTop: 10 }}>
+                {detail.quality.reasons.join("；")}
+              </Typography.Paragraph>
+            )}
             <Text type="secondary">
               {detail.author || "来源未署名"} ·{" "}
               {detail.publishedAt

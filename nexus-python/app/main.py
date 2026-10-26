@@ -57,13 +57,22 @@ async def lifespan(app):
     from app.scheduler import start_scheduler
 
     scheduler = asyncio.create_task(start_scheduler(app.state.supervisor))
+    from app.services.source_maintenance import run_maintenance
+
+    source_maintenance = asyncio.create_task(run_maintenance())
     try:
         yield
     finally:
         scheduler.cancel()
+        source_maintenance.cancel()
         for task in list(BACKGROUND_TASKS):
             task.cancel()
-        await asyncio.gather(scheduler, *list(BACKGROUND_TASKS), return_exceptions=True)
+        await asyncio.gather(
+            scheduler,
+            source_maintenance,
+            *list(BACKGROUND_TASKS),
+            return_exceptions=True
+        )
         if app.state.mcp_pool:
             await app.state.mcp_pool.close_all()
         await close_db_engine()
