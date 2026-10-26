@@ -34,6 +34,7 @@ const baseItems = [
   { key: "/subscriptions", icon: <UnorderedListOutlined />, label: "我的订阅" },
   { key: "/sources", icon: <SearchOutlined />, label: "数据源中心" },
   { key: "/contents", icon: <FileTextOutlined />, label: "内容中心" },
+  { key: "/briefings", icon: <BulbOutlined />, label: "个人情报简报" },
   { key: "/tasks", icon: <DeploymentUnitOutlined />, label: "任务监控" },
   { key: "/notifications", icon: <BellOutlined />, label: "通知中心" },
   { key: "/push", icon: <SendOutlined />, label: "推送设置" },

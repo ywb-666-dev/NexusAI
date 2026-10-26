@@ -9,6 +9,7 @@ from urllib.parse import urlparse, parse_qsl
 import os
 import httpx
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from app.core.dependencies import get_session_factory
 from app.models.delivery import PushChannel, PushDelivery
 
@@ -36,7 +37,11 @@ def validate_webhook(provider, url):
 
 def payload_for(channel, text):
     timestamp = str(int(time.time()))
-    message = ('NexusAI 内容简报\n' + text).encode('utf-8')[:15000].decode('utf-8', errors='ignore')
+    message = (
+        ("NexusAI 内容简报\n" + text)
+        .encode("utf-8")[:15000]
+        .decode("utf-8", errors="ignore")
+    )
     if channel.provider == "feishu":
         data = {
             "msg_type": "text",
@@ -114,8 +119,13 @@ async def dispatch_report(user_id, task_id, report):
                 status="pending",
                 attempts=0,
             )
-            db.add(delivery)
-            await db.commit()
+            try:
+                async with db.begin_nested():
+                    db.add(delivery)
+                    await db.flush()
+                await db.commit()
+            except IntegrityError:
+                continue  # A concurrent request already claimed this channel/report.
             for attempt in range(3):
                 delivery.attempts = attempt + 1
                 try:

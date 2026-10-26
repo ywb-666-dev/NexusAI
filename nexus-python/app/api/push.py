@@ -134,10 +134,25 @@ async def retry_delivery(delivery_id: int, request: Request):
         if delivery.status != "failed":
             raise HTTPException(409, "仅失败的投递可重试")
         channel = await db.get(PushChannel, delivery.channel_id)
-        task = await db.get(AgentTask, delivery.task_id)
-        if not channel or not task:
-            raise HTTPException(404, "渠道或任务已不存在")
-        report = (task.state or {}).get("curator", {}).get("report")
+        if not channel or channel.user_id != user["id"] or not channel.enabled:
+            raise HTTPException(409, "渠道已删除或停用")
+        if delivery.task_id.startswith("briefing:"):
+            from app.models.briefing import Briefing
+            from app.services.briefing import report_text
+
+            brief = await db.get(Briefing, delivery.task_id.removeprefix("briefing:"))
+            report = (
+                report_text(brief)
+                if brief and brief.user_id == user["id"] and brief.status == "ready"
+                else None
+            )
+        else:
+            task = await db.get(AgentTask, delivery.task_id)
+            report = (
+                (task.state or {}).get("curator", {}).get("report")
+                if task and task.user_id == user["id"]
+                else None
+            )
         if not report:
             raise HTTPException(409, "任务简报尚未生成")
         delivery.attempts += 1

@@ -170,3 +170,30 @@ CREATE TABLE IF NOT EXISTS user (
 	PRIMARY KEY (id),
 	UNIQUE (username)
 );
+
+CREATE TABLE IF NOT EXISTS briefing (
+	id VARCHAR(36) NOT NULL,
+	user_id BIGINT NOT NULL,
+	status VARCHAR(20) NOT NULL,
+	active_key VARCHAR(64),
+	schedule_key VARCHAR(80),
+	hours INTEGER NOT NULL,
+	period_start DATETIME NOT NULL,
+	period_end DATETIME NOT NULL,
+	report JSON,
+	error TEXT,
+	created_at DATETIME NOT NULL DEFAULT now(),
+	PRIMARY KEY (id),
+	UNIQUE (active_key),
+	UNIQUE (schedule_key)
+);
+
+CREATE INDEX idx_briefing_user_created ON briefing (user_id, created_at);
+
+CREATE TABLE IF NOT EXISTS briefing_preference (
+	user_id BIGINT NOT NULL,
+	enabled INTEGER NOT NULL,
+	push_enabled INTEGER NOT NULL,
+	enabled_at DATETIME,
+	PRIMARY KEY (user_id)
+);

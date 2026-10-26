@@ -12,6 +12,7 @@ import {
 } from "antd";
 import request from "../api/request";
 import PageHeading from "../components/PageHeading";
+import { Link } from "react-router-dom";
 export default function NotificationPage() {
   const [data, setData] = useState<any[]>([]),
     [page, setPage] = useState(1),
@@ -94,6 +95,18 @@ export default function NotificationPage() {
                 description={
                   <>
                     <p>{item.content}</p>
+                    {item.type === "briefing" && item.relatedId && (
+                      <p>
+                        <Link
+                          to={
+                            "/briefings?id=" +
+                            encodeURIComponent(item.relatedId)
+                          }
+                        >
+                          阅读个人情报简报
+                        </Link>
+                      </p>
+                    )}
                     <Typography.Text type="secondary" style={{ fontSize: 11 }}>
                       {item.createdAt
                         ? new Date(item.createdAt + "Z").toLocaleString("zh-CN")

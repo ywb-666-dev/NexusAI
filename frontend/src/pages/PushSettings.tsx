@@ -59,7 +59,7 @@ export default function PushSettings() {
       <PageHeading
         label="DELIVERY / 推送设置"
         title="让重要内容主动抵达"
-        subtitle="采集完成后，将简报发送到你的飞书或钉钉群；站内通知默认保留。"
+        subtitle="配置飞书或钉钉机器人，接收采集结果及你手动发送或启用自动推送的个人情报简报。"
         extra={
           <Button type="primary" onClick={() => setOpen(true)}>
             添加推送渠道
@@ -145,9 +145,16 @@ export default function PushSettings() {
           scroll={{ x: 600 }}
           columns={[
             {
-              title: "任务",
+              title: "来源",
               dataIndex: "task_id",
-              render: (v) => <code>{v.slice(0, 12)}</code>,
+              render: (v) =>
+                v.startsWith("briefing:") ? (
+                  <a href={"/briefings?id=" + encodeURIComponent(v.slice(9))}>
+                    个人情报简报
+                  </a>
+                ) : (
+                  <code>{v.slice(0, 12)}</code>
+                ),
             },
             {
               title: "渠道",

@@ -54,6 +54,10 @@ async def lifespan(app):
         registry.register(skill)
     app.state.skill_registry, app.state.harness = registry, AgentHarness()
     await recover_tasks()
+    from app.services import briefing as briefing_service
+
+    await briefing_service.recover()
+    briefing_scheduler = asyncio.create_task(briefing_service.scheduler())
     from app.scheduler import start_scheduler
 
     scheduler = asyncio.create_task(start_scheduler(app.state.supervisor))
@@ -64,11 +68,13 @@ async def lifespan(app):
         yield
     finally:
         scheduler.cancel()
+        briefing_scheduler.cancel()
         source_maintenance.cancel()
         for task in list(BACKGROUND_TASKS):
             task.cancel()
         await asyncio.gather(
             scheduler,
+            briefing_scheduler,
             source_maintenance,
             *list(BACKGROUND_TASKS),
             return_exceptions=True
@@ -156,7 +162,18 @@ async def task_socket(websocket: WebSocket, task_id: str):
         await websocket.close(code=1008)
 
 
-from app.api import agent, content, subscription, notification, skill, push, sources
+from app.api import (
+    agent,
+    content,
+    subscription,
+    notification,
+    skill,
+    push,
+    sources,
+    briefing,
+)
+
+app.include_router(briefing.router, prefix="/api/python/briefings", tags=["briefings"])
 
 app.include_router(sources.router, prefix="/api/python/sources", tags=["sources"])
 
