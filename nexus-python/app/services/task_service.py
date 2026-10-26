@@ -35,11 +35,31 @@ def spawn(coro):
 
 async def create_task(subscription_id: int, user_id: int, supervisor) -> str:
     async with get_session_factory()() as db:
-        sub = await db.get(Subscription, subscription_id)
+        sub = (
+            await db.execute(
+                select(Subscription)
+                .where(Subscription.id == subscription_id)
+                .with_for_update()
+            )
+        ).scalar_one_or_none()
         if not sub or sub.user_id != user_id:
             raise HTTPException(404, "订阅不存在")
         if sub.status != 1:
             raise HTTPException(409, "订阅已暂停")
+        conditions = (
+            sub.trigger_conditions if isinstance(sub.trigger_conditions, dict) else {}
+        )
+        from app.services.auto_sources import resolve_subscription_sources
+
+        try:
+            feeds, resolution = await resolve_subscription_sources(
+                parse_list(sub.rss_feeds), conditions
+            )
+        except ValueError as exc:
+            raise HTTPException(409, str(exc))
+        if resolution is not None:
+            sub.rss_feeds = feeds
+            sub.source_platforms = list(dict.fromkeys(f["platform"] for f in feeds))
         task_id = uuid.uuid4().hex
         state = {
             "task_id": task_id,
@@ -47,7 +67,8 @@ async def create_task(subscription_id: int, user_id: int, supervisor) -> str:
             "user_id": user_id,
             "keywords": parse_list(sub.keywords),
             "source_platforms": parse_list(sub.source_platforms),
-            "rss_feeds": parse_list(sub.rss_feeds),
+            "rss_feeds": feeds,
+            "source_resolution": resolution,
             "enable_ai": bool(
                 (
                     sub.trigger_conditions

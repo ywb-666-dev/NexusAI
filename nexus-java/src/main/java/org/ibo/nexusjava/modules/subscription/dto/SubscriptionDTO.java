@@ -18,8 +18,8 @@ public class SubscriptionDTO {
     @Size(max=20)
     private List<@Size(max=200) String> keywords;
     private List<String> sourcePlatforms;
-    @Valid @NotEmpty(message="至少添加一个采集源") @Size(max=20)
-    private List<RssFeedItem> rssFeeds;
+    @Valid @Size(max=20)
+    private List<@NotNull RssFeedItem> rssFeeds;
     private Integer matchMode = 1;
     private String cronExpression;
     @Min(1) @Max(3)
@@ -33,6 +33,12 @@ public class SubscriptionDTO {
         @NotBlank @Pattern(regexp="https?://[^\\s]+",message="请输入 HTTP/HTTPS 地址") @Size(max=1000)
         private String url;
         private String name;
+        @Pattern(regexp="manual|system")
+        private String origin;
+        @Pattern(regexp="[0-9a-f]{16}")
+        private String sourceId;
+        @Size(max=500)
+        private String reason;
         @NotBlank @Pattern(regexp="rss|web|api",message="来源类型必须为 rss、web 或 api")
         private String platform;
 
@@ -42,5 +48,11 @@ public class SubscriptionDTO {
         public void setName(String name) { this.name = name; }
         public String getPlatform() { return platform; }
         public void setPlatform(String platform) { this.platform = platform; }
+        public String getOrigin() { return origin; }
+        public void setOrigin(String origin) { this.origin = origin; }
+        public String getSourceId() { return sourceId; }
+        public void setSourceId(String sourceId) { this.sourceId = sourceId; }
+        public String getReason() { return reason; }
+        public void setReason(String reason) { this.reason = reason; }
     }
 }

@@ -179,6 +179,7 @@ export default function Tasks() {
                         success: "已完成",
                         failed: "失败",
                         interrupted: "等待审批",
+                        skipped: "已跳过",
                       }[state] || state}
                     </Tag>
                   </div>
@@ -191,6 +192,14 @@ export default function Tasks() {
                 type="error"
                 message="执行失败"
                 description={selected.error}
+                style={{ marginBottom: 20 }}
+              />
+            )}
+            {selected.source_resolution && (
+              <Alert
+                type="info"
+                message={`系统来源 ${selected.source_resolution.system_count} 个，额外来源 ${selected.source_resolution.manual_count} 个`}
+                description={selected.source_resolution.notice}
                 style={{ marginBottom: 20 }}
               />
             )}

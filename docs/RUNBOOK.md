@@ -90,3 +90,5 @@ python scripts/dev.py start
 - 外部站点的可访问性和内容结构会变化；单源失败可在任务详情查看，不会伪造成功结果。
 - AI 与真实群投递依赖用户自己的服务配置；不把未配置能力显示为已成功执行。
 - RocketMQ、Milvus、旧版面试材料中的 Nacos／SQL Server／原生 checkpoint 等不属于本轮已验证主链路。
+
+自动来源验收可在正常配置运行 `python scripts/auto_sources_check.py`。它使用普通临时账号验证无 URL 创建、来源标记、用户来源保留、排除、任务刷新及浏览器操作；结束后暂停测试订阅，不需要管理员或真实机器人。

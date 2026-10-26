@@ -20,6 +20,11 @@ public class BusinessException extends RuntimeException {
     /**提示信息*/
     private String message;
 
+    @Override
+    public String getMessage() {
+        return message != null ? message : super.getMessage();
+    }
+
     // 1. 只有错误码枚举
     public BusinessException(ErrorCode errorCode) {
         super(errorCode.getMessage());

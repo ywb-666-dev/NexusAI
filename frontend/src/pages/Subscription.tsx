@@ -25,10 +25,21 @@ import { useNavigate } from "react-router-dom";
 import request from "../api/request";
 import PageHeading from "../components/PageHeading";
 import TrialDrawer from "../components/TrialDrawer";
+import AutomaticSources from "../components/AutomaticSources";
 export default function SubscriptionPage() {
   const { message } = App.useApp(),
     navigate = useNavigate(),
     [form] = Form.useForm();
+  const autoMode = Form.useWatch("sourceMode", form) === "auto";
+  const sourcePolicy = () =>
+    form.getFieldValue("sourceMode") === "auto"
+      ? {
+          mode: "auto",
+          topic: (form.getFieldValue("focusTopic") || "").trim(),
+          language: form.getFieldValue("sourceLanguage") || "zh_first",
+          excluded_ids: form.getFieldValue("excludedSourceIds") || [],
+        }
+      : { mode: "manual" };
   const [data, setData] = useState<any[]>([]),
     [total, setTotal] = useState(0),
     [page, setPage] = useState(1),
@@ -53,11 +64,16 @@ export default function SubscriptionPage() {
       platform: f.platform || "rss",
     })),
     keywords: form.getFieldValue("keywords") || [],
+    source_policy: sourcePolicy(),
   });
   const trial = async () => {
     const values = trialValues();
+    if (autoMode && !values.source_policy.topic) {
+      message.warning("请先填写关注主题");
+      return;
+    }
     if (
-      !values.rss_feeds.length ||
+      (!autoMode && !values.rss_feeds.length) ||
       values.rss_feeds.some((f: any) => !/^https?:\/\/\S+$/.test(f.url))
     ) {
       message.warning("请先填写有效的采集源地址");
@@ -71,7 +87,7 @@ export default function SubscriptionPage() {
       const r: any = await request.post(
         "/python/subscriptions/trial",
         { ...values, rss_feeds: values.rss_feeds.slice(0, 5) },
-        { timeout: 60000 },
+        { timeout: 90000 },
       );
       if (JSON.stringify(values) !== JSON.stringify(trialValues())) {
         setTrialError("订阅配置已变化，请重新试采查看最新结果");
@@ -118,12 +134,24 @@ export default function SubscriptionPage() {
       row
         ? {
             ...row,
+            rssFeeds:
+              conditions.source_policy?.mode === "auto"
+                ? (row.rssFeeds || []).filter((f: any) => f.origin !== "system")
+                : row.rssFeeds,
+            sourceMode: conditions.source_policy?.mode || "manual",
+            focusTopic: conditions.source_policy?.topic || "",
+            sourceLanguage: conditions.source_policy?.language || "zh_first",
+            excludedSourceIds: conditions.source_policy?.excluded_ids || [],
             interval: conditions.interval_minutes || 60,
             enableAi: conditions.enable_ai || false,
           }
         : {
             keywords: [],
-            rssFeeds: [{ url: "", platform: "rss" }],
+            rssFeeds: [],
+            sourceMode: "auto",
+            focusTopic: "",
+            sourceLanguage: "zh_first",
+            excludedSourceIds: [],
             priority: 2,
             interval: 60,
           },
@@ -131,13 +159,18 @@ export default function SubscriptionPage() {
     setOpen(true);
   };
   const save = async () => {
+    if (autoMode && !form.getFieldValue("name"))
+      form.setFieldValue(
+        "name",
+        (form.getFieldValue("focusTopic") || "").trim().slice(0, 100),
+      );
     const v = await form.validateFields();
     setSaving(true);
     try {
       const payload = {
         name: v.name,
         keywords: v.keywords || [],
-        rssFeeds: v.rssFeeds,
+        rssFeeds: v.rssFeeds.map((f: any) => ({ ...f, origin: "manual" })),
         sourcePlatforms: [...new Set(v.rssFeeds.map((f: any) => f.platform))],
         matchMode: 1,
         priority: v.priority,
@@ -145,11 +178,15 @@ export default function SubscriptionPage() {
         triggerConditions: JSON.stringify({
           interval_minutes: v.interval,
           enable_ai: !!v.enableAi,
+          source_policy: sourcePolicy(),
         }),
       };
       if (editing)
-        await request.put("/java/subscriptions/" + editing.id, payload);
-      else await request.post("/java/subscriptions", payload);
+        await request.put("/java/subscriptions/" + editing.id, payload, {
+          timeout: 60000,
+        });
+      else
+        await request.post("/java/subscriptions", payload, { timeout: 60000 });
       setOpen(false);
       message.success("订阅已保存");
       load();
@@ -334,7 +371,7 @@ export default function SubscriptionPage() {
       >
         <Alert
           type="info"
-          message="先添加 RSS 或网页地址。关注关键词留空时采集全部内容，填写后只保留匹配条目。"
+          message="填写关注主题，系统会自动添加采集源；也可以额外添加自己的地址，或切换为手动配置。"
           style={{ margin: "16px 0" }}
         />
         <Space wrap style={{ marginBottom: 16 }}>
@@ -345,104 +382,112 @@ export default function SubscriptionPage() {
             保存前看看会收到什么（最多前 5 个来源）
           </Typography.Text>
         </Space>
-        <Space.Compact style={{ width: "100%", marginBottom: 12 }}>
-          <Input
-            placeholder="例如：人工智能、Python、安全、科技"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            onPressEnter={discover}
-          />
-          <Button
-            icon={<SearchOutlined />}
-            loading={discovering}
-            onClick={discover}
-          >
-            推荐订阅源
-          </Button>
-        </Space.Compact>
-        {sources.length > 0 && (
-          <div
-            style={{
-              maxHeight: 220,
-              overflow: "auto",
-              marginBottom: 16,
-              border: "1px solid #38c9db40",
-              padding: 12,
-              borderRadius: 8,
-            }}
-          >
-            <Typography.Text type="secondary">
-              以下为内置目录推荐，可先预览确认。
-            </Typography.Text>
-            {sources.map((s) => (
+        {!autoMode && (
+          <>
+            <Space.Compact style={{ width: "100%", marginBottom: 12 }}>
+              <Input
+                placeholder="例如：人工智能、Python、安全、科技"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                onPressEnter={discover}
+              />
+              <Button
+                icon={<SearchOutlined />}
+                loading={discovering}
+                onClick={discover}
+              >
+                推荐订阅源
+              </Button>
+            </Space.Compact>
+            {sources.length > 0 && (
               <div
-                key={s.id}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  margin: "10px 0",
+                  maxHeight: 220,
+                  overflow: "auto",
+                  marginBottom: 16,
+                  border: "1px solid #38c9db40",
+                  padding: 12,
+                  borderRadius: 8,
                 }}
               >
-                <Checkbox
-                  checked={selected.includes(s.id)}
-                  onChange={(e) =>
-                    setSelected((p) =>
-                      e.target.checked
-                        ? [...p, s.id]
-                        : p.filter((x) => x !== s.id),
-                    )
-                  }
-                />
-                <div style={{ flex: 1 }}>
-                  {s.name}
+                <Typography.Text type="secondary">
+                  以下为内置目录推荐，可先预览确认。
+                </Typography.Text>
+                {sources.map((s) => (
                   <div
+                    key={s.id}
                     style={{
-                      fontSize: 11,
-                      opacity: 0.6,
-                      wordBreak: "break-all",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      margin: "10px 0",
                     }}
                   >
-                    {s.url}
+                    <Checkbox
+                      checked={selected.includes(s.id)}
+                      onChange={(e) =>
+                        setSelected((p) =>
+                          e.target.checked
+                            ? [...p, s.id]
+                            : p.filter((x) => x !== s.id),
+                        )
+                      }
+                    />
+                    <div style={{ flex: 1 }}>
+                      {s.name}
+                      <div
+                        style={{
+                          fontSize: 11,
+                          opacity: 0.6,
+                          wordBreak: "break-all",
+                        }}
+                      >
+                        {s.url}
+                      </div>
+                    </div>
+                    <Button
+                      size="small"
+                      onClick={async () => {
+                        try {
+                          const r: any = await request.get(
+                            "/python/subscriptions/preview-feed",
+                            { params: { url: s.url } },
+                          );
+                          setPreview(r.data);
+                        } catch (e: any) {
+                          message.error(e.message);
+                        }
+                      }}
+                    >
+                      预览
+                    </Button>
                   </div>
-                </div>
+                ))}
                 <Button
                   size="small"
-                  onClick={async () => {
-                    try {
-                      const r: any = await request.get(
-                        "/python/subscriptions/preview-feed",
-                        { params: { url: s.url } },
-                      );
-                      setPreview(r.data);
-                    } catch (e: any) {
-                      message.error(e.message);
-                    }
-                  }}
+                  disabled={!selected.length}
+                  onClick={addSelected}
                 >
-                  预览
+                  添加选中的源
                 </Button>
               </div>
-            ))}
-            <Button
-              size="small"
-              disabled={!selected.length}
-              onClick={addSelected}
-            >
-              添加选中的源
-            </Button>
-          </div>
+            )}
+          </>
         )}
         <Form
           form={form}
           layout="vertical"
           initialValues={{
             keywords: [],
-            rssFeeds: [{ url: "", platform: "rss" }],
+            rssFeeds: [],
+            sourceMode: "auto",
+            sourceLanguage: "zh_first",
+            excludedSourceIds: [],
             priority: 2,
             interval: 60,
           }}
         >
+          <AutomaticSources form={form} />
           <Form.Item
             name="name"
             label="订阅名称"
@@ -455,14 +500,17 @@ export default function SubscriptionPage() {
             rules={[
               {
                 validator: async (_, value) => {
-                  if (!value?.length) throw Error("至少添加一个采集源");
+                  if (!value?.length && !autoMode)
+                    throw Error("至少添加一个采集源");
                 },
               },
             ]}
           >
             {(fields, { add, remove }, { errors }) => (
               <>
-                <Typography.Text strong>采集源</Typography.Text>
+                <Typography.Text strong>
+                  {autoMode ? "额外来源（可选）" : "采集源"}
+                </Typography.Text>
                 {fields.map((field) => (
                   <Space
                     key={field.key}
@@ -508,7 +556,7 @@ export default function SubscriptionPage() {
                   icon={<PlusOutlined />}
                   style={{ marginBottom: 20 }}
                 >
-                  添加采集源
+                  {autoMode ? "添加自己的来源" : "添加采集源"}
                 </Button>
               </>
             )}

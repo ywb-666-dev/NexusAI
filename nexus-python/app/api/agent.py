@@ -71,6 +71,7 @@ def serialize(task):
             for k in ["stored_count", "duplicate_count"]
         },
         "source_errors": state.get("scout", {}).get("source_errors", []),
+        "source_resolution": state.get("source_resolution"),
         "quality": {
             key: state.get("parser", {}).get(
                 key, [] if key == "rejected" else {} if key == "quality_counts" else 0

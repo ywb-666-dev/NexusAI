@@ -31,7 +31,9 @@ def main():
         page.get_by_placeholder("密码", exact=True).fill(password)
         page.get_by_role("button", name="进入工作台").click()
         page.get_by_role("heading", name="让信息汇聚，让洞察发生").wait_for()
-        page.locator(".ant-empty-description").filter(has_text="暂无数据").first.wait_for()
+        page.locator(".ant-empty-description").filter(
+            has_text="暂无数据"
+        ).first.wait_for()
         page.wait_for_load_state("networkidle")
         page.screenshot(path=str(ROOT / ".runtime/dashboard.png"), full_page=True)
         for route, title in [
@@ -45,6 +47,7 @@ def main():
             page.get_by_role("heading", name=title).wait_for()
         page.get_by_role("button", name="新建订阅").click()
         modal = page.get_by_role("dialog")
+        modal.get_by_role("radio", name="手动配置", exact=True).check()
         modal.get_by_placeholder("https://example.com/feed.xml").wait_for()
         assert modal.get_by_role("spinbutton").input_value() == "60"
         subscription_name = "浏览器验收_" + name

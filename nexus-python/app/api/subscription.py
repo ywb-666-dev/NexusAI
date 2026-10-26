@@ -11,6 +11,17 @@ from app.skills.builtins import DiscoverSourcesSkill
 
 router = APIRouter()
 
+from app.services.auto_sources import SourcePolicy, resolve_sources
+
+
+class ResolveInput(SourcePolicy):
+    limit: int = Field(default=5, ge=0, le=5)
+
+
+@router.post("/resolve-sources")
+async def resolve(body: ResolveInput):
+    return {"code": 200, "data": await resolve_sources(body, body.limit)}
+
 
 class TrialFeed(BaseModel):
     url: str = Field(max_length=1000, pattern=r"^https?://[^\s]+$")
@@ -18,8 +29,9 @@ class TrialFeed(BaseModel):
 
 
 class TrialInput(BaseModel):
-    rss_feeds: list[TrialFeed] = Field(min_length=1, max_length=5)
+    rss_feeds: list[TrialFeed] = Field(default_factory=list, max_length=5)
     keywords: list[str] = Field(default_factory=list, max_length=20)
+    source_policy: SourcePolicy | None = None
 
 
 @router.post("/trial")
@@ -28,11 +40,24 @@ async def trial(body: TrialInput, request: Request):
 
     if any(not k.strip() or len(k) > 200 for k in body.keywords):
         raise HTTPException(422, "关键词长度必须为 1 到 200 字")
+    feeds = [f.model_dump() for f in body.rss_feeds]
+    if body.source_policy and body.source_policy.mode == "auto":
+        from app.services.auto_sources import resolve_subscription_sources
+
+        try:
+            feeds, _ = await resolve_subscription_sources(
+                feeds, {"source_policy": body.source_policy.model_dump()}
+            )
+        except ValueError as exc:
+            raise HTTPException(409, str(exc))
+    if not feeds:
+        raise HTTPException(400, "请填写关注主题并匹配来源，或手动添加来源")
     result = await run_trial(
         current_user(request)["id"],
-        [f.model_dump() for f in body.rss_feeds],
+        feeds[:5],
         body.keywords,
     )
+    result["resolved_sources"] = feeds
     return {"code": 200, "data": result}
 
 

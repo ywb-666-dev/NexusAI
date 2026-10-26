@@ -28,6 +28,9 @@ public class SubscriptionVO {
         private String url;
         private String name;
         private String platform;
+        private String origin;
+        private String sourceId;
+        private String reason;
 
         public String getUrl() { return url; }
         public void setUrl(String url) { this.url = url; }
@@ -35,5 +38,11 @@ public class SubscriptionVO {
         public void setName(String name) { this.name = name; }
         public String getPlatform() { return platform; }
         public void setPlatform(String platform) { this.platform = platform; }
+        public String getOrigin() { return origin; }
+        public void setOrigin(String origin) { this.origin = origin; }
+        public String getSourceId() { return sourceId; }
+        public void setSourceId(String sourceId) { this.sourceId = sourceId; }
+        public String getReason() { return reason; }
+        public void setReason(String reason) { this.reason = reason; }
     }
 }

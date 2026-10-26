@@ -170,7 +170,21 @@ class NexusSupervisor:
             await _update_task_status(task_id, state["status"], {"scout": "failed"})
             return state
 
-        node_status = "success" if state.get("scout", {}).get("items") else "success"
+        if not state.get("scout", {}).get("items"):
+            state["status"] = "completed: no items"
+            await _update_task_status(
+                task_id,
+                state["status"],
+                {
+                    "scout": "success",
+                    "parser": "skipped",
+                    "connector": "skipped",
+                    "actor": "skipped",
+                    "curator": "skipped",
+                },
+            )
+            return state
+        node_status = "success"
         await _update_task_status(
             task_id, "parsing", {"scout": node_status, "parser": "running"}
         )

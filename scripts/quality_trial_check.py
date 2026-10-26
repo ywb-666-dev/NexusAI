@@ -166,6 +166,7 @@ def main():
             page.goto("http://127.0.0.1:5173/subscriptions", wait_until="networkidle")
             page.get_by_role("button", name="新建订阅").click()
             modal = page.get_by_role("dialog")
+            modal.get_by_role("radio", name="手动配置", exact=True).check()
             modal.get_by_placeholder("https://example.com/feed.xml").fill(
                 root + "/feed"
             )
