@@ -22,6 +22,7 @@
 - RSS：支持 RSS／Atom，单源最多读取 50 条，保留标题、作者、源链接、发布时间和正文。
 - 网页：读取公开静态 HTML，优先提取 article/main，清理脚本、导航和页面噪音；不保证需要登录、验证码或必须运行 JavaScript 的页面。
 - JSON API：支持文章数组，以及 `items`、`articles`、`news`、`data` 容器；字段映射支持 `url/link`、`title`、`description/summary/content` 等常见结构。不支持任意私有 API 的认证协议。
+- 来源覆盖扩展：支持 JSON Feed 1/1.1 与公开 GitHub Releases 的字段映射、自动来源选择、健康检测和正式采集。数据源中心可输入网站发现公开声明的 feed；详见 [数据源文档](SOURCES.md)。
 - 网络请求最多重试 3 次，限制单响应 4 MB、重定向次数和每订阅最多 20 个源。正常运行禁止访问本机或私有网络地址。
 - 原文正文与 `translated_summary` 分开保存。AI 未启用时，界面会明确标识原文或摘录，避免把规则生成结果当成模型输出。
 - 当前验收去重为订阅内的源 URL 与清洗内容精确去重。向量语义去重仍是可选扩展代码，不作为当前验收能力。
@@ -85,6 +86,8 @@ python scripts/dev.py start
 来源健康维护与试采说明见 [数据源文档](SOURCES.md)。`scripts/quality_trial_check.py` 用普通临时账号验证只读试采、正文质量、实际入库和浏览器；需要先按上文设置 `NEXUS_ALLOW_LOCAL_SOURCES=true`，同时设置 `SOURCE_HEALTH_ENABLED=false`，再重启应用。结束后恢复前者为 false、后者为 true 并重启。脚本不需要管理员，也不会向真实群发送消息。
 
 ## 已知边界
+
+开发或验收结束后执行 `python scripts/dev.py stop --infra`，及时关闭项目应用和项目自有 MySQL、Redis。命令核验应用 PID/创建时间/工作目录及依赖数据路径，正常关闭数据库并保存 Redis；不删除数据、不终止其他项目服务。下次启动前运行 `scripts/start-local-infra.ps1`。
 
 - 本次完成的是本机单实例运行，尚未验证生产集群、故障转移或大规模负载。
 - 外部站点的可访问性和内容结构会变化；单源失败可在任务详情查看，不会伪造成功结果。

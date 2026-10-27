@@ -19,11 +19,93 @@ def available(port):
         return sock.connect_ex(("127.0.0.1", port)) == 0
 
 
+def owns_infra(name, command):
+    expected = RUNTIME / ("mysql" if name.lower() in ("mysqld", "mysqld.exe") else "")
+    flag = "--datadir" if name.lower() in ("mysqld", "mysqld.exe") else "--dir"
+    if name.lower() not in ("mysqld", "mysqld.exe", "redis-server", "redis-server.exe"):
+        return False
+    for index, arg in enumerate(command):
+        if arg == flag and index + 1 < len(command):
+            value = command[index + 1]
+        elif arg.startswith(flag + "="):
+            value = arg.split("=", 1)[1]
+        else:
+            continue
+        path = Path(value.strip('"'))
+        return path.is_absolute() and path.resolve() == expected.resolve()
+    return False
+
+
+def stop_owned_infra():
+    import psutil
+
+    sys.path.insert(0, str(ROOT / "nexus-python"))
+    from app.core.config import settings
+
+    for proc in psutil.process_iter(["name", "cmdline"]):
+        try:
+            name, command = proc.info["name"] or "", proc.info["cmdline"] or []
+            if not owns_infra(name, command):
+                continue
+            if name.lower().startswith("mysqld"):
+                import pymysql
+
+                with pymysql.connect(
+                    host="127.0.0.1",
+                    port=3306,
+                    user=settings.db.username,
+                    password=settings.db.password,
+                    connect_timeout=5,
+                    read_timeout=10,
+                ) as conn:
+                    with conn.cursor() as cursor:
+                        cursor.execute("SELECT @@datadir")
+                        if (
+                            Path(cursor.fetchone()[0]).resolve()
+                            != (RUNTIME / "mysql").resolve()
+                        ):
+                            raise RuntimeError(
+                                "Database data directory does not match this project"
+                            )
+                        cursor.execute("SHUTDOWN")
+            else:
+                import redis
+
+                client = redis.Redis(
+                    host="127.0.0.1",
+                    port=6379,
+                    socket_timeout=10,
+                    decode_responses=True,
+                )
+                if client.info("server")["process_id"] != proc.pid:
+                    raise RuntimeError("Redis process does not match this project")
+                if Path(client.config_get("dir")["dir"]).resolve() != RUNTIME.resolve():
+                    raise RuntimeError(
+                        "Redis data directory does not match this project"
+                    )
+                client.shutdown(save=True)
+            proc.wait(timeout=20)
+            print(f"Stopped project-owned {name}; data saved.")
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            continue
+        except Exception:
+            raise RuntimeError(
+                "Could not gracefully stop project infrastructure; no unrelated service was terminated."
+            ) from None
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("action", choices=["start", "stop", "status"])
     parser.add_argument("--build", action="store_true")
+    parser.add_argument(
+        "--infra",
+        action="store_true",
+        help="With stop, also gracefully shut down project-owned MySQL/Redis.",
+    )
     args = parser.parse_args()
+    if args.infra and args.action != "stop":
+        parser.error("--infra is only supported with stop")
     RUNTIME.mkdir(exist_ok=True)
     pidfile = RUNTIME / "services.json"
     if args.action == "status":
@@ -46,15 +128,33 @@ def main():
                 if abs(proc.create_time() - entry["created"]) < 1 and Path(
                     proc.cwd()
                 ).resolve().is_relative_to(ROOT):
+                    children = proc.children(recursive=True)
                     proc.terminate()
                     try:
                         proc.wait(timeout=10)
                     except psutil.TimeoutExpired:
                         proc.kill()
+                    for child in children:
+                        try:
+                            child.terminate()
+                            child.wait(timeout=5)
+                        except psutil.TimeoutExpired:
+                            child.kill()
+                        except psutil.NoSuchProcess:
+                            pass
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 pass
         pidfile.write_text("[]")
-        print("Stopped owned application services. MySQL and Redis remain available.")
+        if args.infra:
+            stop_owned_infra()
+        print(
+            "Stopped owned application services."
+            + (
+                " Project infrastructure checked and stopped."
+                if args.infra
+                else " MySQL and Redis remain available."
+            )
+        )
         return
     if args.build:
         for folder, command in [

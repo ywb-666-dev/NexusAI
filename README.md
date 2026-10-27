@@ -23,7 +23,7 @@ flowchart LR
 ```
 
 - 前端：中文科技感工作台、深浅主题、订阅编辑、内容分页搜索、任务监控、审批和推送记录。
-- 数据源中心：217 个中英文 RSS/Atom 频道，分类搜索、健康检测、文章预览、批量加入订阅和 OPML 导出。实测结果及维护方法见 [数据源说明](docs/SOURCES.md)。
+- 数据源中心：348 个中英文来源、233 个域名，包含 305 个 RSS/Atom 频道和 43 个 API/JSON Feed（其中 40 个 GitHub 项目发布频道）。支持分类与类型筛选、健康检测、网站订阅源发现、批量加入订阅，以及 OPML/JSON 导出。实测结果及维护方法见 [数据源说明](docs/SOURCES.md)。
 - 质量与试采：来源自动巡检、失败退避和历史成功率；正文质量标记、验证页/导航页拦截；订阅保存前可只读试采，查看关键词匹配与可读样本。
 - 自动来源：新建订阅填写关注主题即可，系统从来源库匹配健康来源；支持中文优先、排除系统来源、保留额外来源，采集前自动刷新。
 - 个人情报简报：跨订阅汇总近 24 小时／7 天的语义推荐，合并事件、展示原文引文与关注建议、保存历史及导出 Markdown；可选每日北京时间 08:00 自动整理与机器人推送。见 [简报说明](docs/BRIEFINGS.md)。
@@ -80,11 +80,13 @@ python scripts/create_admin.py --username admin
 ```powershell
 python scripts/dev.py status
 python scripts/dev.py stop
+# 工作结束时，同时关闭项目自有的 MySQL、Redis，释放内存：
+python scripts/dev.py stop --infra
 # 修改代码后重新打包时先停服务，避免 Windows JAR 文件锁：
 python scripts/dev.py start --build
 ```
 
-日志保存在 `.runtime/python.log`、`java.log`、`gateway.log`、`frontend.log`。停止应用不会删除数据库，也不会停止 MySQL 或 Redis。
+日志保存在 `.runtime/python.log`、`java.log`、`gateway.log`、`frontend.log`。普通 stop 只关闭应用；stop --infra 会核验项目数据目录并正常关闭本项目自有的 MySQL、Redis，不删除数据或关闭其他项目服务。下次启动前先运行本地依赖启动脚本。
 
 ## 开始订阅
 

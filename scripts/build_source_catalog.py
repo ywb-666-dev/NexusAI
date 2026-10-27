@@ -7,6 +7,7 @@ import hashlib
 import json
 from pathlib import Path
 from urllib.parse import urlparse
+from source_extensions import records as extension_records
 
 ROOT = Path(__file__).resolve().parents[1]
 CATEGORIES = {
@@ -277,25 +278,29 @@ def main():
             )
         )
     seen = set()
+    records.extend(extension_records(CATEGORIES))
     for row in records:
         assert row["url"] not in seen, row["url"]
         seen.add(row["url"])
         row.update(
             id=hashlib.sha256(row["url"].encode()).hexdigest()[:16],
-            platform="rss",
+            platform=row.get("platform", "rss"),
             homepage=f'https://{urlparse(row["url"]).hostname}',
-            tags=[CATEGORIES[row["category"]]],
-            attribution=(
-                "publisher feed candidate"
-                if row["kind"] == "publisher"
-                else "https://info.arxiv.org/help/rss.html"
+            tags=row.get("tags", [CATEGORIES[row["category"]]]),
+            attribution=row.get(
+                "attribution",
+                (
+                    "https://info.arxiv.org/help/rss.html"
+                    if row["kind"] == "academic"
+                    else row["url"]
+                ),
             ),
         )
     path = ROOT / "nexus-python/app/data/sources.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(
-            {"version": 1, "categories": CATEGORIES, "sources": records},
+            {"version": 2, "categories": CATEGORIES, "sources": records},
             ensure_ascii=False,
             indent=2,
         )

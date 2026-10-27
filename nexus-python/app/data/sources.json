@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "categories": {
     "ai": "人工智能",
     "tech": "科技数码",
@@ -25,7 +25,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://sspai.com/feed"
     },
     {
       "name": "IT之家",
@@ -40,7 +40,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.ithome.com/rss/"
     },
     {
       "name": "Solidot",
@@ -55,7 +55,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.solidot.org/index.rss"
     },
     {
       "name": "月光博客",
@@ -70,7 +70,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.williamlong.info/rss.xml"
     },
     {
       "name": "小众软件",
@@ -85,7 +85,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.appinn.com/feed/"
     },
     {
       "name": "异次元软件世界",
@@ -100,7 +100,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.iplaysoft.com/feed"
     },
     {
       "name": "爱范儿",
@@ -115,7 +115,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.ifanr.com/feed"
     },
     {
       "name": "雷峰网",
@@ -130,7 +130,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.leiphone.com/feed"
     },
     {
       "name": "机器之心",
@@ -145,7 +145,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.jiqizhixin.com/rss"
     },
     {
       "name": "量子位",
@@ -160,7 +160,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.qbitai.com/feed"
     },
     {
       "name": "InfoQ 中文",
@@ -175,7 +175,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.infoq.cn/feed"
     },
     {
       "name": "阮一峰的网络日志",
@@ -190,7 +190,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.ruanyifeng.com/blog/atom.xml"
     },
     {
       "name": "酷壳",
@@ -205,7 +205,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://coolshell.cn/feed"
     },
     {
       "name": "廖雪峰",
@@ -220,7 +220,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.liaoxuefeng.com/feed"
     },
     {
       "name": "美团技术团队",
@@ -235,7 +235,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://tech.meituan.com/feed/"
     },
     {
       "name": "阿里云开发者",
@@ -250,7 +250,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://developer.aliyun.com/feed"
     },
     {
       "name": "腾讯技术工程",
@@ -265,7 +265,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://cloud.tencent.com/developer/column/100002/rss"
     },
     {
       "name": "V2EX 最新主题",
@@ -280,7 +280,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.v2ex.com/index.xml"
     },
     {
       "name": "博客园首页",
@@ -295,7 +295,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.cnblogs.com/rss"
     },
     {
       "name": "开源中国资讯",
@@ -310,7 +310,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.oschina.net/news/rss"
     },
     {
       "name": "Linux 中国",
@@ -325,7 +325,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://linux.cn/rss.xml"
     },
     {
       "name": "鸟窝",
@@ -340,7 +340,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://colobu.com/atom.xml"
     },
     {
       "name": "面向信仰编程",
@@ -355,7 +355,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://draveness.me/feed.xml"
     },
     {
       "name": "煎鱼的清汤锅",
@@ -370,7 +370,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://eddycjy.com/index.xml"
     },
     {
       "name": "冰霜之地",
@@ -385,7 +385,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://halfrost.com/rss/"
     },
     {
       "name": "云风的 BLOG",
@@ -400,7 +400,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.codingnow.com/atom.xml"
     },
     {
       "name": "王垠",
@@ -415,7 +415,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.yinwang.org/atom.xml"
     },
     {
       "name": "科学空间",
@@ -430,7 +430,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://spaces.ac.cn/feed"
     },
     {
       "name": "FreeBuf",
@@ -445,7 +445,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.freebuf.com/feed"
     },
     {
       "name": "安全客",
@@ -460,7 +460,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://api.anquanke.com/data/v1/rss"
     },
     {
       "name": "Seebug Paper",
@@ -475,7 +475,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://paper.seebug.org/rss/"
     },
     {
       "name": "知道创宇 404",
@@ -490,7 +490,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.knownsec.com/feed/"
     },
     {
       "name": "嘶吼",
@@ -505,7 +505,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.4hou.com/feed"
     },
     {
       "name": "奇客安全",
@@ -520,7 +520,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.solidot.org/index.rss?tid=15"
     },
     {
       "name": "36氪",
@@ -535,7 +535,7 @@
       "tags": [
         "商业财经"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://36kr.com/feed"
     },
     {
       "name": "虎嗅",
@@ -550,7 +550,7 @@
       "tags": [
         "商业财经"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.huxiu.com/rss/0.xml"
     },
     {
       "name": "钛媒体",
@@ -565,7 +565,7 @@
       "tags": [
         "商业财经"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.tmtpost.com/rss.xml"
     },
     {
       "name": "FT中文网",
@@ -580,7 +580,7 @@
       "tags": [
         "商业财经"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.ftchinese.com/rss/feed"
     },
     {
       "name": "端传媒",
@@ -595,7 +595,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://theinitium.com/feed/"
     },
     {
       "name": "联合早报",
@@ -610,7 +610,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.zaobao.com.sg/rss/realtime/china"
     },
     {
       "name": "BBC 中文",
@@ -625,7 +625,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://feeds.bbci.co.uk/zhongwen/simp/rss.xml"
     },
     {
       "name": "纽约时报中文网",
@@ -640,7 +640,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://cn.nytimes.com/rss/"
     },
     {
       "name": "德国之声中文",
@@ -655,7 +655,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://rss.dw.com/rdf/rss-chi-all"
     },
     {
       "name": "联合国新闻中文",
@@ -670,7 +670,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://news.un.org/feed/subscribe/zh/news/all/rss.xml"
     },
     {
       "name": "维基新闻中文",
@@ -685,7 +685,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://zh.wikinews.org/w/index.php?title=Special:NewsFeed&feed=atom&categories=Published&notcategories=No_publish"
     },
     {
       "name": "机核",
@@ -700,7 +700,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.gcores.com/rss"
     },
     {
       "name": "触乐",
@@ -715,7 +715,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.chuapp.com/feed"
     },
     {
       "name": "游研社",
@@ -730,7 +730,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.yystv.cn/rss/feed"
     },
     {
       "name": "indienova",
@@ -745,7 +745,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://indienova.com/feed"
     },
     {
       "name": "博海拾贝",
@@ -760,7 +760,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.bohaishibei.com/feed/"
     },
     {
       "name": "ONE 一个",
@@ -775,7 +775,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://wufazhuce.com/feed"
     },
     {
       "name": "人文与社会",
@@ -790,7 +790,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://wen.org.cn/rss.xml"
     },
     {
       "name": "优设",
@@ -805,7 +805,7 @@
       "tags": [
         "设计与产品"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.uisdc.com/feed"
     },
     {
       "name": "人人都是产品经理",
@@ -820,7 +820,7 @@
       "tags": [
         "设计与产品"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.woshipm.com/feed"
     },
     {
       "name": "Hacker News 热门",
@@ -835,7 +835,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://hnrss.org/frontpage"
     },
     {
       "name": "Hacker News 最新",
@@ -850,7 +850,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://hnrss.org/newest"
     },
     {
       "name": "TechCrunch",
@@ -865,7 +865,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://techcrunch.com/feed/"
     },
     {
       "name": "The Verge",
@@ -880,7 +880,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.theverge.com/rss/index.xml"
     },
     {
       "name": "Ars Technica",
@@ -895,7 +895,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://feeds.arstechnica.com/arstechnica/index"
     },
     {
       "name": "Wired",
@@ -910,7 +910,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.wired.com/feed/rss"
     },
     {
       "name": "Engadget",
@@ -925,7 +925,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.engadget.com/rss.xml"
     },
     {
       "name": "MIT Technology Review",
@@ -940,7 +940,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.technologyreview.com/feed/"
     },
     {
       "name": "IEEE Spectrum",
@@ -955,7 +955,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://spectrum.ieee.org/feeds/feed.rss"
     },
     {
       "name": "404 Media",
@@ -970,7 +970,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.404media.co/rss/"
     },
     {
       "name": "OpenAI News",
@@ -985,7 +985,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://openai.com/news/rss.xml"
     },
     {
       "name": "Google AI Blog",
@@ -1000,7 +1000,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.google/technology/ai/rss/"
     },
     {
       "name": "Google Research",
@@ -1015,7 +1015,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://research.google/blog/rss/"
     },
     {
       "name": "Google DeepMind",
@@ -1030,7 +1030,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://deepmind.google/blog/rss.xml"
     },
     {
       "name": "Hugging Face Blog",
@@ -1045,7 +1045,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://huggingface.co/blog/feed.xml"
     },
     {
       "name": "BAIR Berkeley AI",
@@ -1060,7 +1060,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://bair.berkeley.edu/blog/feed.xml"
     },
     {
       "name": "The Gradient",
@@ -1075,7 +1075,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://thegradient.pub/rss/"
     },
     {
       "name": "Simon Willison",
@@ -1090,7 +1090,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://simonwillison.net/atom/everything/"
     },
     {
       "name": "Lilian Weng",
@@ -1105,7 +1105,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://lilianweng.github.io/index.xml"
     },
     {
       "name": "Sebastian Raschka",
@@ -1120,7 +1120,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://magazine.sebastianraschka.com/feed"
     },
     {
       "name": "Chip Huyen",
@@ -1135,7 +1135,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://huyenchip.com/feed.xml"
     },
     {
       "name": "Interconnects",
@@ -1150,7 +1150,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.interconnects.ai/feed"
     },
     {
       "name": "Latent Space",
@@ -1165,7 +1165,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.latent.space/feed"
     },
     {
       "name": "NVIDIA Technical Blog",
@@ -1180,7 +1180,7 @@
       "tags": [
         "人工智能"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://developer.nvidia.com/blog/feed/"
     },
     {
       "name": "GitHub Blog",
@@ -1195,7 +1195,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://github.blog/feed/"
     },
     {
       "name": "GitLab Blog",
@@ -1210,7 +1210,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://about.gitlab.com/atom.xml"
     },
     {
       "name": "Stack Overflow Blog",
@@ -1225,7 +1225,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://stackoverflow.blog/feed/"
     },
     {
       "name": "Martin Fowler",
@@ -1240,7 +1240,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://martinfowler.com/feed.atom"
     },
     {
       "name": "Julia Evans",
@@ -1255,7 +1255,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://jvns.ca/atom.xml"
     },
     {
       "name": "Brendan Gregg",
@@ -1270,7 +1270,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.brendangregg.com/blog/rss.xml"
     },
     {
       "name": "Cloudflare Blog",
@@ -1285,7 +1285,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.cloudflare.com/rss/"
     },
     {
       "name": "Netflix Tech Blog",
@@ -1300,7 +1300,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://netflixtechblog.com/feed"
     },
     {
       "name": "Uber Engineering",
@@ -1315,7 +1315,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.uber.com/blog/engineering/rss/"
     },
     {
       "name": "AWS Architecture",
@@ -1330,7 +1330,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://aws.amazon.com/blogs/architecture/feed/"
     },
     {
       "name": "AWS News",
@@ -1345,7 +1345,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://aws.amazon.com/blogs/aws/feed/"
     },
     {
       "name": "Google Cloud Blog",
@@ -1360,7 +1360,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://cloudblog.withgoogle.com/rss/"
     },
     {
       "name": "Microsoft Developer Blogs",
@@ -1375,7 +1375,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://devblogs.microsoft.com/feed/"
     },
     {
       "name": "Meta Engineering",
@@ -1390,7 +1390,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://engineering.fb.com/feed/"
     },
     {
       "name": "Stripe Engineering",
@@ -1405,7 +1405,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://stripe.com/blog/engineering/feed.rss"
     },
     {
       "name": "Discord Engineering",
@@ -1420,7 +1420,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://discord.com/blog/rss.xml"
     },
     {
       "name": "Kubernetes Blog",
@@ -1435,7 +1435,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://kubernetes.io/feed.xml"
     },
     {
       "name": "Docker Blog",
@@ -1450,7 +1450,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.docker.com/blog/feed/"
     },
     {
       "name": "Rust Blog",
@@ -1465,7 +1465,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.rust-lang.org/feed.xml"
     },
     {
       "name": "Go Blog",
@@ -1480,7 +1480,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://go.dev/blog/feed.atom"
     },
     {
       "name": "Python Insider",
@@ -1495,7 +1495,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.python.org/feeds/posts/default"
     },
     {
       "name": "Real Python",
@@ -1510,7 +1510,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://realpython.com/atom.xml"
     },
     {
       "name": "PyPI Updates",
@@ -1525,7 +1525,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://pypi.org/rss/updates.xml"
     },
     {
       "name": "Django Weblog",
@@ -1540,7 +1540,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.djangoproject.com/rss/weblog/"
     },
     {
       "name": "Node.js Blog",
@@ -1555,7 +1555,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://nodejs.org/en/feed/blog.xml"
     },
     {
       "name": "React Blog",
@@ -1570,7 +1570,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://react.dev/rss.xml"
     },
     {
       "name": "Vue Blog",
@@ -1585,7 +1585,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.vuejs.org/feed.rss"
     },
     {
       "name": "Vite Blog",
@@ -1600,7 +1600,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://vite.dev/blog.rss"
     },
     {
       "name": "TypeScript Blog",
@@ -1615,7 +1615,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://devblogs.microsoft.com/typescript/feed/"
     },
     {
       "name": ".NET Blog",
@@ -1630,7 +1630,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://devblogs.microsoft.com/dotnet/feed/"
     },
     {
       "name": "Spring Blog",
@@ -1645,7 +1645,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://spring.io/blog.atom"
     },
     {
       "name": "JetBrains Blog",
@@ -1660,7 +1660,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.jetbrains.com/feed/"
     },
     {
       "name": "PostgreSQL News",
@@ -1675,7 +1675,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.postgresql.org/news.rss"
     },
     {
       "name": "Redis Blog",
@@ -1690,7 +1690,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://redis.io/blog/feed/"
     },
     {
       "name": "Elastic Blog",
@@ -1705,7 +1705,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.elastic.co/blog/feed"
     },
     {
       "name": "MongoDB Blog",
@@ -1720,7 +1720,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.mongodb.com/blog/rss"
     },
     {
       "name": "Mozilla Hacks",
@@ -1735,7 +1735,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://hacks.mozilla.org/feed/"
     },
     {
       "name": "WebKit Blog",
@@ -1750,7 +1750,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://webkit.org/feed/"
     },
     {
       "name": "Chromium Blog",
@@ -1765,7 +1765,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.chromium.org/feeds/posts/default"
     },
     {
       "name": "web.dev",
@@ -1780,7 +1780,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://web.dev/feed.xml"
     },
     {
       "name": "MDN Blog",
@@ -1795,7 +1795,7 @@
       "tags": [
         "编程与开源"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://developer.mozilla.org/en-US/blog/rss.xml"
     },
     {
       "name": "Krebs on Security",
@@ -1810,7 +1810,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://krebsonsecurity.com/feed/"
     },
     {
       "name": "Schneier on Security",
@@ -1825,7 +1825,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.schneier.com/feed/atom/"
     },
     {
       "name": "The Hacker News",
@@ -1840,7 +1840,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://feeds.feedburner.com/TheHackersNews"
     },
     {
       "name": "BleepingComputer",
@@ -1855,7 +1855,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.bleepingcomputer.com/feed/"
     },
     {
       "name": "SANS Internet Storm Center",
@@ -1870,7 +1870,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://isc.sans.edu/rssfeed.xml"
     },
     {
       "name": "Google Project Zero",
@@ -1885,7 +1885,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://googleprojectzero.blogspot.com/feeds/posts/default"
     },
     {
       "name": "Google Security Blog",
@@ -1900,7 +1900,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://security.googleblog.com/feeds/posts/default"
     },
     {
       "name": "Microsoft Security Blog",
@@ -1915,7 +1915,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.microsoft.com/en-us/security/blog/feed/"
     },
     {
       "name": "Cisco Talos",
@@ -1930,7 +1930,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.talosintelligence.com/rss/"
     },
     {
       "name": "Trail of Bits",
@@ -1945,7 +1945,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://blog.trailofbits.com/feed/"
     },
     {
       "name": "PortSwigger Research",
@@ -1960,7 +1960,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://portswigger.net/research/rss"
     },
     {
       "name": "CISA Alerts",
@@ -1975,7 +1975,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.cisa.gov/cybersecurity-advisories/all.xml"
     },
     {
       "name": "US-CERT / CISA News",
@@ -1990,7 +1990,7 @@
       "tags": [
         "网络安全"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.cisa.gov/news.xml"
     },
     {
       "name": "Nature",
@@ -2005,7 +2005,7 @@
       "tags": [
         "科学与学术"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.nature.com/nature.rss"
     },
     {
       "name": "Science",
@@ -2020,7 +2020,7 @@
       "tags": [
         "科学与学术"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.science.org/rss/news_current.xml"
     },
     {
       "name": "ScienceDaily",
@@ -2035,7 +2035,7 @@
       "tags": [
         "科学与学术"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.sciencedaily.com/rss/all.xml"
     },
     {
       "name": "Phys.org",
@@ -2050,7 +2050,7 @@
       "tags": [
         "科学与学术"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://phys.org/rss-feed/"
     },
     {
       "name": "Quanta Magazine",
@@ -2065,7 +2065,7 @@
       "tags": [
         "科学与学术"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.quantamagazine.org/feed/"
     },
     {
       "name": "NASA News",
@@ -2080,7 +2080,7 @@
       "tags": [
         "科学与学术"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.nasa.gov/news-release/feed/"
     },
     {
       "name": "ESA News",
@@ -2095,7 +2095,7 @@
       "tags": [
         "科学与学术"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.esa.int/rssfeed/Our_Activities/Space_Science"
     },
     {
       "name": "PLOS ONE",
@@ -2110,7 +2110,7 @@
       "tags": [
         "科学与学术"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://journals.plos.org/plosone/feed/atom"
     },
     {
       "name": "eLife",
@@ -2125,7 +2125,7 @@
       "tags": [
         "科学与学术"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://elifesciences.org/rss/recent.xml"
     },
     {
       "name": "MIT News",
@@ -2140,7 +2140,7 @@
       "tags": [
         "科学与学术"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://news.mit.edu/rss/feed"
     },
     {
       "name": "BBC World",
@@ -2155,7 +2155,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://feeds.bbci.co.uk/news/world/rss.xml"
     },
     {
       "name": "BBC Technology",
@@ -2170,7 +2170,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://feeds.bbci.co.uk/news/technology/rss.xml"
     },
     {
       "name": "The Guardian World",
@@ -2185,7 +2185,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.theguardian.com/world/rss"
     },
     {
       "name": "The Guardian Technology",
@@ -2200,7 +2200,7 @@
       "tags": [
         "科技数码"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.theguardian.com/technology/rss"
     },
     {
       "name": "NPR News",
@@ -2215,7 +2215,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://feeds.npr.org/1001/rss.xml"
     },
     {
       "name": "Al Jazeera",
@@ -2230,7 +2230,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.aljazeera.com/xml/rss/all.xml"
     },
     {
       "name": "UN News",
@@ -2245,7 +2245,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://news.un.org/feed/subscribe/en/news/all/rss.xml"
     },
     {
       "name": "Deutsche Welle",
@@ -2260,7 +2260,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://rss.dw.com/rdf/rss-en-all"
     },
     {
       "name": "AP Top News",
@@ -2275,7 +2275,7 @@
       "tags": [
         "新闻资讯"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://apnews.com/index.rss"
     },
     {
       "name": "CNBC Top News",
@@ -2290,7 +2290,7 @@
       "tags": [
         "商业财经"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.cnbc.com/id/100003114/device/rss/rss.html"
     },
     {
       "name": "CNBC Finance",
@@ -2305,7 +2305,7 @@
       "tags": [
         "商业财经"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.cnbc.com/id/10000664/device/rss/rss.html"
     },
     {
       "name": "Financial Times",
@@ -2320,7 +2320,7 @@
       "tags": [
         "商业财经"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.ft.com/rss/home"
     },
     {
       "name": "The Economist Finance",
@@ -2335,7 +2335,7 @@
       "tags": [
         "商业财经"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.economist.com/finance-and-economics/rss.xml"
     },
     {
       "name": "Y Combinator Blog",
@@ -2350,7 +2350,7 @@
       "tags": [
         "商业财经"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.ycombinator.com/blog/rss/"
     },
     {
       "name": "Paul Graham Essays",
@@ -2365,7 +2365,7 @@
       "tags": [
         "商业财经"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.aaronsw.com/2002/feeds/pgessays.rss"
     },
     {
       "name": "Product Hunt",
@@ -2380,7 +2380,7 @@
       "tags": [
         "设计与产品"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.producthunt.com/feed"
     },
     {
       "name": "Smashing Magazine",
@@ -2395,7 +2395,7 @@
       "tags": [
         "设计与产品"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.smashingmagazine.com/feed/"
     },
     {
       "name": "A List Apart",
@@ -2410,7 +2410,7 @@
       "tags": [
         "设计与产品"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://alistapart.com/main/feed/"
     },
     {
       "name": "Nielsen Norman Group",
@@ -2425,7 +2425,7 @@
       "tags": [
         "设计与产品"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.nngroup.com/feed/rss/"
     },
     {
       "name": "UX Collective",
@@ -2440,7 +2440,7 @@
       "tags": [
         "设计与产品"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://uxdesign.cc/feed"
     },
     {
       "name": "Figma Blog",
@@ -2455,7 +2455,7 @@
       "tags": [
         "设计与产品"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.figma.com/blog/feed/atom.xml"
     },
     {
       "name": "CSS-Tricks",
@@ -2470,7 +2470,7 @@
       "tags": [
         "设计与产品"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://css-tricks.com/feed/"
     },
     {
       "name": "Aeon",
@@ -2485,7 +2485,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://aeon.co/feed.rss"
     },
     {
       "name": "The Marginalian",
@@ -2500,7 +2500,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.themarginalian.org/feed/"
     },
     {
       "name": "Longreads",
@@ -2515,7 +2515,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://longreads.com/feed/"
     },
     {
       "name": "Atlas Obscura",
@@ -2530,7 +2530,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.atlasobscura.com/feeds/latest"
     },
     {
       "name": "Rock Paper Shotgun",
@@ -2545,7 +2545,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.rockpapershotgun.com/feed"
     },
     {
       "name": "PC Gamer",
@@ -2560,7 +2560,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.pcgamer.com/rss/"
     },
     {
       "name": "Eurogamer",
@@ -2575,7 +2575,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.eurogamer.net/feed"
     },
     {
       "name": "Polygon",
@@ -2590,7 +2590,7 @@
       "tags": [
         "生活与文化"
       ],
-      "attribution": "publisher feed candidate"
+      "attribution": "https://www.polygon.com/rss/index.xml"
     },
     {
       "name": "arXiv · 人工智能",
@@ -3266,6 +3266,2192 @@
         "科学与学术"
       ],
       "attribution": "https://info.arxiv.org/help/rss.html"
+    },
+    {
+      "name": "晚晴幽草轩",
+      "url": "https://www.jeffjade.com/atom.xml",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "eccf69b93e7e19ff",
+      "homepage": "https://www.jeffjade.com",
+      "attribution": "https://www.jeffjade.com/atom.xml"
+    },
+    {
+      "name": "张鑫旭",
+      "url": "https://www.zhangxinxu.com/wordpress/feed/",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "d29f292a85bb5f74",
+      "homepage": "https://www.zhangxinxu.com",
+      "attribution": "https://www.zhangxinxu.com/wordpress/feed/"
+    },
+    {
+      "name": "张乃欣",
+      "url": "https://nexmoe.com/atom.xml",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "bdc32d9e3d1ceacb",
+      "homepage": "https://nexmoe.com",
+      "attribution": "https://nexmoe.com/atom.xml"
+    },
+    {
+      "name": "技术小黑屋",
+      "url": "https://droidyue.com/atom.xml",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "cacb46e391a0f42e",
+      "homepage": "https://droidyue.com",
+      "attribution": "https://droidyue.com/atom.xml"
+    },
+    {
+      "name": "掘金翻译计划",
+      "url": "https://gold.xitu.io/rss",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "abcea921327ba480",
+      "homepage": "https://gold.xitu.io",
+      "attribution": "https://gold.xitu.io/rss"
+    },
+    {
+      "name": "DIYgod",
+      "url": "https://diygod.me/atom.xml",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "ca3610ee701db5fb",
+      "homepage": "https://diygod.me",
+      "attribution": "https://diygod.me/atom.xml"
+    },
+    {
+      "name": "Anthony Fu",
+      "url": "https://antfu.me/feed.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "d90a321ddd920e42",
+      "homepage": "https://antfu.me",
+      "attribution": "https://antfu.me/feed.xml"
+    },
+    {
+      "name": "大前端",
+      "url": "https://www.daqianduan.com/feed",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "576d71c74fc9629f",
+      "homepage": "https://www.daqianduan.com",
+      "attribution": "https://www.daqianduan.com/feed"
+    },
+    {
+      "name": "程序员的喵",
+      "url": "https://catcoding.me/index.xml",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "f43807b61f1b75ad",
+      "homepage": "https://catcoding.me",
+      "attribution": "https://catcoding.me/index.xml"
+    },
+    {
+      "name": "HelloGitHub",
+      "url": "https://hellogithub.com/rss",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "b48b9777d720e9c9",
+      "homepage": "https://hellogithub.com",
+      "attribution": "https://hellogithub.com/rss"
+    },
+    {
+      "name": "小胡同学",
+      "url": "https://www.xiaohuz.com/atom.xml",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "70650a2c1f033383",
+      "homepage": "https://www.xiaohuz.com",
+      "attribution": "https://www.xiaohuz.com/atom.xml"
+    },
+    {
+      "name": "宝玉的分享",
+      "url": "https://baoyu.io/feed.xml",
+      "language": "zh",
+      "category": "ai",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "人工智能"
+      ],
+      "description": "人工智能领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "59e01500e7843766",
+      "homepage": "https://baoyu.io",
+      "attribution": "https://baoyu.io/feed.xml"
+    },
+    {
+      "name": "李继刚",
+      "url": "https://lijigang.com/index.xml",
+      "language": "zh",
+      "category": "ai",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "人工智能"
+      ],
+      "description": "人工智能领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "d4e782c475e71189",
+      "homepage": "https://lijigang.com",
+      "attribution": "https://lijigang.com/index.xml"
+    },
+    {
+      "name": "数字尾巴",
+      "url": "https://www.dgtle.com/rss/dgtle.xml",
+      "language": "zh",
+      "category": "tech",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科技数码"
+      ],
+      "description": "科技数码领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "c0f1da3915a3cef6",
+      "homepage": "https://www.dgtle.com",
+      "attribution": "https://www.dgtle.com/rss/dgtle.xml"
+    },
+    {
+      "name": "极客公园",
+      "url": "https://www.geekpark.net/rss",
+      "language": "zh",
+      "category": "tech",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科技数码"
+      ],
+      "description": "科技数码领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "9ca1837e94d883d4",
+      "homepage": "https://www.geekpark.net",
+      "attribution": "https://www.geekpark.net/rss"
+    },
+    {
+      "name": "阮一峰每周科技爱好者周刊",
+      "url": "https://github.com/ruanyf/weekly/releases.atom",
+      "language": "zh",
+      "category": "tech",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科技数码"
+      ],
+      "description": "科技数码领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "f605dbf3e499c55b",
+      "homepage": "https://github.com",
+      "attribution": "https://github.com/ruanyf/weekly/releases.atom"
+    },
+    {
+      "name": "V2EX 技术节点",
+      "url": "https://www.v2ex.com/feed/tech.xml",
+      "language": "zh",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "27239a4fba06eed1",
+      "homepage": "https://www.v2ex.com",
+      "attribution": "https://www.v2ex.com/feed/tech.xml"
+    },
+    {
+      "name": "V2EX 创意节点",
+      "url": "https://www.v2ex.com/feed/create.xml",
+      "language": "zh",
+      "category": "design",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "设计与产品"
+      ],
+      "description": "设计与产品领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "61b9a15f73f9a647",
+      "homepage": "https://www.v2ex.com",
+      "attribution": "https://www.v2ex.com/feed/create.xml"
+    },
+    {
+      "name": "经济学人中国",
+      "url": "https://www.economist.com/china/rss.xml",
+      "language": "en",
+      "category": "business",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "商业财经"
+      ],
+      "description": "商业财经领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "385a189199c7872e",
+      "homepage": "https://www.economist.com",
+      "attribution": "https://www.economist.com/china/rss.xml"
+    },
+    {
+      "name": "IMF Blog",
+      "url": "https://www.imf.org/en/Blogs/rss",
+      "language": "en",
+      "category": "business",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "商业财经"
+      ],
+      "description": "商业财经领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "b46790a669c22cee",
+      "homepage": "https://www.imf.org",
+      "attribution": "https://www.imf.org/en/Blogs/rss"
+    },
+    {
+      "name": "Federal Reserve Press Releases",
+      "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+      "language": "en",
+      "category": "business",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "商业财经"
+      ],
+      "description": "商业财经领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "97656cefc7b0673b",
+      "homepage": "https://www.federalreserve.gov",
+      "attribution": "https://www.federalreserve.gov/feeds/press_all.xml"
+    },
+    {
+      "name": "Federal Reserve Research",
+      "url": "https://www.federalreserve.gov/feeds/feds.xml",
+      "language": "en",
+      "category": "business",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "商业财经"
+      ],
+      "description": "商业财经领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "6b4f3c67e078d91b",
+      "homepage": "https://www.federalreserve.gov",
+      "attribution": "https://www.federalreserve.gov/feeds/feds.xml"
+    },
+    {
+      "name": "ECB Press Releases",
+      "url": "https://www.ecb.europa.eu/rss/press.html",
+      "language": "en",
+      "category": "business",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "商业财经"
+      ],
+      "description": "商业财经领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "991c113079223ac6",
+      "homepage": "https://www.ecb.europa.eu",
+      "attribution": "https://www.ecb.europa.eu/rss/press.html"
+    },
+    {
+      "name": "ECB Blog",
+      "url": "https://www.ecb.europa.eu/rss/blog.html",
+      "language": "en",
+      "category": "business",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "商业财经"
+      ],
+      "description": "商业财经领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "a87cd8b112c53ad8",
+      "homepage": "https://www.ecb.europa.eu",
+      "attribution": "https://www.ecb.europa.eu/rss/blog.html"
+    },
+    {
+      "name": "Bank of England News",
+      "url": "https://www.bankofengland.co.uk/rss/news",
+      "language": "en",
+      "category": "business",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "商业财经"
+      ],
+      "description": "商业财经领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "4feb37261159f283",
+      "homepage": "https://www.bankofengland.co.uk",
+      "attribution": "https://www.bankofengland.co.uk/rss/news"
+    },
+    {
+      "name": "BIS Press Releases",
+      "url": "https://www.bis.org/doclist/all_pressrels.rss",
+      "language": "en",
+      "category": "business",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "商业财经"
+      ],
+      "description": "商业财经领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "8d1fbea6cace72bc",
+      "homepage": "https://www.bis.org",
+      "attribution": "https://www.bis.org/doclist/all_pressrels.rss"
+    },
+    {
+      "name": "Our World in Data",
+      "url": "https://ourworldindata.org/atom.xml",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "cb12fe59d1dc70ef",
+      "homepage": "https://ourworldindata.org",
+      "attribution": "https://ourworldindata.org/atom.xml"
+    },
+    {
+      "name": "Science News",
+      "url": "https://www.sciencenews.org/feed",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "f8262b7a9b3fa807",
+      "homepage": "https://www.sciencenews.org",
+      "attribution": "https://www.sciencenews.org/feed"
+    },
+    {
+      "name": "Scientific American",
+      "url": "https://www.scientificamerican.com/platform/syndication/rss/",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "cbc0fc8a6abbb7f8",
+      "homepage": "https://www.scientificamerican.com",
+      "attribution": "https://www.scientificamerican.com/platform/syndication/rss/"
+    },
+    {
+      "name": "Astronomy Magazine",
+      "url": "https://www.astronomy.com/feed/",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "d82a07be14269155",
+      "homepage": "https://www.astronomy.com",
+      "attribution": "https://www.astronomy.com/feed/"
+    },
+    {
+      "name": "NOAA Research",
+      "url": "https://research.noaa.gov/feed/",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "3f966078f0e117f6",
+      "homepage": "https://research.noaa.gov",
+      "attribution": "https://research.noaa.gov/feed/"
+    },
+    {
+      "name": "The Conversation Science",
+      "url": "https://theconversation.com/global/topics/science-3/articles.atom",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "df6cb00fcad55a3c",
+      "homepage": "https://theconversation.com",
+      "attribution": "https://theconversation.com/global/topics/science-3/articles.atom"
+    },
+    {
+      "name": "Frontiers Neuroscience",
+      "url": "https://www.frontiersin.org/journals/neuroscience/rss",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "75eaeab3556885c6",
+      "homepage": "https://www.frontiersin.org",
+      "attribution": "https://www.frontiersin.org/journals/neuroscience/rss"
+    },
+    {
+      "name": "PLOS Biology",
+      "url": "https://journals.plos.org/plosbiology/feed/atom",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "daacaa98b46e57dc",
+      "homepage": "https://journals.plos.org",
+      "attribution": "https://journals.plos.org/plosbiology/feed/atom"
+    },
+    {
+      "name": "PLOS Computational Biology",
+      "url": "https://journals.plos.org/ploscompbiol/feed/atom",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "ebacf78ea03bc6fe",
+      "homepage": "https://journals.plos.org",
+      "attribution": "https://journals.plos.org/ploscompbiol/feed/atom"
+    },
+    {
+      "name": "LWN.net",
+      "url": "https://lwn.net/headlines/rss",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "fcd2576f521b6d40",
+      "homepage": "https://lwn.net",
+      "attribution": "https://lwn.net/headlines/rss"
+    },
+    {
+      "name": "Linux Kernel News",
+      "url": "https://www.kernel.org/feeds/kdist.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "f9c68b543bb81e33",
+      "homepage": "https://www.kernel.org",
+      "attribution": "https://www.kernel.org/feeds/kdist.xml"
+    },
+    {
+      "name": "Debian News",
+      "url": "https://www.debian.org/News/news",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "d62e895c572f3e0a",
+      "homepage": "https://www.debian.org",
+      "attribution": "https://www.debian.org/News/news"
+    },
+    {
+      "name": "Ubuntu Blog",
+      "url": "https://ubuntu.com/blog/feed",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "53200d8347c03786",
+      "homepage": "https://ubuntu.com",
+      "attribution": "https://ubuntu.com/blog/feed"
+    },
+    {
+      "name": "Fedora Magazine",
+      "url": "https://fedoramagazine.org/feed/",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "0007c1668f8f9877",
+      "homepage": "https://fedoramagazine.org",
+      "attribution": "https://fedoramagazine.org/feed/"
+    },
+    {
+      "name": "Arch Linux News",
+      "url": "https://archlinux.org/feeds/news/",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "0f4cfa4e85961671",
+      "homepage": "https://archlinux.org",
+      "attribution": "https://archlinux.org/feeds/news/"
+    },
+    {
+      "name": "FreeBSD News",
+      "url": "https://www.freebsd.org/news/feed.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "c3d69309450a5d15",
+      "homepage": "https://www.freebsd.org",
+      "attribution": "https://www.freebsd.org/news/feed.xml"
+    },
+    {
+      "name": "DuckDB Blog",
+      "url": "https://duckdb.org/feed.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "a6e5614cfda0c605",
+      "homepage": "https://duckdb.org",
+      "attribution": "https://duckdb.org/feed.xml"
+    },
+    {
+      "name": "Grafana Blog",
+      "url": "https://grafana.com/blog/index.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "1960f26297675dbf",
+      "homepage": "https://grafana.com",
+      "attribution": "https://grafana.com/blog/index.xml"
+    },
+    {
+      "name": "Prometheus Blog",
+      "url": "https://prometheus.io/blog/feed.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "42107491caf9dbba",
+      "homepage": "https://prometheus.io",
+      "attribution": "https://prometheus.io/blog/feed.xml"
+    },
+    {
+      "name": "OpenTelemetry Blog",
+      "url": "https://opentelemetry.io/blog/index.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "8c7aa883851b4daa",
+      "homepage": "https://opentelemetry.io",
+      "attribution": "https://opentelemetry.io/blog/index.xml"
+    },
+    {
+      "name": "HashiCorp Blog",
+      "url": "https://www.hashicorp.com/blog/feed.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "6bede9306370f8cc",
+      "homepage": "https://www.hashicorp.com",
+      "attribution": "https://www.hashicorp.com/blog/feed.xml"
+    },
+    {
+      "name": "Tailscale Blog",
+      "url": "https://tailscale.com/blog/index.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "964956a23c01a280",
+      "homepage": "https://tailscale.com",
+      "attribution": "https://tailscale.com/blog/index.xml"
+    },
+    {
+      "name": "Fly.io Blog",
+      "url": "https://fly.io/blog/feed.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "bf2903aa6942ed46",
+      "homepage": "https://fly.io",
+      "attribution": "https://fly.io/blog/feed.xml"
+    },
+    {
+      "name": "Vercel Blog",
+      "url": "https://vercel.com/atom",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "fc6274f5837165aa",
+      "homepage": "https://vercel.com",
+      "attribution": "https://vercel.com/atom"
+    },
+    {
+      "name": "Svelte Blog",
+      "url": "https://svelte.dev/blog/rss.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "1ee25c2e8decc275",
+      "homepage": "https://svelte.dev",
+      "attribution": "https://svelte.dev/blog/rss.xml"
+    },
+    {
+      "name": "Astro Blog",
+      "url": "https://astro.build/rss.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "040de47b133cbf18",
+      "homepage": "https://astro.build",
+      "attribution": "https://astro.build/rss.xml"
+    },
+    {
+      "name": "Pragmatic Engineer",
+      "url": "https://newsletter.pragmaticengineer.com/feed",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "cbf2446fe8d4ad79",
+      "homepage": "https://newsletter.pragmaticengineer.com",
+      "attribution": "https://newsletter.pragmaticengineer.com/feed"
+    },
+    {
+      "name": "Julia Language Blog",
+      "url": "https://julialang.org/feed.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "da660546b144de88",
+      "homepage": "https://julialang.org",
+      "attribution": "https://julialang.org/feed.xml"
+    },
+    {
+      "name": "LLVM Blog",
+      "url": "https://blog.llvm.org/index.xml",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "b5b7f22bd076996b",
+      "homepage": "https://blog.llvm.org",
+      "attribution": "https://blog.llvm.org/index.xml"
+    },
+    {
+      "name": "R-bloggers",
+      "url": "https://www.r-bloggers.com/feed/",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "编程与开源"
+      ],
+      "description": "编程与开源领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "02a0c20f2aa3c0da",
+      "homepage": "https://www.r-bloggers.com",
+      "attribution": "https://www.r-bloggers.com/feed/"
+    },
+    {
+      "name": "Data Elixir",
+      "url": "https://dataelixir.com/feed",
+      "language": "en",
+      "category": "ai",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "人工智能"
+      ],
+      "description": "人工智能领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "4a01f191a60a43c5",
+      "homepage": "https://dataelixir.com",
+      "attribution": "https://dataelixir.com/feed"
+    },
+    {
+      "name": "Allen AI Blog",
+      "url": "https://allenai.org/blog/rss.xml",
+      "language": "en",
+      "category": "ai",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "人工智能"
+      ],
+      "description": "人工智能领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "80d993cd64680f1f",
+      "homepage": "https://allenai.org",
+      "attribution": "https://allenai.org/blog/rss.xml"
+    },
+    {
+      "name": "Microsoft Research",
+      "url": "https://www.microsoft.com/en-us/research/feed/",
+      "language": "en",
+      "category": "ai",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "人工智能"
+      ],
+      "description": "人工智能领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "689dc3f1b092fd61",
+      "homepage": "https://www.microsoft.com",
+      "attribution": "https://www.microsoft.com/en-us/research/feed/"
+    },
+    {
+      "name": "Apple Machine Learning Research",
+      "url": "https://machinelearning.apple.com/rss.xml",
+      "language": "en",
+      "category": "ai",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "人工智能"
+      ],
+      "description": "人工智能领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "740de9a19f7a0748",
+      "homepage": "https://machinelearning.apple.com",
+      "attribution": "https://machinelearning.apple.com/rss.xml"
+    },
+    {
+      "name": "AWS Machine Learning",
+      "url": "https://aws.amazon.com/blogs/machine-learning/feed/",
+      "language": "en",
+      "category": "ai",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "人工智能"
+      ],
+      "description": "人工智能领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "50914fe5c60ced88",
+      "homepage": "https://aws.amazon.com",
+      "attribution": "https://aws.amazon.com/blogs/machine-learning/feed/"
+    },
+    {
+      "name": "GitHub Security Lab",
+      "url": "https://github.blog/security/vulnerability-research/feed/",
+      "language": "en",
+      "category": "security",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "网络安全"
+      ],
+      "description": "网络安全领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "a3c0a73d562a2c35",
+      "homepage": "https://github.blog",
+      "attribution": "https://github.blog/security/vulnerability-research/feed/"
+    },
+    {
+      "name": "SecurityWeek",
+      "url": "https://www.securityweek.com/feed/",
+      "language": "en",
+      "category": "security",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "网络安全"
+      ],
+      "description": "网络安全领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "3f95918a26d6e5c6",
+      "homepage": "https://www.securityweek.com",
+      "attribution": "https://www.securityweek.com/feed/"
+    },
+    {
+      "name": "Dark Reading",
+      "url": "https://www.darkreading.com/rss.xml",
+      "language": "en",
+      "category": "security",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "网络安全"
+      ],
+      "description": "网络安全领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "81b0f7abff977893",
+      "homepage": "https://www.darkreading.com",
+      "attribution": "https://www.darkreading.com/rss.xml"
+    },
+    {
+      "name": "EFF Deeplinks",
+      "url": "https://www.eff.org/rss/updates.xml",
+      "language": "en",
+      "category": "security",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "网络安全"
+      ],
+      "description": "网络安全领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "1face9fbd38e6da5",
+      "homepage": "https://www.eff.org",
+      "attribution": "https://www.eff.org/rss/updates.xml"
+    },
+    {
+      "name": "Mozilla Security",
+      "url": "https://blog.mozilla.org/security/feed/",
+      "language": "en",
+      "category": "security",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "网络安全"
+      ],
+      "description": "网络安全领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "282e6e0b607b4f3f",
+      "homepage": "https://blog.mozilla.org",
+      "attribution": "https://blog.mozilla.org/security/feed/"
+    },
+    {
+      "name": "Troy Hunt",
+      "url": "https://www.troyhunt.com/rss/",
+      "language": "en",
+      "category": "security",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "网络安全"
+      ],
+      "description": "网络安全领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "2ca35d6c0a43c1c1",
+      "homepage": "https://www.troyhunt.com",
+      "attribution": "https://www.troyhunt.com/rss/"
+    },
+    {
+      "name": "Socket Security",
+      "url": "https://socket.dev/blog/rss.xml",
+      "language": "en",
+      "category": "security",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "网络安全"
+      ],
+      "description": "网络安全领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "f88201abf8dcaea0",
+      "homepage": "https://socket.dev",
+      "attribution": "https://socket.dev/blog/rss.xml"
+    },
+    {
+      "name": "404 Media Podcast",
+      "url": "https://feeds.megaphone.fm/404media",
+      "language": "en",
+      "category": "life",
+      "platform": "rss",
+      "kind": "podcast",
+      "tags": [
+        "生活与文化",
+        "播客",
+        "podcast",
+        "音频节目简介"
+      ],
+      "description": "公开播客节目简介与原文链接；不下载音频、不做转录。",
+      "id": "b21324a855ff4fa2",
+      "homepage": "https://feeds.megaphone.fm",
+      "attribution": "https://feeds.megaphone.fm/404media"
+    },
+    {
+      "name": "Syntax Podcast",
+      "url": "https://feed.syntax.fm/rss",
+      "language": "en",
+      "category": "dev",
+      "platform": "rss",
+      "kind": "podcast",
+      "tags": [
+        "编程与开源",
+        "播客",
+        "podcast",
+        "音频节目简介"
+      ],
+      "description": "公开播客节目简介与原文链接；不下载音频、不做转录。",
+      "id": "2f4432eac51cc386",
+      "homepage": "https://feed.syntax.fm",
+      "attribution": "https://feed.syntax.fm/rss"
+    },
+    {
+      "name": "Design Details Podcast",
+      "url": "https://feeds.simplecast.com/4MvgQ73R",
+      "language": "en",
+      "category": "design",
+      "platform": "rss",
+      "kind": "podcast",
+      "tags": [
+        "设计与产品",
+        "播客",
+        "podcast",
+        "音频节目简介"
+      ],
+      "description": "公开播客节目简介与原文链接；不下载音频、不做转录。",
+      "id": "72a5e24749e1b2c3",
+      "homepage": "https://feeds.simplecast.com",
+      "attribution": "https://feeds.simplecast.com/4MvgQ73R"
+    },
+    {
+      "name": "99% Invisible",
+      "url": "https://feeds.simplecast.com/BqbsxVfO",
+      "language": "en",
+      "category": "design",
+      "platform": "rss",
+      "kind": "podcast",
+      "tags": [
+        "设计与产品",
+        "播客",
+        "podcast",
+        "音频节目简介"
+      ],
+      "description": "公开播客节目简介与原文链接；不下载音频、不做转录。",
+      "id": "8ef9c24e8b09ab53",
+      "homepage": "https://feeds.simplecast.com",
+      "attribution": "https://feeds.simplecast.com/BqbsxVfO"
+    },
+    {
+      "name": "NPR Planet Money",
+      "url": "https://feeds.npr.org/510289/podcast.xml",
+      "language": "en",
+      "category": "business",
+      "platform": "rss",
+      "kind": "podcast",
+      "tags": [
+        "商业财经",
+        "播客",
+        "podcast",
+        "音频节目简介"
+      ],
+      "description": "公开播客节目简介与原文链接；不下载音频、不做转录。",
+      "id": "ef15faeacb5c506d",
+      "homepage": "https://feeds.npr.org",
+      "attribution": "https://feeds.npr.org/510289/podcast.xml"
+    },
+    {
+      "name": "NPR Science Friday",
+      "url": "https://feeds.simplecast.com/y1LF_sn2",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "podcast",
+      "tags": [
+        "科学与学术",
+        "播客",
+        "podcast",
+        "音频节目简介"
+      ],
+      "description": "公开播客节目简介与原文链接；不下载音频、不做转录。",
+      "id": "66cbfbf14bfe5c8e",
+      "homepage": "https://feeds.simplecast.com",
+      "attribution": "https://feeds.simplecast.com/y1LF_sn2"
+    },
+    {
+      "name": "Web Designer Depot",
+      "url": "https://www.webdesignerdepot.com/feed/",
+      "language": "en",
+      "category": "design",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "设计与产品"
+      ],
+      "description": "设计与产品领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "097a4f8b773c2817",
+      "homepage": "https://www.webdesignerdepot.com",
+      "attribution": "https://www.webdesignerdepot.com/feed/"
+    },
+    {
+      "name": "Creative Bloq",
+      "url": "https://www.creativebloq.com/feed",
+      "language": "en",
+      "category": "design",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "设计与产品"
+      ],
+      "description": "设计与产品领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "d59f95bc2707359f",
+      "homepage": "https://www.creativebloq.com",
+      "attribution": "https://www.creativebloq.com/feed"
+    },
+    {
+      "name": "Colossal",
+      "url": "https://www.thisiscolossal.com/feed/",
+      "language": "en",
+      "category": "design",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "设计与产品"
+      ],
+      "description": "设计与产品领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "15726ece12307d03",
+      "homepage": "https://www.thisiscolossal.com",
+      "attribution": "https://www.thisiscolossal.com/feed/"
+    },
+    {
+      "name": "Open Culture",
+      "url": "https://www.openculture.com/feed",
+      "language": "en",
+      "category": "life",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "生活与文化"
+      ],
+      "description": "生活与文化领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "d042c91a5c5fa8c0",
+      "homepage": "https://www.openculture.com",
+      "attribution": "https://www.openculture.com/feed"
+    },
+    {
+      "name": "Public Domain Review",
+      "url": "https://publicdomainreview.org/rss.xml",
+      "language": "en",
+      "category": "life",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "生活与文化"
+      ],
+      "description": "生活与文化领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "cc71e9184e1147d5",
+      "homepage": "https://publicdomainreview.org",
+      "attribution": "https://publicdomainreview.org/rss.xml"
+    },
+    {
+      "name": "Literary Hub",
+      "url": "https://lithub.com/feed/",
+      "language": "en",
+      "category": "life",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "生活与文化"
+      ],
+      "description": "生活与文化领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "0b7d74bf8c6693b5",
+      "homepage": "https://lithub.com",
+      "attribution": "https://lithub.com/feed/"
+    },
+    {
+      "name": "Smithsonian Magazine",
+      "url": "https://www.smithsonianmag.com/rss/latest_articles/",
+      "language": "en",
+      "category": "life",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "生活与文化"
+      ],
+      "description": "生活与文化领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "f5ae99cdd499da98",
+      "homepage": "https://www.smithsonianmag.com",
+      "attribution": "https://www.smithsonianmag.com/rss/latest_articles/"
+    },
+    {
+      "name": "The Guardian Books",
+      "url": "https://www.theguardian.com/books/rss",
+      "language": "en",
+      "category": "life",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "生活与文化"
+      ],
+      "description": "生活与文化领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "d52292131cf2ffe7",
+      "homepage": "https://www.theguardian.com",
+      "attribution": "https://www.theguardian.com/books/rss"
+    },
+    {
+      "name": "The Guardian Environment",
+      "url": "https://www.theguardian.com/environment/rss",
+      "language": "en",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "3d8bb258eaa7f6af",
+      "homepage": "https://www.theguardian.com",
+      "attribution": "https://www.theguardian.com/environment/rss"
+    },
+    {
+      "name": "The Conversation Business",
+      "url": "https://theconversation.com/global/business/articles.atom",
+      "language": "en",
+      "category": "business",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "商业财经"
+      ],
+      "description": "商业财经领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "6ca6a2ccbc4f901e",
+      "homepage": "https://theconversation.com",
+      "attribution": "https://theconversation.com/global/business/articles.atom"
+    },
+    {
+      "name": "UN News Climate",
+      "url": "https://news.un.org/feed/subscribe/en/news/topic/climate-change/feed/rss.xml",
+      "language": "en",
+      "category": "news",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "新闻资讯"
+      ],
+      "description": "新闻资讯领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "d601e70d7251406c",
+      "homepage": "https://news.un.org",
+      "attribution": "https://news.un.org/feed/subscribe/en/news/topic/climate-change/feed/rss.xml"
+    },
+    {
+      "name": "联合国新闻气候",
+      "url": "https://news.un.org/feed/subscribe/zh/news/topic/climate-change/feed/rss.xml",
+      "language": "zh",
+      "category": "news",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "新闻资讯"
+      ],
+      "description": "新闻资讯领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "985705f428b6897a",
+      "homepage": "https://news.un.org",
+      "attribution": "https://news.un.org/feed/subscribe/zh/news/topic/climate-change/feed/rss.xml"
+    },
+    {
+      "name": "德国之声中文科技",
+      "url": "https://rss.dw.com/rdf/rss-chi-sci",
+      "language": "zh",
+      "category": "science",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "科学与学术"
+      ],
+      "description": "科学与学术领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "e98238b21207c2d8",
+      "homepage": "https://rss.dw.com",
+      "attribution": "https://rss.dw.com/rdf/rss-chi-sci"
+    },
+    {
+      "name": "BBC 中文国际",
+      "url": "https://feeds.bbci.co.uk/zhongwen/simp/world/rss.xml",
+      "language": "zh",
+      "category": "news",
+      "platform": "rss",
+      "kind": "publisher",
+      "tags": [
+        "新闻资讯"
+      ],
+      "description": "新闻资讯领域的公开 RSS/Atom 候选；可用性见实时检测。",
+      "id": "2ba9a05f1baf1331",
+      "homepage": "https://feeds.bbci.co.uk",
+      "attribution": "https://feeds.bbci.co.uk/zhongwen/simp/world/rss.xml"
+    },
+    {
+      "name": "GitHub Releases · Ollama 本地模型",
+      "url": "https://api.github.com/repos/ollama/ollama/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "ollama/ollama",
+        "Ollama 本地模型",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "ollama/ollama 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/ollama/ollama/releases",
+      "id": "55392bde359b0e24",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · llama.cpp 本地推理",
+      "url": "https://api.github.com/repos/ggml-org/llama.cpp/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "ggml-org/llama.cpp",
+        "llama.cpp 本地推理",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "ggml-org/llama.cpp 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/ggml-org/llama.cpp/releases",
+      "id": "1b06c2455403409c",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · vLLM 推理服务",
+      "url": "https://api.github.com/repos/vllm-project/vllm/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "vllm-project/vllm",
+        "vLLM 推理服务",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "vllm-project/vllm 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/vllm-project/vllm/releases",
+      "id": "f1041a891584f287",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · SGLang 推理",
+      "url": "https://api.github.com/repos/sgl-project/sglang/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "sgl-project/sglang",
+        "SGLang 推理",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "sgl-project/sglang 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/sgl-project/sglang/releases",
+      "id": "67aa00c376ff0808",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Transformers 模型库",
+      "url": "https://api.github.com/repos/huggingface/transformers/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "huggingface/transformers",
+        "Transformers 模型库",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "huggingface/transformers 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/huggingface/transformers/releases",
+      "id": "7747d8939ffcf7dc",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · PEFT 参数高效微调",
+      "url": "https://api.github.com/repos/huggingface/peft/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "huggingface/peft",
+        "PEFT 参数高效微调",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "huggingface/peft 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/huggingface/peft/releases",
+      "id": "1e7fcd6d88baa634",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Diffusers 图像生成",
+      "url": "https://api.github.com/repos/huggingface/diffusers/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "huggingface/diffusers",
+        "Diffusers 图像生成",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "huggingface/diffusers 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/huggingface/diffusers/releases",
+      "id": "86c979b6750f0bea",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · LangChain 智能体",
+      "url": "https://api.github.com/repos/langchain-ai/langchain/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "langchain-ai/langchain",
+        "LangChain 智能体",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "langchain-ai/langchain 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/langchain-ai/langchain/releases",
+      "id": "245f6bb649e571af",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · LangGraph 智能体编排",
+      "url": "https://api.github.com/repos/langchain-ai/langgraph/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "langchain-ai/langgraph",
+        "LangGraph 智能体编排",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "langchain-ai/langgraph 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/langchain-ai/langgraph/releases",
+      "id": "17d3330855fbc947",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · LlamaIndex RAG",
+      "url": "https://api.github.com/repos/run-llama/llama_index/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "run-llama/llama_index",
+        "LlamaIndex RAG",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "run-llama/llama_index 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/run-llama/llama_index/releases",
+      "id": "78ffc644228e3f32",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Open WebUI 本地助手",
+      "url": "https://api.github.com/repos/open-webui/open-webui/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "open-webui/open-webui",
+        "Open WebUI 本地助手",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "open-webui/open-webui 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/open-webui/open-webui/releases",
+      "id": "67ef5a04b86a3921",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Dify 应用开发",
+      "url": "https://api.github.com/repos/langgenius/dify/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "langgenius/dify",
+        "Dify 应用开发",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "langgenius/dify 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/langgenius/dify/releases",
+      "id": "b8ef957affa7d5cd",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · RAGFlow 检索增强",
+      "url": "https://api.github.com/repos/infiniflow/ragflow/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "infiniflow/ragflow",
+        "RAGFlow 检索增强",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "infiniflow/ragflow 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/infiniflow/ragflow/releases",
+      "id": "fdf0158a3b279d22",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Unsloth 微调",
+      "url": "https://api.github.com/repos/unslothai/unsloth/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "unslothai/unsloth",
+        "Unsloth 微调",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "unslothai/unsloth 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/unslothai/unsloth/releases",
+      "id": "e14599e6f4d5dddb",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · MLX Apple 芯片机器学习",
+      "url": "https://api.github.com/repos/ml-explore/mlx/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "ml-explore/mlx",
+        "MLX Apple 芯片机器学习",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "ml-explore/mlx 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/ml-explore/mlx/releases",
+      "id": "7e1a541c7b08637c",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Whisper.cpp 语音识别",
+      "url": "https://api.github.com/repos/ggerganov/whisper.cpp/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "ggerganov/whisper.cpp",
+        "Whisper.cpp 语音识别",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "ggerganov/whisper.cpp 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/ggerganov/whisper.cpp/releases",
+      "id": "1927d52660801128",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · ComfyUI 图像工作流",
+      "url": "https://api.github.com/repos/comfyanonymous/ComfyUI/releases?per_page=10",
+      "language": "en",
+      "category": "ai",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "人工智能",
+        "comfyanonymous/ComfyUI",
+        "ComfyUI 图像工作流",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "comfyanonymous/ComfyUI 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/comfyanonymous/ComfyUI/releases",
+      "id": "4d5629fd9ccbd8a9",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · uv Python 包管理",
+      "url": "https://api.github.com/repos/astral-sh/uv/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "astral-sh/uv",
+        "uv Python 包管理",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "astral-sh/uv 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/astral-sh/uv/releases",
+      "id": "c88657d6d1befbb9",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Ruff Python 检查",
+      "url": "https://api.github.com/repos/astral-sh/ruff/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "astral-sh/ruff",
+        "Ruff Python 检查",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "astral-sh/ruff 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/astral-sh/ruff/releases",
+      "id": "06b5053b6bb33663",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · FastAPI Web 框架",
+      "url": "https://api.github.com/repos/fastapi/fastapi/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "fastapi/fastapi",
+        "FastAPI Web 框架",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "fastapi/fastapi 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/fastapi/fastapi/releases",
+      "id": "e7cb66ff23eb892d",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Pydantic 数据校验",
+      "url": "https://api.github.com/repos/pydantic/pydantic/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "pydantic/pydantic",
+        "Pydantic 数据校验",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "pydantic/pydantic 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/pydantic/pydantic/releases",
+      "id": "f58097f6a064d6bd",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Django Web 框架",
+      "url": "https://api.github.com/repos/django/django/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "django/django",
+        "Django Web 框架",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "django/django 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/django/django/releases",
+      "id": "824c537aa0faf6c3",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Node.js 运行时",
+      "url": "https://api.github.com/repos/nodejs/node/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "nodejs/node",
+        "Node.js 运行时",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "nodejs/node 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/nodejs/node/releases",
+      "id": "266a0d34f0c38d07",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Vite 构建工具",
+      "url": "https://api.github.com/repos/vitejs/vite/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "vitejs/vite",
+        "Vite 构建工具",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "vitejs/vite 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/vitejs/vite/releases",
+      "id": "c77bc2825acde8e8",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Vue 前端框架",
+      "url": "https://api.github.com/repos/vuejs/core/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "vuejs/core",
+        "Vue 前端框架",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "vuejs/core 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/vuejs/core/releases",
+      "id": "51558d07c6c53d1e",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · React 前端框架",
+      "url": "https://api.github.com/repos/facebook/react/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "facebook/react",
+        "React 前端框架",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "facebook/react 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/facebook/react/releases",
+      "id": "aa3bdeba21c5f874",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Svelte 前端框架",
+      "url": "https://api.github.com/repos/sveltejs/svelte/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "sveltejs/svelte",
+        "Svelte 前端框架",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "sveltejs/svelte 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/sveltejs/svelte/releases",
+      "id": "4d389b5422c37951",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Spring Boot Java",
+      "url": "https://api.github.com/repos/spring-projects/spring-boot/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "spring-projects/spring-boot",
+        "Spring Boot Java",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "spring-projects/spring-boot 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/spring-projects/spring-boot/releases",
+      "id": "4676eeacf758de0f",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Kubernetes 容器编排",
+      "url": "https://api.github.com/repos/kubernetes/kubernetes/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "kubernetes/kubernetes",
+        "Kubernetes 容器编排",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "kubernetes/kubernetes 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/kubernetes/kubernetes/releases",
+      "id": "439f347bbedb279c",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Prometheus 监控",
+      "url": "https://api.github.com/repos/prometheus/prometheus/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "prometheus/prometheus",
+        "Prometheus 监控",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "prometheus/prometheus 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/prometheus/prometheus/releases",
+      "id": "e20b3d6616f32661",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Grafana 可视化",
+      "url": "https://api.github.com/repos/grafana/grafana/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "grafana/grafana",
+        "Grafana 可视化",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "grafana/grafana 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/grafana/grafana/releases",
+      "id": "f4cd7338a97c6143",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · DuckDB 数据分析",
+      "url": "https://api.github.com/repos/duckdb/duckdb/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "duckdb/duckdb",
+        "DuckDB 数据分析",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "duckdb/duckdb 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/duckdb/duckdb/releases",
+      "id": "817092aa270d8e2d",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Redis 数据库",
+      "url": "https://api.github.com/repos/redis/redis/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "redis/redis",
+        "Redis 数据库",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "redis/redis 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/redis/redis/releases",
+      "id": "88ce5a2940b2f53e",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Milvus 向量数据库",
+      "url": "https://api.github.com/repos/milvus-io/milvus/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "milvus-io/milvus",
+        "Milvus 向量数据库",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "milvus-io/milvus 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/milvus-io/milvus/releases",
+      "id": "7fdd02fab3b08f76",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Qdrant 向量检索",
+      "url": "https://api.github.com/repos/qdrant/qdrant/releases?per_page=10",
+      "language": "en",
+      "category": "dev",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "编程与开源",
+        "qdrant/qdrant",
+        "Qdrant 向量检索",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "qdrant/qdrant 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/qdrant/qdrant/releases",
+      "id": "23cdeb362fd85076",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Trivy 漏洞扫描",
+      "url": "https://api.github.com/repos/aquasecurity/trivy/releases?per_page=10",
+      "language": "en",
+      "category": "security",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "网络安全",
+        "aquasecurity/trivy",
+        "Trivy 漏洞扫描",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "aquasecurity/trivy 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/aquasecurity/trivy/releases",
+      "id": "20a4c5b3ac664a05",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Gitleaks 密钥检测",
+      "url": "https://api.github.com/repos/gitleaks/gitleaks/releases?per_page=10",
+      "language": "en",
+      "category": "security",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "网络安全",
+        "gitleaks/gitleaks",
+        "Gitleaks 密钥检测",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "gitleaks/gitleaks 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/gitleaks/gitleaks/releases",
+      "id": "0f7d5ce7e2f0600c",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Semgrep 静态安全分析",
+      "url": "https://api.github.com/repos/semgrep/semgrep/releases?per_page=10",
+      "language": "en",
+      "category": "security",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "网络安全",
+        "semgrep/semgrep",
+        "Semgrep 静态安全分析",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "semgrep/semgrep 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/semgrep/semgrep/releases",
+      "id": "154a6e3cc72d3802",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · OWASP Amass",
+      "url": "https://api.github.com/repos/owasp-amass/amass/releases?per_page=10",
+      "language": "en",
+      "category": "security",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "网络安全",
+        "owasp-amass/amass",
+        "OWASP Amass",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "owasp-amass/amass 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/owasp-amass/amass/releases",
+      "id": "f8ebdc481fb7cd4f",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "GitHub Releases · Nuclei 安全检测",
+      "url": "https://api.github.com/repos/projectdiscovery/nuclei/releases?per_page=10",
+      "language": "en",
+      "category": "security",
+      "platform": "api",
+      "kind": "github",
+      "tags": [
+        "网络安全",
+        "projectdiscovery/nuclei",
+        "Nuclei 安全检测",
+        "开源",
+        "项目发布",
+        "release"
+      ],
+      "description": "projectdiscovery/nuclei 官方发布说明；使用公开 GitHub API，不含未关联 Release 的普通标签；受匿名请求配额限制。",
+      "attribution": "https://github.com/projectdiscovery/nuclei/releases",
+      "id": "a06af8b36d64977b",
+      "homepage": "https://api.github.com"
+    },
+    {
+      "name": "Daring Fireball JSON Feed",
+      "url": "https://daringfireball.net/feeds/json",
+      "category": "tech",
+      "language": "en",
+      "platform": "api",
+      "kind": "jsonfeed",
+      "tags": [
+        "科技数码",
+        "JSON Feed"
+      ],
+      "description": "作者公开 JSON Feed；按标准提取摘要、正文和原文地址。",
+      "attribution": "https://daringfireball.net/feeds/json",
+      "id": "39f09038d14c1867",
+      "homepage": "https://daringfireball.net"
+    },
+    {
+      "name": "Flying Meat JSON Feed",
+      "url": "https://flyingmeat.com/blog/feed.json",
+      "category": "dev",
+      "language": "en",
+      "platform": "api",
+      "kind": "jsonfeed",
+      "tags": [
+        "编程与开源",
+        "JSON Feed"
+      ],
+      "description": "作者公开 JSON Feed；按标准提取摘要、正文和原文地址。",
+      "attribution": "https://flyingmeat.com/blog/feed.json",
+      "id": "80b539765cec5a71",
+      "homepage": "https://flyingmeat.com"
+    },
+    {
+      "name": "Manton Reece JSON Feed",
+      "url": "https://www.manton.org/feed.json",
+      "category": "tech",
+      "language": "en",
+      "platform": "api",
+      "kind": "jsonfeed",
+      "tags": [
+        "科技数码",
+        "JSON Feed"
+      ],
+      "description": "作者公开 JSON Feed；按标准提取摘要、正文和原文地址。",
+      "attribution": "https://www.manton.org/feed.json",
+      "id": "6fae62c5cfec463f",
+      "homepage": "https://www.manton.org"
     }
   ]
 }

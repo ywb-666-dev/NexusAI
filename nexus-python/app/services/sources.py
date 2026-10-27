@@ -10,7 +10,7 @@ from pathlib import Path
 from sqlalchemy import select
 from app.models.source import SourceHealth
 from app.core.dependencies import get_session_factory
-from app.services.fetching import rss_items
+from app.services.fetching import rss_items, api_items
 
 CHECK_LIMIT = asyncio.Semaphore(4)
 LOCKS: dict[str, asyncio.Lock] = {}
@@ -36,7 +36,7 @@ def catalog():
     )
 
 
-def search_sources(query="", category="", language=""):
+def search_sources(query="", category="", language="", platform=""):
     words = query.lower().strip().split()
     related = (
         {
@@ -61,6 +61,8 @@ def search_sources(query="", category="", language=""):
     )
     matches = []
     for source in catalog()["sources"]:
+        if platform and source["platform"] != platform:
+            continue
         if category and source["category"] != category:
             continue
         if language and source["language"] != language:
@@ -131,7 +133,9 @@ def classify_error(exc):
         code = exc.response.status_code
         if code in (404, 410):
             return "not_found"
-        if code == 429:
+        if code == 429 or (
+            code == 403 and exc.response.headers.get("x-ratelimit-remaining") == "0"
+        ):
             return "rate_limited"
         if code in (401, 403, 406):
             return "access_denied"
@@ -218,14 +222,14 @@ def apply_observation(row, items, status, error=None, error_kind=None, latency_m
     ][-20:]
 
 
-async def list_sources(query="", category="", language="", status=""):
+async def list_sources(query="", category="", language="", status="", platform=""):
     async with get_session_factory()() as db:
         rows = {
             r.source_id: r for r in (await db.execute(select(SourceHealth))).scalars()
         }
     result = [
         {**source, "health": health_data(rows.get(source["id"]))}
-        for source in search_sources(query, category, language)
+        for source in search_sources(query, category, language, platform)
     ]
     if status:
         result = [source for source in result if source["health"]["status"] == status]
@@ -258,7 +262,8 @@ async def check_source(source_id: str, *, force=False):
         async with CHECK_LIMIT:
             started = time.monotonic()
             try:
-                items = await asyncio.wait_for(rss_items(source["url"]), timeout=22)
+                reader = api_items if source["platform"] == "api" else rss_items
+                items = await asyncio.wait_for(reader(source["url"]), timeout=22)
                 status, error = ("available" if items else "empty"), None
                 error_kind = None
             except Exception as exc:

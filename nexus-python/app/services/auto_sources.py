@@ -122,7 +122,7 @@ async def resolve_sources(policy: SourcePolicy, limit=5, *, allow_checks=True):
             {
                 "url": source["url"],
                 "name": source["name"],
-                "platform": "rss",
+                "platform": source.get("platform", "rss"),
                 "origin": "system",
                 "sourceId": source["id"],
                 "reason": "；".join(reasons),

@@ -16,6 +16,7 @@ import {
 } from "antd";
 import {
   CheckCircleOutlined,
+  SearchOutlined,
   DownloadOutlined,
   PlusOutlined,
   ReloadOutlined,
@@ -35,6 +36,7 @@ type Source = {
   category: string;
   description: string;
   platform: string;
+  discovered?: boolean;
   health: {
     status: string;
     checked_at: string | null;
@@ -92,6 +94,7 @@ export default function Sources() {
     [page, setPage] = useState(1);
   const [maintenanceEnabled, setMaintenanceEnabled] = useState(true);
   const [q, setQ] = useState(""),
+    [platform, setPlatform] = useState(""),
     [category, setCategory] = useState(""),
     [language, setLanguage] = useState(""),
     [status, setStatus] = useState("");
@@ -107,7 +110,12 @@ export default function Sources() {
     [saving, setSaving] = useState(false),
     [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [form] = Form.useForm();
-  const filters = { q, category, language, status };
+  const [discoverOpen, setDiscoverOpen] = useState(false),
+    [discoverUrl, setDiscoverUrl] = useState(""),
+    [discoverBusy, setDiscoverBusy] = useState(false),
+    [discovered, setDiscovered] = useState<Source[]>([]),
+    [discoveryNotice, setDiscoveryNotice] = useState("");
+  const filters = { q, category, language, status, platform };
   const load = async () => {
     setLoading(true);
     setError("");
@@ -128,7 +136,7 @@ export default function Sources() {
   };
   useEffect(() => {
     load();
-  }, [q, category, language, status, page]);
+  }, [q, category, language, status, platform, page]);
   const check = async (sources: Source[], showPreview = false) => {
     setChecking(true);
     setChecked(0);
@@ -150,9 +158,9 @@ export default function Sources() {
       setChecking(false);
     }
   };
-  const choose = async () => {
-    if (!selected.length) return;
-    if (selected.length > 20) {
+  const choose = async (selection = selected) => {
+    if (!selection.length) return;
+    if (selection.length > 20) {
       message.warning("每个订阅最多 20 个来源，请减少选择");
       return;
     }
@@ -161,6 +169,7 @@ export default function Sources() {
         params: { current: 1, size: 100 },
       });
       setSubscriptions(r.data.records);
+      setSelected(selection);
       form.resetFields();
       form.setFieldsValue({
         target: "new",
@@ -230,20 +239,38 @@ export default function Sources() {
       setSaving(false);
     }
   };
-  const exportFeeds = async () => {
+  const exportFeeds = async (format = "opml") => {
     try {
-      const blob: any = await request.get("/python/sources/export.opml", {
+      const blob: any = await request.get("/python/sources/export." + format, {
         params: filters,
         responseType: "blob",
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "nexusai-sources.opml";
+      a.download = "nexusai-sources." + format;
       a.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (e: any) {
       message.error(e.message);
+    }
+  };
+  const discover = async () => {
+    setDiscoverBusy(true);
+    setDiscovered([]);
+    setDiscoveryNotice("");
+    try {
+      const r: any = await request.post(
+        "/python/sources/discover",
+        { url: discoverUrl.trim() },
+        { timeout: 50000 },
+      );
+      setDiscovered(r.data.sources);
+      setDiscoveryNotice(r.data.notice);
+    } catch (e: any) {
+      message.error(e.message);
+    } finally {
+      setDiscoverBusy(false);
     }
   };
   return (
@@ -251,11 +278,19 @@ export default function Sources() {
       <PageHeading
         label="SOURCES / 数据源中心"
         title="构建你的信息版图"
-        subtitle="从公开 RSS 与 Atom 频道选择来源，检测可用性，再组成自己的订阅。"
+        subtitle="从 RSS、Atom、JSON Feed 与 GitHub 项目发布中选择来源，也可从网站发现订阅地址。"
         extra={
-          <Button onClick={() => navigate("/subscriptions")}>
-            管理我的订阅
-          </Button>
+          <Space wrap>
+            <Button
+              icon={<SearchOutlined />}
+              onClick={() => setDiscoverOpen(true)}
+            >
+              从网站发现来源
+            </Button>
+            <Button onClick={() => navigate("/subscriptions")}>
+              管理我的订阅
+            </Button>
+          </Space>
         }
       />
       <div className="stat-grid" style={{ marginBottom: 20 }}>
@@ -284,6 +319,7 @@ export default function Sources() {
           ? "自动巡检已开启：可用来源约每 24 小时检查，空订阅约每 6 小时检查，失败来源从 15 分钟起逐步退避。"
           : "自动巡检已关闭，可手动检测来源。"}{" "}
         历史成功率从本次升级后的检测开始累计。
+        {` 目录包含 ${stats.rss ?? "—"} 个 RSS/Atom 和 ${stats.api ?? "—"} 个 API/JSON Feed。OPML 仅导出 RSS/Atom；JSON 导出保留所有类型。`}
       </Typography.Paragraph>
       {error && (
         <Alert
@@ -336,6 +372,20 @@ export default function Sources() {
             ]}
           />
           <Select
+            aria-label="来源类型"
+            value={platform}
+            style={{ width: 150 }}
+            onChange={(v) => {
+              setPlatform(v);
+              setPage(1);
+            }}
+            options={[
+              { value: "", label: "全部类型" },
+              { value: "rss", label: "RSS / Atom" },
+              { value: "api", label: "API / JSON Feed" },
+            ]}
+          />
+          <Select
             aria-label="来源状态"
             value={status}
             style={{ width: 155 }}
@@ -354,8 +404,14 @@ export default function Sources() {
           <Button icon={<ReloadOutlined />} onClick={load}>
             刷新
           </Button>
-          <Button icon={<DownloadOutlined />} onClick={exportFeeds}>
+          <Button icon={<DownloadOutlined />} onClick={() => exportFeeds()}>
             导出 OPML
+          </Button>
+          <Button
+            icon={<DownloadOutlined />}
+            onClick={() => exportFeeds("json")}
+          >
+            导出 JSON
           </Button>
         </Space>
         <Space wrap style={{ marginBottom: 16 }}>
@@ -364,13 +420,17 @@ export default function Sources() {
             type="primary"
             icon={<PlusOutlined />}
             disabled={!selected.length || checking || selected.length > 20}
-            onClick={choose}
+            onClick={() => choose()}
           >
             加入订阅
           </Button>
           <Button
             icon={<CheckCircleOutlined />}
-            disabled={!selected.length || selected.length > 20}
+            disabled={
+              !selected.length ||
+              selected.length > 20 ||
+              selected.some((s) => s.discovered)
+            }
             loading={checking}
             onClick={() => check(selected)}
           >
@@ -411,6 +471,9 @@ export default function Sources() {
               render: (_, s) => (
                 <>
                   <Typography.Text strong>{s.name}</Typography.Text>
+                  <Tag style={{ marginLeft: 8 }}>
+                    {s.platform === "api" ? "API / JSON Feed" : "RSS / Atom"}
+                  </Tag>
                   <div>
                     <Typography.Text
                       type="secondary"
@@ -585,7 +648,10 @@ export default function Sources() {
       <Modal
         title={`将 ${selected.length} 个来源加入订阅`}
         open={open}
-        onCancel={() => setOpen(false)}
+        onCancel={() => {
+          setOpen(false);
+          if (selected.some((s) => s.discovered)) setSelected([]);
+        }}
         onOk={save}
         confirmLoading={saving}
         okText="保存订阅"
@@ -628,6 +694,76 @@ export default function Sources() {
             message="新订阅每 60 分钟采集，语义模式会调用模型筛选文章；额外翻译与简报默认关闭。已有订阅保留设置。"
           />
         </Form>
+      </Modal>
+      <Modal
+        title="从网站发现来源"
+        open={discoverOpen}
+        onCancel={() => setDiscoverOpen(false)}
+        footer={null}
+        width={700}
+      >
+        <Typography.Paragraph type="secondary">
+          输入公开网站、RSS/JSON Feed 地址，或 GitHub
+          仓库地址。只读取公开声明的订阅源并验证，不创建订阅或推送；最多检查 6
+          个地址。
+        </Typography.Paragraph>
+        <Space.Compact style={{ width: "100%" }}>
+          <Input
+            aria-label="待发现的网站地址"
+            placeholder="https://example.com 或 https://github.com/owner/repo"
+            value={discoverUrl}
+            onChange={(e) => {
+              setDiscoverUrl(e.target.value);
+              setDiscovered([]);
+              setDiscoveryNotice("");
+            }}
+            onPressEnter={discover}
+            disabled={discoverBusy}
+          />
+          <Button type="primary" loading={discoverBusy} onClick={discover}>
+            发现来源
+          </Button>
+        </Space.Compact>
+        {discoveryNotice && (
+          <Alert
+            type="info"
+            message={discoveryNotice}
+            style={{ margin: "16px 0" }}
+          />
+        )}
+        {discovered.map((source) => (
+          <div
+            key={source.id}
+            style={{ padding: "16px 0", overflowWrap: "anywhere" }}
+          >
+            <Typography.Text strong>{source.name}</Typography.Text>{" "}
+            <Tag color={states[source.health.status]?.color}>
+              {states[source.health.status]?.label}
+            </Tag>
+            <div>{source.url}</div>
+            <Typography.Paragraph type="secondary">
+              {source.health.error ||
+                `读取到 ${source.health.entry_count} 条；${source.platform === "api" ? "API / JSON Feed" : "RSS / Atom"}`}
+            </Typography.Paragraph>
+            {source.health.samples?.slice(0, 2).map((sample) => (
+              <div key={sample.url}>
+                <a href={sample.url} target="_blank" rel="noopener noreferrer">
+                  {sample.title}
+                </a>
+              </div>
+            ))}
+            <Button
+              style={{ marginTop: 10 }}
+              disabled={source.health.status === "failed"}
+              onClick={async () => {
+                setDiscoverOpen(false);
+                await choose([source]);
+              }}
+            >
+              使用此来源创建或加入订阅
+            </Button>
+          </div>
+        ))}
       </Modal>
     </>
   );

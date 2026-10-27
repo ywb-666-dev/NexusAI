@@ -5,6 +5,7 @@ import ipaddress
 import os
 import socket
 import json
+import re
 from urllib.parse import urlparse, urljoin, urldefrag
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
@@ -106,8 +107,7 @@ def published(value):
         return None
 
 
-async def rss_items(url: str) -> list[dict]:
-    data, final_url = await fetch(url)
+def parse_rss(data, final_url):
     feed = feedparser.parse(data)
     if not feed.entries and (feed.bozo or not feed.get("version")):
         raise ValueError("该地址不是有效的 RSS/Atom 订阅源")
@@ -131,6 +131,11 @@ async def rss_items(url: str) -> list[dict]:
             }
         )
     return items
+
+
+async def rss_items(url: str) -> list[dict]:
+    data, final_url = await fetch(url)
+    return parse_rss(data, final_url)
 
 
 async def web_item(url: str) -> dict:
@@ -161,7 +166,23 @@ async def web_item(url: str) -> dict:
 
 async def api_items(url: str) -> list[dict]:
     body, final_url = await fetch(url)
+    return parse_api(body, final_url)
+
+
+def parse_api(body, final_url):
     data = json.loads(body)
+    json_feed = isinstance(data, dict) and data.get("version") in (
+        "https://jsonfeed.org/version/1",
+        "https://jsonfeed.org/version/1.1",
+    )
+    if json_feed and (
+        not isinstance(data.get("title"), str)
+        or not isinstance(data.get("items"), list)
+    ):
+        raise ValueError("JSON Feed 缺少标题或条目数组")
+    github = urlparse(final_url).hostname == "api.github.com" and bool(
+        re.fullmatch(r"/repos/[^/]+/[^/]+/releases/?", urlparse(final_url).path)
+    )
     for _ in range(3):
         if isinstance(data, list):
             break
@@ -181,37 +202,86 @@ async def api_items(url: str) -> list[dict]:
     for entry in data[:50]:
         if not isinstance(entry, dict):
             continue
-        link = entry.get("url") or entry.get("link") or entry.get("source_url")
+        if github and entry.get("draft"):
+            continue
+        link = (
+            (entry.get("html_url") if github else None)
+            or entry.get("url")
+            or entry.get("external_url")
+            or entry.get("link")
+            or entry.get("source_url")
+        )
         if not isinstance(link, str):
             continue
         link = urldefrag(urljoin(final_url, link))[0]
         if not link.startswith(("http://", "https://")):
             continue
         content = (
-            entry.get("content")
+            (entry.get("body") if github else None)
+            or entry.get("content_html")
+            or entry.get("content_text")
+            or entry.get("content")
             or entry.get("description")
             or entry.get("summary")
             or ""
         )
-        text = plain_text(
-            content
-            if isinstance(content, str)
-            else json.dumps(content, ensure_ascii=False)
+        text = (
+            content.strip()
+            if json_feed and not entry.get("content_html") and isinstance(content, str)
+            else plain_text(
+                content
+                if isinstance(content, str)
+                else json.dumps(content, ensure_ascii=False)
+            )
         )
         items.append(
             {
                 "platform": "api",
                 "source_url": link,
-                "title": str(entry.get("title") or "无标题")[:500],
-                "summary": text[:2000],
+                "title": plain_text(
+                    str(
+                        entry.get("title")
+                        or (
+                            entry.get("name") or entry.get("tag_name")
+                            if github
+                            else None
+                        )
+                        or "无标题"
+                    )
+                )[:500],
+                "summary": (
+                    plain_text(entry["summary"])
+                    if isinstance(entry.get("summary"), str)
+                    else text
+                )[:2000],
                 "raw_html": text[:100000],
-                "author": str(entry.get("author") or "")[:100],
+                "author": api_author(entry)[:100],
                 "published_at": str(
                     entry.get("publishedAt")
                     or entry.get("published_at")
                     or entry.get("published")
+                    or entry.get("date_published")
+                    or entry.get("date_modified")
                     or ""
                 ),
             }
         )
+    if (
+        data
+        and not items
+        and not (
+            github and all(isinstance(e, dict) and e.get("draft") for e in data[:50])
+        )
+    ):
+        raise ValueError("API 条目缺少可读取的原文地址，当前不支持仅有 ID 或附件的条目")
     return items
+
+
+def api_author(entry):
+    authors = entry.get("authors") or [entry.get("author") or ""]
+    if not isinstance(authors, list):
+        authors = [authors]
+    return ", ".join(
+        str(a.get("name") or a.get("login") or "") if isinstance(a, dict) else str(a)
+        for a in authors[:3]
+    )
