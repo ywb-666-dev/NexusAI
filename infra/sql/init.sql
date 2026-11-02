@@ -197,3 +197,13 @@ CREATE TABLE IF NOT EXISTS briefing_preference (
 	enabled_at DATETIME,
 	PRIMARY KEY (user_id)
 );
+
+CREATE TABLE IF NOT EXISTS content_feedback (
+	user_id BIGINT NOT NULL,
+	content_id VARCHAR(36) NOT NULL,
+	liked BOOL NOT NULL,
+	saved BOOL NOT NULL,
+	dismissed BOOL NOT NULL,
+	updated_at DATETIME NOT NULL DEFAULT now(),
+	PRIMARY KEY (user_id, content_id)
+);

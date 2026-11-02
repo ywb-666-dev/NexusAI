@@ -12,6 +12,7 @@ import {
   Space,
   Tag,
   Typography,
+  Checkbox,
 } from "antd";
 import { useSearchParams } from "react-router-dom";
 import { SearchOutlined, ExportOutlined } from "@ant-design/icons";
@@ -25,7 +26,10 @@ export default function ContentPage() {
     [search, setSearch] = useState(params.get("search") || ""),
     [query, setQuery] = useState(search),
     [platform, setPlatform] = useState(""),
-    [sort, setSort] = useState("relevance"),
+    [sort, setSort] = useState("personalized"),
+    [savedOnly, setSavedOnly] = useState(false),
+    [revision, setRevision] = useState(0),
+    [feedbackBusy, setFeedbackBusy] = useState(false),
     [page, setPage] = useState(1),
     [data, setData] = useState<any[]>([]),
     [total, setTotal] = useState(0),
@@ -47,7 +51,14 @@ export default function ContentPage() {
     setError("");
     request
       .get("/python/contents", {
-        params: { page, size: 12, search: query, platform, sort },
+        params: {
+          page,
+          size: 12,
+          search: query,
+          platform,
+          sort,
+          saved: savedOnly,
+        },
       })
       .then((r: any) => {
         if (live) {
@@ -64,7 +75,29 @@ export default function ContentPage() {
     return () => {
       live = false;
     };
-  }, [page, query, platform, sort]);
+  }, [page, query, platform, sort, savedOnly, revision]);
+  const feedback = async (field: string) => {
+    const contentId = detail.id;
+    setFeedbackBusy(true);
+    try {
+      const r: any = await request.put(
+        `/python/contents/${detail.id}/feedback`,
+        { [field]: !detail.feedback?.[field] },
+      );
+      setDetail((previous: any) =>
+        previous?.id === contentId
+          ? { ...previous, feedback: r.data }
+          : previous,
+      );
+      setPage(1);
+      setRevision((v) => v + 1);
+      message.success("偏好已更新；不感兴趣的内容可从最新内容中找回并撤销");
+    } catch (e: any) {
+      message.error(e.message);
+    } finally {
+      setFeedbackBusy(false);
+    }
+  };
   const invoke = async (name: string) => {
     setBusy(true);
     setAi("");
@@ -126,12 +159,29 @@ export default function ContentPage() {
             setPage(1);
           }}
           options={[
+            { value: "personalized", label: "为你推荐" },
             { value: "relevance", label: "推荐优先" },
             { value: "latest", label: "最新内容" },
           ]}
         />
         <Text type="secondary">共 {total} 条内容</Text>
+        <Checkbox
+          checked={savedOnly}
+          onChange={(e) => {
+            setSavedOnly(e.target.checked);
+            setPage(1);
+          }}
+        >
+          仅看收藏
+        </Checkbox>
       </div>
+      {sort === "personalized" && (
+        <Alert
+          type="info"
+          message="从近期最多 500 篇通过语义筛选的内容中，结合喜欢、收藏和不感兴趣反馈排序，并平衡来源与相似内容。未经过语义筛选的内容可在最新内容中阅读；排序不额外调用模型。"
+          style={{ marginTop: 16 }}
+        />
+      )}
       {error && (
         <Alert
           type="error"
@@ -162,6 +212,13 @@ export default function ContentPage() {
                 <h3>{item.title || "无标题"}</h3>
                 <QualityBadge quality={item.quality} />
                 <RelevanceView value={item.relevance} compact />
+                {item.recommendation && (
+                  <Text type="secondary">
+                    {item.recommendation.coldStart
+                      ? "根据订阅需求推荐"
+                      : "个性化排序"}
+                  </Text>
+                )}
                 <p>
                   {item.translatedSummary || item.summary || "打开阅读完整正文"}
                 </p>
@@ -217,6 +274,39 @@ export default function ContentPage() {
             <Tag color="cyan">{detail.sourcePlatform}</Tag>
             <Typography.Title level={3}>{detail.title}</Typography.Title>
             <RelevanceView value={detail.relevance} />
+            <Space wrap style={{ margin: "16px 0" }}>
+              <Button
+                loading={feedbackBusy}
+                type={detail.feedback?.liked ? "primary" : "default"}
+                onClick={() => feedback("liked")}
+              >
+                {detail.feedback?.liked ? "取消喜欢" : "喜欢"}
+              </Button>
+              <Button
+                loading={feedbackBusy}
+                type={detail.feedback?.saved ? "primary" : "default"}
+                onClick={() => feedback("saved")}
+              >
+                {detail.feedback?.saved ? "取消收藏" : "收藏"}
+              </Button>
+              <Button
+                loading={feedbackBusy}
+                onClick={() => feedback("dismissed")}
+              >
+                {detail.feedback?.dismissed ? "撤销不感兴趣" : "不感兴趣"}
+              </Button>
+            </Space>
+            {detail.recommendation && (
+              <Alert
+                type="info"
+                message="为什么推荐"
+                description={
+                  detail.recommendation.reasons.join("；") +
+                  "。这是内容匹配与人工设定权重的排序，不是点击率预测；反馈会影响后续排序。"
+                }
+                style={{ marginBottom: 16 }}
+              />
+            )}
             <QualityBadge quality={detail.quality} />
             {!!detail.quality?.reasons?.length && (
               <Typography.Paragraph type="secondary" style={{ marginTop: 10 }}>

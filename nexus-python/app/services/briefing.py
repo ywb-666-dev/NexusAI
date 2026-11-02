@@ -10,13 +10,15 @@ from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 from fastapi import HTTPException
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import select, func, update, cast, Integer
+from sqlalchemy import or_, select, func, update, cast, Integer
 from sqlalchemy.exc import IntegrityError
 
 from app.core.dependencies import get_session_factory
 from app.models import Content, Subscription, Notification
 from app.models.briefing import Briefing, BriefingPreference
 from app.models.delivery import PushDelivery
+from app.models.feedback import ContentFeedback
+from app.services.recommendation import rank, VERSION as RANKING_VERSION
 from app.services.llm import chat
 from app.services.semantic import read_json
 from app.services.task_service import spawn
@@ -262,6 +264,12 @@ async def build(identifier):
                 Subscription.user_id == row.user_id,
                 Content.status == 1,
                 Content.is_duplicate == 0,
+                ~Content.id.in_(
+                    select(ContentFeedback.content_id).where(
+                        ContentFeedback.user_id == row.user_id,
+                        ContentFeedback.dismissed == True,
+                    )
+                ),
                 Content.fetched_at >= row.period_start,
                 Content.fetched_at < row.period_end,
                 func.json_extract(Content.relevance, "$.recommended") == True,
@@ -272,7 +280,7 @@ async def build(identifier):
         total = (
             await db.execute(select(func.count()).select_from(query.subquery()))
         ).scalar()
-        # Date first preserves new developments; relevance orders within each UTC day.
+        # Bound recall before personalized reranking, shared with the content center.
         rows = (
             await db.execute(
                 query.order_by(
@@ -282,9 +290,36 @@ async def build(identifier):
                     ).desc(),
                     Content.fetched_at.desc(),
                     Content.id,
-                ).limit(40)
+                ).limit(500)
             )
         ).all()
+        history = (
+            await db.execute(
+                select(Content, ContentFeedback)
+                .join(Subscription, Content.subscription_id == Subscription.id)
+                .join(
+                    ContentFeedback,
+                    (ContentFeedback.content_id == Content.id)
+                    & (ContentFeedback.user_id == row.user_id),
+                )
+                .where(
+                    Subscription.user_id == row.user_id,
+                    Content.status == 1,
+                    or_(
+                        ContentFeedback.liked == True,
+                        ContentFeedback.saved == True,
+                        ContentFeedback.dismissed == True,
+                    ),
+                )
+                .order_by(ContentFeedback.updated_at.desc(), Content.id)
+                .limit(200)
+            )
+        ).all()
+        ranked = await asyncio.to_thread(
+            rank, [c for c, _ in rows], history, deduplicate=False
+        )
+        subscriptions = {c.id: sub for c, sub in rows}
+        rows = [(c, subscriptions[c.id]) for c, _ in ranked[:40]]
         sources = make_sources(rows)
         outline = (
             await compose(sources)
@@ -306,6 +341,7 @@ async def build(identifier):
             "model": None,
             "method": "llm" if sources else "empty",
             "version": 1,
+            "rankingVersion": RANKING_VERSION,
         }
         if sources:
             from app.core.config import settings
