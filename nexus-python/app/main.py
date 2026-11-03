@@ -173,6 +173,9 @@ from app.api import (
     briefing,
 )
 
+from app.api import radio
+
+app.include_router(radio.router, prefix="/api/python/radio", tags=["radio"])
 app.include_router(briefing.router, prefix="/api/python/briefings", tags=["briefings"])
 
 app.include_router(sources.router, prefix="/api/python/sources", tags=["sources"])

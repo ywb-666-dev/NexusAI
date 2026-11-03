@@ -207,3 +207,24 @@ CREATE TABLE IF NOT EXISTS content_feedback (
 	updated_at DATETIME NOT NULL DEFAULT now(),
 	PRIMARY KEY (user_id, content_id)
 );
+
+CREATE TABLE IF NOT EXISTS radio_turn (
+	id VARCHAR(36) NOT NULL,
+	user_id BIGINT NOT NULL,
+	briefing_id VARCHAR(36) NOT NULL,
+	event_index INTEGER NOT NULL,
+	question TEXT NOT NULL,
+	answer JSON NOT NULL,
+	created_at DATETIME NOT NULL DEFAULT now(),
+	PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_radio_history ON radio_turn (user_id, briefing_id, event_index, created_at);
+
+CREATE TABLE IF NOT EXISTS radio_follow (
+	user_id BIGINT NOT NULL,
+	briefing_id VARCHAR(36) NOT NULL,
+	event_index INTEGER NOT NULL,
+	subscription_id BIGINT NOT NULL,
+	PRIMARY KEY (user_id, briefing_id, event_index)
+);

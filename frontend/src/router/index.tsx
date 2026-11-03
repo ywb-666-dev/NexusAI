@@ -12,6 +12,7 @@ const Tasks = lazy(() => import("../pages/Tasks"));
 const PushSettings = lazy(() => import("../pages/PushSettings"));
 const Sources = lazy(() => import("../pages/Sources"));
 const Briefings = lazy(() => import("../pages/Briefings"));
+const Radio = lazy(() => import("../pages/Radio"));
 import { useAuthStore } from "../store/auth";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -48,6 +49,7 @@ function AppRouter() {
           <Route path="sources" element={<Sources />} />
           <Route path="contents" element={<ContentPage />} />
           <Route path="briefings" element={<Briefings />} />
+          <Route path="radio" element={<Radio />} />
           <Route
             path="approvals"
             element={

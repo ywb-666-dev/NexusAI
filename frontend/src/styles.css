@@ -311,3 +311,28 @@ body {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.radio-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+  gap: 24px;
+  align-items: start;
+}
+.radio-orbit {
+  margin: 24px auto;
+  width: 130px;
+  height: 130px;
+  border: 1px solid #24c6c8;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 44px;
+  color: #24c6c8;
+  box-shadow:
+    0 0 35px #24c6c822,
+    inset 0 0 35px #24c6c811;
+}
+@media (max-width: 1100px) {
+  .radio-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

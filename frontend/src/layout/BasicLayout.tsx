@@ -25,6 +25,7 @@ import {
   SearchOutlined,
   DeploymentUnitOutlined,
   SendOutlined,
+  SoundOutlined,
 } from "@ant-design/icons";
 import { useAuthStore } from "../store/auth";
 import { useThemeStore } from "../store/theme";
@@ -35,6 +36,7 @@ const baseItems = [
   { key: "/sources", icon: <SearchOutlined />, label: "数据源中心" },
   { key: "/contents", icon: <FileTextOutlined />, label: "内容中心" },
   { key: "/briefings", icon: <BulbOutlined />, label: "个人情报简报" },
+  { key: "/radio", icon: <SoundOutlined />, label: "我的信息电台" },
   { key: "/tasks", icon: <DeploymentUnitOutlined />, label: "任务监控" },
   { key: "/notifications", icon: <BellOutlined />, label: "通知中心" },
   { key: "/push", icon: <SendOutlined />, label: "推送设置" },

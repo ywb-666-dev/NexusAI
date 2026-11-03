@@ -24,6 +24,7 @@ import {
 import { useSearchParams } from "react-router-dom";
 import request from "../api/request";
 import PageHeading from "../components/PageHeading";
+import { Link } from "react-router-dom";
 
 const labels: Record<string, string> = {
   queued: "排队中",
@@ -362,6 +363,11 @@ export default function Briefings() {
                   {report.method === "llm" ? "AI 情报简报" : "本期暂无内容"}
                 </Tag>
                 <Space>
+                  {!!report.events?.length && (
+                    <Link to={"/radio?id=" + detail.id}>
+                      <Button>收听这份简报</Button>
+                    </Link>
+                  )}
                   <Button icon={<DownloadOutlined />} onClick={download}>
                     导出 Markdown
                   </Button>
